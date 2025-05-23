@@ -5,12 +5,14 @@ public class PlayerController : MonoBehaviour
 {
     #region     ========================= Variables =========================
     [Header("Movement")]
-    [SerializeField] private float movementSpeed;
+    [SerializeField] private float acceleration;
+    [SerializeField] private float deceleration;
     [SerializeField] private float maxMovementSpeed;
     [SerializeField] private float groundDrag, airDrag;
     [SerializeField] private Transform orientation;
 
-    private Vector3 velocity;
+    private float movementSpeed;
+    private float accelerationProgress = 0;
 
     private Rigidbody playerRigidBody;
 
@@ -54,9 +56,9 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        velocity = playerRigidBody.linearVelocity;
-        Debug.Log(velocity);
+        //Debug.Log(movementSpeed);
         PlayerMovementInput();
+        MovementSpeed();
         GroundCheck();
         MaxSpeed();
 
@@ -96,7 +98,7 @@ public class PlayerController : MonoBehaviour
     /// Adds force to this direction
     /// Checks if grounded and adds drag if so
     /// </summary>
-    private void MovePlayer(){
+    private void MovePlayer() {
         moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
 
         if (SlopeCheck() && !exitSlope){
@@ -105,8 +107,7 @@ public class PlayerController : MonoBehaviour
                 playerRigidBody.AddForce(Vector3.down * 80f, ForceMode.Force); 
             }
         }
-
-        if (isGrounded) { 
+        if (isGrounded) {
             playerRigidBody.AddForce(moveDirection.normalized * movementSpeed * 10, ForceMode.Force);
             playerRigidBody.linearDamping = groundDrag; 
         }
@@ -116,6 +117,20 @@ public class PlayerController : MonoBehaviour
         }
 
         playerRigidBody.useGravity = !SlopeCheck();
+    }
+
+    private void MovementSpeed() {
+        if (Input.GetButton("Horizontal") || Input.GetButton("Vertical")) {
+            movementSpeed = Mathf.Lerp(0, maxMovementSpeed, accelerationProgress);
+            accelerationProgress += Time.deltaTime * (acceleration * 0.1f);
+            accelerationProgress = Mathf.Clamp(accelerationProgress, 0, 1);
+        }
+        else {
+            float inverseProgress = 1 - accelerationProgress;
+            movementSpeed = Mathf.Lerp(maxMovementSpeed, 0, inverseProgress);
+            accelerationProgress = Time.deltaTime * deceleration * 0.1f;
+            accelerationProgress = Mathf.Clamp(accelerationProgress, 0, 1);
+        }
     }
 
     /// <summary>
@@ -167,11 +182,9 @@ public class PlayerController : MonoBehaviour
         canJump = true;
         exitSlope = false;
     }
-
     #endregion  ========================= Jump =========================
 
     #region     ========================= Ground Check =========================
-
     private void GroundCheck() {
         RaycastHit hit;
         isGrounded = Physics.Raycast(groundCheckPosition.position, Vector3.down, out hit, groundCheckRange, groundCheck);
@@ -183,7 +196,6 @@ public class PlayerController : MonoBehaviour
     private bool SlopeCheck(){
         if (Physics.Raycast(groundCheckPosition.position, Vector3.down, out slopeHit, groundCheckRange)) {
             float angle = Vector3.Angle(Vector3.up, slopeHit.normal);
-            Debug.Log(angle);
             return angle < maxSlopeAngle && angle != 0;
         }
         return false;
@@ -191,6 +203,5 @@ public class PlayerController : MonoBehaviour
     private Vector3 GetSlopeMovementDiretion() {
         return Vector3.ProjectOnPlane(moveDirection,slopeHit.normal).normalized;
     }
-
     #endregion  ========================= Ground Check =========================
 }
