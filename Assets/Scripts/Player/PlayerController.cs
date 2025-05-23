@@ -6,6 +6,7 @@ public class PlayerController : MonoBehaviour
     #region     ========================= Variables =========================
     [Header("Movement")]
     [SerializeField] private float movementSpeed;
+    [SerializeField] private float maxMovementSpeed;
     [SerializeField] private float groundDrag, airDrag;
     [SerializeField] private Transform orientation;
 
@@ -15,6 +16,12 @@ public class PlayerController : MonoBehaviour
 
     private float horizontalInput, verticalInput;
     private Vector3 moveDirection;
+    
+    [Space(10)]
+    [Header("Slope Movement")]
+    [SerializeField] private float maxSlopeAngle;
+    private RaycastHit slopeHit;
+    private bool exitSlope;
 
     [Space(10)]
     [Header("Jump")]
@@ -30,13 +37,13 @@ public class PlayerController : MonoBehaviour
     private bool canJump = true;
     private bool jumpReleased;
 
-
     [Space(10)]
     [Header("Ground Check")]
     [SerializeField] private Transform groundCheckPosition;
     [SerializeField] private float groundCheckRange;
     [SerializeField] private LayerMask groundCheck;
     private bool isGrounded;
+    
 
     #endregion  ========================= Variables =========================
 
@@ -48,6 +55,7 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         velocity = playerRigidBody.linearVelocity;
+        Debug.Log(velocity);
         PlayerMovementInput();
         GroundCheck();
         MaxSpeed();
@@ -75,6 +83,7 @@ public class PlayerController : MonoBehaviour
             Jump();
             canJump = false;
             jumpReleased = false;
+            exitSlope = true;
 
             Invoke(nameof(ResetJump), jumpCooldown);
         }
@@ -89,7 +98,14 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     private void MovePlayer(){
         moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
-        
+
+        if (SlopeCheck() && !exitSlope){
+            playerRigidBody.AddForce(GetSlopeMovementDiretion() * movementSpeed * 20f, ForceMode.Force);
+            if (playerRigidBody.linearVelocity.y > 0) { 
+                playerRigidBody.AddForce(Vector3.down * 80f, ForceMode.Force); 
+            }
+        }
+
         if (isGrounded) { 
             playerRigidBody.AddForce(moveDirection.normalized * movementSpeed * 10, ForceMode.Force);
             playerRigidBody.linearDamping = groundDrag; 
@@ -98,19 +114,29 @@ public class PlayerController : MonoBehaviour
             playerRigidBody.AddForce(moveDirection.normalized * movementSpeed * 10 * airControlMultiplier, ForceMode.Force);
             playerRigidBody.linearDamping = airDrag;
         }
+
+        playerRigidBody.useGravity = !SlopeCheck();
     }
 
     /// <summary>
     /// If the player is moving faster than the max speed on any axis the velocity is set to the max speed
+    /// Ensures the player does not move faster on slopes --- temporary will be replaced to increase speed on decline and decrease on incline
     /// </summary>
     private void MaxSpeed(){
-        Vector3 velocity = new Vector3(playerRigidBody.linearVelocity.x, 0, playerRigidBody.linearVelocity.z);
-        if(velocity.magnitude > movementSpeed) { 
-            Vector3 maxVelocity = velocity.normalized * movementSpeed;
-            playerRigidBody.linearVelocity = new Vector3(maxVelocity.x, playerRigidBody.linearVelocity.y, maxVelocity.z);
+        if(SlopeCheck() && !exitSlope && playerRigidBody.linearVelocity.magnitude > movementSpeed) { 
+            playerRigidBody.linearVelocity = playerRigidBody.linearVelocity.normalized * movementSpeed; 
         }
-        if (playerRigidBody.linearVelocity.y >= maxFallSpeed) {
-            playerRigidBody.linearVelocity = new Vector3(playerRigidBody.linearVelocity.x, maxFallSpeed, playerRigidBody.linearVelocity.z);
+        else {
+            Vector3 velocity = new Vector3(playerRigidBody.linearVelocity.x, 0, playerRigidBody.linearVelocity.z);
+
+            if(velocity.magnitude > maxMovementSpeed) { 
+                Vector3 maxVelocity = velocity.normalized * maxMovementSpeed;
+                playerRigidBody.linearVelocity = new Vector3(maxVelocity.x, playerRigidBody.linearVelocity.y, maxVelocity.z);
+            }
+
+            if (playerRigidBody.linearVelocity.y >= maxFallSpeed) {
+                playerRigidBody.linearVelocity = new Vector3(playerRigidBody.linearVelocity.x, maxFallSpeed, playerRigidBody.linearVelocity.z);
+            } 
         }
     }
 
@@ -130,27 +156,41 @@ public class PlayerController : MonoBehaviour
     private void VariableJump()
     {
         if (jumpReleased && !isGrounded && playerRigidBody.linearVelocity.y > 0) {
-            playerRigidBody.AddForce(Vector3.down * maxJumpMultiplier);
+            playerRigidBody.AddForce(Vector3.down * maxJumpMultiplier, ForceMode.Force);
         }
         else if (jumpReleased && !isGrounded && playerRigidBody.linearVelocity.y < 0) {
-            playerRigidBody.AddForce(Vector3.down * fallMultiplier);
+            playerRigidBody.AddForce(Vector3.down * fallMultiplier, ForceMode.Force);
         }
     }
 
     private void ResetJump() {
         canJump = true;
+        exitSlope = false;
     }
 
     #endregion  ========================= Jump =========================
 
-    #region     ========================= GroundCheck =========================
+    #region     ========================= Ground Check =========================
 
     private void GroundCheck() {
         RaycastHit hit;
         isGrounded = Physics.Raycast(groundCheckPosition.position, Vector3.down, out hit, groundCheckRange, groundCheck);
-        Debug.Log(hit.collider);
-
+    }
+    /// <summary>
+    /// Casts a ray to find the angle the ground is at to detect if its a slope
+    /// </summary>
+    /// <returns> Returns a boolean value based on the angle the ground is at </returns>
+    private bool SlopeCheck(){
+        if (Physics.Raycast(groundCheckPosition.position, Vector3.down, out slopeHit, groundCheckRange)) {
+            float angle = Vector3.Angle(Vector3.up, slopeHit.normal);
+            Debug.Log(angle);
+            return angle < maxSlopeAngle && angle != 0;
+        }
+        return false;
+    }
+    private Vector3 GetSlopeMovementDiretion() {
+        return Vector3.ProjectOnPlane(moveDirection,slopeHit.normal).normalized;
     }
 
-    #endregion  ========================= GroundCheck =========================
+    #endregion  ========================= Ground Check =========================
 }
