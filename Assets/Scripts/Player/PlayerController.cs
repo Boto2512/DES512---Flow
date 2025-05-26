@@ -138,7 +138,12 @@ public class PlayerController : MonoBehaviour
     /// Ensures the player does not move faster on slopes --- temporary will be replaced to increase speed on decline and decrease on incline
     /// </summary>
     private void MaxSpeed(){
-        if(SlopeCheck() && !exitSlope && playerRigidBody.linearVelocity.magnitude > movementSpeed) { 
+        if(SlopeCheck() && !exitSlope) {
+
+            // check if going up or down
+            // increase max speed & acceleration if down
+            // decrease max speed & acceleration if up
+
             playerRigidBody.linearVelocity = playerRigidBody.linearVelocity.normalized * movementSpeed; 
         }
         else {
@@ -154,11 +159,9 @@ public class PlayerController : MonoBehaviour
             } 
         }
     }
-
     #endregion  ========================= Movement =========================
 
     #region     ========================= Jump =========================
-
     private void Jump() {
         playerRigidBody.linearVelocity = new Vector3(playerRigidBody.linearVelocity.x, 0, playerRigidBody.linearVelocity.z) ;
         playerRigidBody.AddForce(transform.up * jumpForce, ForceMode.Impulse);
