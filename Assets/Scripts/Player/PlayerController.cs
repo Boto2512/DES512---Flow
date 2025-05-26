@@ -13,6 +13,7 @@ public class PlayerController : MonoBehaviour
 
     private float movementSpeed;
     private float accelerationProgress = 0;
+    private Vector3 velocity;
 
     private Rigidbody playerRigidBody;
 
@@ -22,6 +23,7 @@ public class PlayerController : MonoBehaviour
     [Space(10)]
     [Header("Slope Movement")]
     [SerializeField] private float maxSlopeAngle;
+    [SerializeField] private float slopeSpeedImpact;
     private RaycastHit slopeHit;
     private bool exitSlope;
 
@@ -53,10 +55,10 @@ public class PlayerController : MonoBehaviour
         playerRigidBody = GetComponent<Rigidbody>();
     }
 
-
     void Update()
     {
-        //Debug.Log(movementSpeed);
+        velocity = playerRigidBody.linearVelocity;
+        //Debug.Log(velocity);
         PlayerMovementInput();
         MovementSpeed();
         GroundCheck();
@@ -103,9 +105,7 @@ public class PlayerController : MonoBehaviour
 
         if (SlopeCheck() && !exitSlope){
             playerRigidBody.AddForce(GetSlopeMovementDiretion() * movementSpeed * 20f, ForceMode.Force);
-            if (playerRigidBody.linearVelocity.y > 0) { 
-                playerRigidBody.AddForce(Vector3.down * 80f, ForceMode.Force); 
-            }
+            playerRigidBody.AddForce(Vector3.down * 180f, ForceMode.Force); 
         }
         if (isGrounded) {
             playerRigidBody.AddForce(moveDirection.normalized * movementSpeed * 10, ForceMode.Force);
@@ -136,16 +136,15 @@ public class PlayerController : MonoBehaviour
     /// <summary>
     /// If the player is moving faster than the max speed on any axis the velocity is set to the max speed
     /// Ensures the player does not move faster on slopes --- temporary will be replaced to increase speed on decline and decrease on incline
+    /// 
     /// </summary>
     private void MaxSpeed(){
-        if(SlopeCheck() && !exitSlope) {
 
-            // check if going up or down
-            // increase max speed & acceleration if down
-            // decrease max speed & acceleration if up
-
-            playerRigidBody.linearVelocity = playerRigidBody.linearVelocity.normalized * movementSpeed; 
+            
+        if (SlopeCheck() && !exitSlope && playerRigidBody.linearVelocity.magnitude > maxMovementSpeed) {
+                playerRigidBody.linearVelocity = playerRigidBody.linearVelocity.normalized * movementSpeed;
         }
+        
         else {
             Vector3 velocity = new Vector3(playerRigidBody.linearVelocity.x, 0, playerRigidBody.linearVelocity.z);
 
@@ -159,10 +158,35 @@ public class PlayerController : MonoBehaviour
             } 
         }
     }
+
+    private void SlopeSpeedIncrease()
+    {
+        bool once = false;
+        float speedStorage = maxMovementSpeed;
+        float accelerationStorage = acceleration;
+
+        if(SlopeCheck() && !once)
+        {
+            if (playerRigidBody.linearVelocity.y > 0)
+            {
+                maxMovementSpeed = speedStorage - slopeSpeedImpact;
+            }
+            else if (playerRigidBody.linearVelocity.y < 0)
+            {
+                maxMovementSpeed = speedStorage + slopeSpeedImpact;
+            }
+        }
+        else if (!SlopeCheck())
+        {
+
+        }
+        
+    }
     #endregion  ========================= Movement =========================
 
     #region     ========================= Jump =========================
     private void Jump() {
+        exitSlope = true;
         playerRigidBody.linearVelocity = new Vector3(playerRigidBody.linearVelocity.x, 0, playerRigidBody.linearVelocity.z) ;
         playerRigidBody.AddForce(transform.up * jumpForce, ForceMode.Impulse);
     }
