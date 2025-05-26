@@ -21,16 +21,13 @@ public class BounceBomb : MonoBehaviour
     [SerializeField, Min(0f)] private float strongBlastPower;
     [SerializeField, Min(0f)] private float strongSpeedMinimum;
 
-    private bool isDetonable = false;
-
-    public UnityEvent EventThrow = new UnityEvent();
-    public UnityEvent EventActivate = new UnityEvent();
+    [Header("Other")]
+    [SerializeField] private bool isDetonable = true;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        EventThrow.AddListener(Throw);
-        EventActivate.AddListener(Activate);
+
     }
 
     // Update is called once per frame
@@ -53,10 +50,13 @@ public class BounceBomb : MonoBehaviour
     /// Has all the blasting logic (redirecting momentum and possibly speeding up)
     /// </summary>
     public void Activate() {
+        Debug.Log("Activate called");
         if (!isDetonable)
             return;
 
         var affectableEntities = FindBlastAffectableEntities();
+
+        Debug.Log(affectableEntities.Count());
 
         // sets the momentum of each blast affectable entity to at least the speed minimum of the blast radius it's in, in the direction from itself to the blast origin
         foreach ((var entity, bool inStrongBlast) in affectableEntities) {
@@ -75,19 +75,15 @@ public class BounceBomb : MonoBehaviour
     /// </summary>
     /// <returns>A collection of each IMomentumModifiable entity and whether it is in the strong blast range</returns>
     private IEnumerable<(IMomentumModifiable Entity, bool InStrongBlast)> FindBlastAffectableEntities() {
-        RaycastHit outHit = new();
+        var allColliders = new List<(IMomentumModifiable, bool)>();
 
-        // gets all colliders that implement IMomentumModifiable that are within the largest allowed radius (weak) and are in the line of sight from the entity to the bomb
-        // returns the IMomentumModifiable object and couples it with a boolean dictating whether it's in the strong blast range
-        var allColliders = Physics.OverlapSphere(blastOrigin, weakBlastRadius)
-            .Where(collider => {
-                if (collider is IMomentumModifiable 
-                        && Physics.Raycast(blastOrigin, Vector3.Normalize(collider.ClosestPoint(blastOrigin) - blastOrigin), out RaycastHit tempOutHit, weakBlastRadius)) {
-                    outHit = tempOutHit;
-                    return true;
-                }
-                return false;
-            }).Select(collider => (collider as IMomentumModifiable, outHit.distance <= strongBlastRadius));
+        foreach (var collider in Physics.OverlapSphere(blastOrigin, weakBlastRadius)) {
+            IMomentumModifiable imm = collider.GetComponentInParent<IMomentumModifiable>();     // TODO: change this GetComponentInParent() function to something more general
+            if (imm != null 
+                    && Physics.Raycast(blastOrigin, collider.ClosestPoint(blastOrigin) - blastOrigin, out RaycastHit outHit, weakBlastRadius)) {
+                allColliders.Add((imm, outHit.distance <= strongBlastRadius));
+            }
+        }
 
         return allColliders;
     }
