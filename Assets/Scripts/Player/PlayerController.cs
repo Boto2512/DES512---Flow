@@ -1,5 +1,6 @@
 using Unity.Hierarchy;
 using UnityEngine;
+using DG.Tweening;
 
 public class PlayerController : MonoBehaviour, IMomentumModifiable
 {
@@ -9,6 +10,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
     [SerializeField] private float deceleration;
     [SerializeField] private float maxMovementSpeed;
     [SerializeField] private float groundDrag;
+    [SerializeField] private float velocityDecayTime;
 
     [Space(10)]
     [SerializeField] private float airSpeedIncrease;
@@ -80,6 +82,8 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
         else {
             coyoteTimeCounter -= Time.deltaTime;
         }
+
+        if (Input.GetKey(KeyCode.LeftShift)) { playerRigidBody.AddForce(orientation.forward * 1000); }
     }
 
     void FixedUpdate() {
@@ -166,6 +170,10 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
             if(velocity.magnitude > maxMovementSpeed) { 
                 Vector3 maxVelocity = velocity.normalized * maxMovementSpeed;
                 playerRigidBody.linearVelocity = new Vector3(maxVelocity.x, playerRigidBody.linearVelocity.y, maxVelocity.z);
+
+                DOTween.Init();
+                DOTween.To(() => velocity.x, x => velocity.x = x, maxVelocity.x, velocityDecayTime);
+                DOTween.To(() => velocity.z, x => velocity.z = x, maxVelocity.z, velocityDecayTime);
             }
 
             float yVelocity = Mathf.Abs(playerRigidBody.linearVelocity.y);
