@@ -1,38 +1,50 @@
 using Unity.Hierarchy;
 using UnityEngine;
+using DG.Tweening;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : MonoBehaviour, IMomentumModifiable
 {
     #region     ========================= Variables =========================
     [Header("Movement")]
     [SerializeField] private float acceleration;
     [SerializeField] private float deceleration;
     [SerializeField] private float maxMovementSpeed;
-    [SerializeField] private float groundDrag, airDrag;
+    [SerializeField] private float groundDrag;
+    [SerializeField] private float velocityDecayTime;
+
+    [Space(10)]
+    [SerializeField] private float airSpeedIncrease;
+    [SerializeField] private float maxFallSpeed;
+    [SerializeField] private float airControlMultiplier;
+
+    [Space(10)]
     [SerializeField] private Transform orientation;
 
-    private float movementSpeed;
     private float accelerationProgress = 0;
 
     private Rigidbody playerRigidBody;
 
+    private float movementSpeed;
     private float horizontalInput, verticalInput;
+    private float speedLerpProgress;
     private Vector3 moveDirection;
+    private Vector3 velocity;
+
+    private float maxSpeedStorage;
+    private float accelerationStorage;
     
     [Space(10)]
     [Header("Slope Movement")]
     [SerializeField] private float maxSlopeAngle;
+    [SerializeField] private float slopeSpeedImpact;
     private RaycastHit slopeHit;
     private bool exitSlope;
-
     [Space(10)]
     [Header("Jump")]
     [SerializeField] private float jumpForce;
     [SerializeField] private float maxJumpMultiplier;
     [SerializeField] private float fallMultiplier;
-    [SerializeField] private float maxFallSpeed;
     [SerializeField] private float jumpCooldown;
-    [SerializeField] private float airControlMultiplier;
     [Space(5)]
     [SerializeField] private float coyoteTime = 0.2f;
     private float coyoteTimeCounter;
@@ -51,12 +63,14 @@ public class PlayerController : MonoBehaviour
 
     void Start() {
         playerRigidBody = GetComponent<Rigidbody>();
+        accelerationStorage = acceleration;
+        maxSpeedStorage = maxMovementSpeed;
     }
-
 
     void Update()
     {
-        //Debug.Log(movementSpeed);
+        velocity = playerRigidBody.linearVelocity;
+        //Debug.Log(velocity);
         PlayerMovementInput();
         MovementSpeed();
         GroundCheck();
@@ -68,6 +82,8 @@ public class PlayerController : MonoBehaviour
         else {
             coyoteTimeCounter -= Time.deltaTime;
         }
+
+        if (Input.GetKey(KeyCode.LeftShift)) { playerRigidBody.AddForce(orientation.forward * 1000); }
     }
 
     void FixedUpdate() {
@@ -103,9 +119,7 @@ public class PlayerController : MonoBehaviour
 
         if (SlopeCheck() && !exitSlope){
             playerRigidBody.AddForce(GetSlopeMovementDiretion() * movementSpeed * 20f, ForceMode.Force);
-            if (playerRigidBody.linearVelocity.y > 0) { 
-                playerRigidBody.AddForce(Vector3.down * 80f, ForceMode.Force); 
-            }
+            playerRigidBody.AddForce(Vector3.down * 180f, ForceMode.Force); 
         }
         if (isGrounded) {
             playerRigidBody.AddForce(moveDirection.normalized * movementSpeed * 10, ForceMode.Force);
@@ -113,12 +127,16 @@ public class PlayerController : MonoBehaviour
         }
         else {
             playerRigidBody.AddForce(moveDirection.normalized * movementSpeed * 10 * airControlMultiplier, ForceMode.Force);
-            playerRigidBody.linearDamping = airDrag;
+            playerRigidBody.linearDamping = 0;
         }
 
         playerRigidBody.useGravity = !SlopeCheck();
     }
 
+    /// <summary>
+    /// Lerps the current movement speed from 0 to the maximum movement speed when the player is using player input
+    /// Does the reverse when the player is not inputing movement controls
+    /// </summary>
     private void MovementSpeed() {
         if (Input.GetButton("Horizontal") || Input.GetButton("Vertical")) {
             movementSpeed = Mathf.Lerp(0, maxMovementSpeed, accelerationProgress);
@@ -134,35 +152,82 @@ public class PlayerController : MonoBehaviour
     }
 
     /// <summary>
-    /// If the player is moving faster than the max speed on any axis the velocity is set to the max speed
-    /// Ensures the player does not move faster on slopes --- temporary will be replaced to increase speed on decline and decrease on incline
+    /// Ensures the player does not move faster than the max speed 
+    /// Calls functions to increase max speed when on slopes or in air
     /// </summary>
-    private void MaxSpeed(){
-        if(SlopeCheck() && !exitSlope) {
+    private void MaxSpeed(){        
+        SlopeSpeedIncrease();
+        AirSpeedIncrease();
 
-            // check if going up or down
-            // increase max speed & acceleration if down
-            // decrease max speed & acceleration if up
-
-            playerRigidBody.linearVelocity = playerRigidBody.linearVelocity.normalized * movementSpeed; 
+        if (SlopeCheck() && !exitSlope && playerRigidBody.linearVelocity.magnitude > maxMovementSpeed) {
+                playerRigidBody.linearVelocity = playerRigidBody.linearVelocity.normalized * movementSpeed;
         }
+        
         else {
+                
             Vector3 velocity = new Vector3(playerRigidBody.linearVelocity.x, 0, playerRigidBody.linearVelocity.z);
 
             if(velocity.magnitude > maxMovementSpeed) { 
                 Vector3 maxVelocity = velocity.normalized * maxMovementSpeed;
                 playerRigidBody.linearVelocity = new Vector3(maxVelocity.x, playerRigidBody.linearVelocity.y, maxVelocity.z);
+
+                DOTween.Init();
+                DOTween.To(() => velocity.x, x => velocity.x = x, maxVelocity.x, velocityDecayTime);
+                DOTween.To(() => velocity.z, x => velocity.z = x, maxVelocity.z, velocityDecayTime);
             }
 
-            if (playerRigidBody.linearVelocity.y >= maxFallSpeed) {
+            float yVelocity = Mathf.Abs(playerRigidBody.linearVelocity.y);
+            if (yVelocity >= maxFallSpeed) {
                 playerRigidBody.linearVelocity = new Vector3(playerRigidBody.linearVelocity.x, maxFallSpeed, playerRigidBody.linearVelocity.z);
             } 
         }
+    }
+
+    private void AirSpeedIncrease()
+    {
+        if (!isGrounded) {
+            if (playerRigidBody.linearVelocity.y < 0)
+            {
+                maxMovementSpeed = maxSpeedStorage + airSpeedIncrease;
+                acceleration = accelerationStorage + airSpeedIncrease;
+            }
+            else
+            {
+                maxMovementSpeed = maxSpeedStorage;
+                acceleration = accelerationStorage;
+            }
+        }
+        else { 
+            maxMovementSpeed = maxSpeedStorage;
+            acceleration = accelerationStorage;
+        }
+    }
+    /// <summary>
+    /// If the player is on a slope they will beable to move faster
+    /// </summary>
+    private void SlopeSpeedIncrease()
+    {
+        if(SlopeCheck()) {
+            if (playerRigidBody.linearVelocity.y < 0) {
+                maxMovementSpeed = maxSpeedStorage + slopeSpeedImpact;
+                acceleration = accelerationStorage + slopeSpeedImpact;
+            }
+            else {  
+                maxMovementSpeed = maxSpeedStorage;
+                acceleration = accelerationStorage;
+            }
+        }
+        else {
+            maxMovementSpeed = maxSpeedStorage;
+            acceleration = accelerationStorage;
+        }
+
     }
     #endregion  ========================= Movement =========================
 
     #region     ========================= Jump =========================
     private void Jump() {
+        exitSlope = true;
         playerRigidBody.linearVelocity = new Vector3(playerRigidBody.linearVelocity.x, 0, playerRigidBody.linearVelocity.z) ;
         playerRigidBody.AddForce(transform.up * jumpForce, ForceMode.Impulse);
     }
@@ -206,5 +271,20 @@ public class PlayerController : MonoBehaviour
     private Vector3 GetSlopeMovementDiretion() {
         return Vector3.ProjectOnPlane(moveDirection,slopeHit.normal).normalized;
     }
+
+    
     #endregion  ========================= Ground Check =========================
+
+    #region  ========================= Momentum Interface =========================
+    public Vector3 GetMomentum()
+    {
+        return playerRigidBody.linearVelocity;
+    }
+    public void SetMomentum(Vector3 force)
+    {
+       playerRigidBody.AddForce(force, ForceMode.Force);
+    }
+    #endregion  ========================= Momentum Interface  =========================
+
+
 }
