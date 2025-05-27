@@ -50,13 +50,10 @@ public class BounceBomb : MonoBehaviour
     /// Has all the blasting logic (redirecting momentum and possibly speeding up)
     /// </summary>
     public void Activate() {
-        Debug.Log("Activate called");
         if (!isDetonable)
             return;
 
         var affectableEntities = FindBlastAffectableEntities();
-
-        Debug.Log(affectableEntities.Count());
 
         // sets the momentum of each blast affectable entity to at least the speed minimum of the blast radius it's in, in the direction from itself to the blast origin
         foreach ((var entity, bool inStrongBlast) in affectableEntities) {
@@ -78,7 +75,7 @@ public class BounceBomb : MonoBehaviour
         var allColliders = new List<(IMomentumModifiable, bool)>();
 
         foreach (var collider in Physics.OverlapSphere(blastOrigin, weakBlastRadius)) {
-            IMomentumModifiable imm = collider.GetComponentInParent<IMomentumModifiable>();     // TODO: change this GetComponentInParent() function to something more general
+            IMomentumModifiable imm = collider.attachedRigidbody.GetComponentInParent<IMomentumModifiable>();
             if (imm != null 
                     && Physics.Raycast(blastOrigin, collider.ClosestPoint(blastOrigin) - blastOrigin, out RaycastHit outHit, weakBlastRadius)) {
                 allColliders.Add((imm, outHit.distance <= strongBlastRadius));
