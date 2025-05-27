@@ -57,7 +57,7 @@ public class BounceBomb : MonoBehaviour
 
         // sets the momentum of each blast affectable entity to at least the speed minimum of the blast radius it's in, in the direction from itself to the blast origin
         foreach ((var entity, bool inStrongBlast) in affectableEntities) {
-            var momentum = entity.GetMomentum();
+            Vector3 momentum = entity.GetMomentum();
             Vector3 direction = Vector3.Normalize(entity.GetPosition() - blastOrigin);
 
             float speedMinimumToUse = inStrongBlast ? strongSpeedMinimum : weakSpeedMinimum;
@@ -75,9 +75,13 @@ public class BounceBomb : MonoBehaviour
         var allColliders = new List<(IMomentumModifiable, bool)>();
 
         foreach (var collider in Physics.OverlapSphere(blastOrigin, weakBlastRadius)) {
-            IMomentumModifiable imm = collider.attachedRigidbody.GetComponentInParent<IMomentumModifiable>();
-            if (imm != null 
-                    && Physics.Raycast(blastOrigin, collider.ClosestPoint(blastOrigin) - blastOrigin, out RaycastHit outHit, weakBlastRadius)) {
+            var rb = collider.attachedRigidbody;
+            if (rb == null) {
+                continue;
+            }
+
+            var imm = rb.gameObject.GetComponent<IMomentumModifiable>();
+            if (imm != null && Physics.Raycast(blastOrigin, collider.ClosestPoint(blastOrigin) - blastOrigin, out RaycastHit outHit, weakBlastRadius)) {
                 allColliders.Add((imm, outHit.distance <= strongBlastRadius));
             }
         }
