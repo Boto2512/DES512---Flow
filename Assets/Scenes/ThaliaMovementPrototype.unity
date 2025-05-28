@@ -1522,7 +1522,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7543525415685462447, guid: 883e63158b6e3b643af400a2629423a3, type: 3}
       propertyPath: airSpeedIncrease
-      value: 4
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 7543525415685462447, guid: 883e63158b6e3b643af400a2629423a3, type: 3}
       propertyPath: maxMovementSpeed
@@ -1530,7 +1530,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7543525415685462447, guid: 883e63158b6e3b643af400a2629423a3, type: 3}
       propertyPath: slopeSpeedImpact
-      value: 3
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 7543525415685462447, guid: 883e63158b6e3b643af400a2629423a3, type: 3}
+      propertyPath: velocityDecayTime
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8868278733414767004, guid: 883e63158b6e3b643af400a2629423a3, type: 3}
       propertyPath: m_LocalPosition.y

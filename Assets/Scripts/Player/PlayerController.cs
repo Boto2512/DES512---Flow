@@ -1,7 +1,6 @@
-using Unity.Hierarchy;
 using UnityEngine;
 using DG.Tweening;
-
+using UnityEngine.Events;
 public class PlayerController : MonoBehaviour, IMomentumModifiable
 {
     #region     ========================= Variables =========================
@@ -29,6 +28,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
     private float speedLerpProgress;
     private Vector3 moveDirection;
     private Vector3 velocity;
+    private Vector3 lastAirVelocity;
 
     private float maxSpeedStorage;
     private float accelerationStorage;
@@ -57,7 +57,10 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
     [SerializeField] private float groundCheckRange;
     [SerializeField] private LayerMask groundCheck;
     private bool isGrounded;
-    
+
+    [Header("Events")]
+    [SerializeField] private UnityEvent EventPrimaryClick = new();
+    [SerializeField] private UnityEvent EventSecondaryClick = new();
 
     #endregion  ========================= Variables =========================
 
@@ -67,14 +70,14 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
         maxSpeedStorage = maxMovementSpeed;
     }
 
-    void Update()
-    {
+    void Update() {
         velocity = playerRigidBody.linearVelocity;
         //Debug.Log(velocity);
         PlayerMovementInput();
         MovementSpeed();
         GroundCheck();
-        MaxSpeed();
+        GetLastAirVelocity();
+        PerserveMomentumOnLand();
 
         if (isGrounded) {
             coyoteTimeCounter = coyoteTime;
@@ -84,16 +87,17 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
         }
 
         if (Input.GetKey(KeyCode.LeftShift)) { playerRigidBody.AddForce(orientation.forward * 1000); }
+        if (playerRigidBody.linearVelocity.magnitude > maxMovementSpeed +.3f) { Debug.Log("Too Fast: " + playerRigidBody.linearVelocity.magnitude); }
     }
-
     void FixedUpdate() {
         MovePlayer();
         VariableJump();
     }
-
+    void LateUpdate(){
+        MaxSpeed();
+    }
     #region     ========================= Movement =========================
-
-    private void PlayerMovementInput(){
+    private void PlayerMovementInput() {
         horizontalInput = Input.GetAxisRaw("Horizontal");
         verticalInput = Input.GetAxisRaw("Vertical");
 
@@ -108,6 +112,9 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
         else if (Input.GetButtonUp("Jump") && !isGrounded) {
             jumpReleased = true;
         }
+
+        if (Input.GetMouseButtonDown(0)) { EventPrimaryClick.Invoke(); }
+        if (Input.GetMouseButtonDown(1)) { EventSecondaryClick.Invoke(); }
     }
     /// <summary>
     /// Gets the movement direction from orintation and applies the vertical and horizontal inputs values 
@@ -119,7 +126,10 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
 
         if (SlopeCheck() && !exitSlope){
             playerRigidBody.AddForce(GetSlopeMovementDiretion() * movementSpeed * 20f, ForceMode.Force);
-            playerRigidBody.AddForce(Vector3.down * 180f, ForceMode.Force); 
+
+            if ((Input.GetButton("Horizontal") || Input.GetButton("Vertical"))) { 
+                playerRigidBody.AddForce(Vector3.down * 80f, ForceMode.Force);
+            }
         }
         if (isGrounded) {
             playerRigidBody.AddForce(moveDirection.normalized * movementSpeed * 10, ForceMode.Force);
@@ -150,30 +160,38 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
             accelerationProgress = Mathf.Clamp(accelerationProgress, 0, 1);
         }
     }
-
     /// <summary>
     /// Ensures the player does not move faster than the max speed 
     /// Calls functions to increase max speed when on slopes or in air
     /// </summary>
-    private void MaxSpeed(){        
+    private void MaxSpeed() {        
         SlopeSpeedIncrease();
         AirSpeedIncrease();
 
         if (SlopeCheck() && !exitSlope && playerRigidBody.linearVelocity.magnitude > maxMovementSpeed) {
-                playerRigidBody.linearVelocity = playerRigidBody.linearVelocity.normalized * movementSpeed;
+            playerRigidBody.linearVelocity = playerRigidBody.linearVelocity.normalized * movementSpeed;
         }
         
         else {
                 
             Vector3 velocity = new Vector3(playerRigidBody.linearVelocity.x, 0, playerRigidBody.linearVelocity.z);
+            Vector3 maxVelocity = velocity.normalized * maxMovementSpeed;
 
-            if(velocity.magnitude > maxMovementSpeed) { 
-                Vector3 maxVelocity = velocity.normalized * maxMovementSpeed;
-                playerRigidBody.linearVelocity = new Vector3(maxVelocity.x, playerRigidBody.linearVelocity.y, maxVelocity.z);
+            if(velocity.magnitude > maxMovementSpeed * 3) {
+                playerRigidBody.linearVelocity = new Vector3(maxVelocity.x * 3, playerRigidBody.linearVelocity.y, maxVelocity.z * 3);
+            }
+            else if (velocity.magnitude > maxMovementSpeed) {
+                float distance = Vector3.Distance(maxVelocity, playerRigidBody.linearVelocity);
 
                 DOTween.Init();
-                DOTween.To(() => velocity.x, x => velocity.x = x, maxVelocity.x, velocityDecayTime);
-                DOTween.To(() => velocity.z, x => velocity.z = x, maxVelocity.z, velocityDecayTime);
+                DOTween.To(() => speedLerpProgress, x => speedLerpProgress = x, 1, velocityDecayTime);
+
+                Vector3 lerpedVelocity = Vector3.Lerp(playerRigidBody.linearVelocity, maxVelocity, speedLerpProgress);
+                playerRigidBody.linearVelocity = new Vector3(lerpedVelocity.x, playerRigidBody.linearVelocity.y, lerpedVelocity.z);
+                
+                if (speedLerpProgress >= 1) {
+                    speedLerpProgress = 0;
+                }
             }
 
             float yVelocity = Mathf.Abs(playerRigidBody.linearVelocity.y);
@@ -183,23 +201,16 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
         }
     }
 
-    private void AirSpeedIncrease()
-    {
+    private void AirSpeedIncrease() {
         if (!isGrounded) {
-            if (playerRigidBody.linearVelocity.y < 0)
-            {
+            if (playerRigidBody.linearVelocity.y < 0) {
                 maxMovementSpeed = maxSpeedStorage + airSpeedIncrease;
                 acceleration = accelerationStorage + airSpeedIncrease;
             }
-            else
-            {
+            else {
                 maxMovementSpeed = maxSpeedStorage;
                 acceleration = accelerationStorage;
             }
-        }
-        else { 
-            maxMovementSpeed = maxSpeedStorage;
-            acceleration = accelerationStorage;
         }
     }
     /// <summary>
@@ -217,11 +228,19 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
                 acceleration = accelerationStorage;
             }
         }
-        else {
-            maxMovementSpeed = maxSpeedStorage;
-            acceleration = accelerationStorage;
-        }
+    }
+    private void PerserveMomentumOnLand() {
+        bool previousGround = isGrounded;
+        GroundCheck();
 
+        if (previousGround == false && isGrounded == true) {
+            playerRigidBody.linearVelocity = new Vector3(lastAirVelocity.x, playerRigidBody.linearVelocity.y, lastAirVelocity.z);
+        }
+    }
+    private void GetLastAirVelocity() {
+        if (!isGrounded) {  
+            lastAirVelocity = playerRigidBody.linearVelocity;
+        }
     }
     #endregion  ========================= Movement =========================
 
@@ -252,6 +271,10 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
     }
     #endregion  ========================= Jump =========================
 
+    #region  ========================= Wall Kick =========================
+     //When player runs into a wall & interacts the player will "kick" it and reverse its momentum
+    #endregion  ========================= Wall Kick =========================
+
     #region     ========================= Ground Check =========================
     private void GroundCheck() {
         RaycastHit hit;
@@ -271,18 +294,17 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
     private Vector3 GetSlopeMovementDiretion() {
         return Vector3.ProjectOnPlane(moveDirection,slopeHit.normal).normalized;
     }
-
-    
     #endregion  ========================= Ground Check =========================
 
     #region  ========================= Momentum Interface =========================
-    public Vector3 GetMomentum()
-    {
+    public Vector3 GetMomentum() {
         return playerRigidBody.linearVelocity;
     }
-    public void SetMomentum(Vector3 force)
-    {
-       playerRigidBody.AddForce(force, ForceMode.Force);
+    public Vector3 GetPosition() {
+        return playerRigidBody.position;
+    }
+    public void SetMomentum(Vector3 value) {
+        playerRigidBody.linearVelocity = value;
     }
     #endregion  ========================= Momentum Interface  =========================
 
