@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
 
 namespace StateMachine {
     public class StateMachine<TEnum> where TEnum : Enum {
@@ -11,11 +9,29 @@ namespace StateMachine {
         public TEnum CurrentState { get; protected set; }
 
         /// <summary>
+        /// Default parameterless constructor. Avoid using.
+        /// </summary>
+        /// <exception cref="Exception"></exception>
+        public StateMachine() {
+            TEnum[] enums = (TEnum[])Enum.GetValues(typeof(TEnum));
+
+            if (enums.Length == 0) {
+                throw new Exception("Generic enum type has no values.");
+            }
+
+            foreach (TEnum value in Enum.GetValues(typeof(TEnum))) {
+                transitions.Add(value, new());
+            }
+
+            CurrentState = enums[0];
+        }
+
+        /// <summary>
         /// Creates a finite state machine based on the enum states and transitions passed in.
         /// TEnum MUST have consecutive positive int values from 0-n. 
         /// </summary>
         /// <param name="initialState">State the finite state machine starts in</param>
-        /// <param name="transitions"></param>
+        /// <param name="transitions">How one state can move into another state</param>
         public StateMachine(TEnum initialState, List<Transition<TEnum>> transitions) {
             CurrentState = initialState;
 
@@ -33,6 +49,9 @@ namespace StateMachine {
             TransitionCheck();
         }
 
+        /// <summary>
+        /// Checks all transitions from the CurrentState and applies the first one that's valid
+        /// </summary>
         protected void TransitionCheck() {
             foreach (var transition in transitions[CurrentState]) {
                 if (transition.Evaluate) {
