@@ -9,12 +9,13 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
     [SerializeField] private float deceleration;
     [SerializeField] private float maxMovementSpeed;
     [SerializeField] private float groundDrag;
-    [SerializeField] private float velocityDecayTime;
+    [SerializeField, Tooltip("Controls how long it takes for velocity takes to return to max speed when the player goes over it")] 
+    private float velocityDecayTime;
 
     [Space(10)]
-    [SerializeField] private float airSpeedIncrease;
+    [SerializeField, Tooltip("the amount the player's max speed and acceleration increases by when in air")] private float airSpeedIncrease;
     [SerializeField] private float maxFallSpeed;
-    [SerializeField] private float airControlMultiplier;
+    [SerializeField, Range(0,1), Tooltip("Controls how much control the player has when in the air (0 is none, 1 is full)")] private float airControlMultiplier;
 
     [Space(10)]
     [SerializeField] private Transform orientation;
@@ -35,18 +36,18 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
     
     [Space(10)]
     [Header("Slope Movement")]
-    [SerializeField] private float maxSlopeAngle;
-    [SerializeField] private float slopeSpeedImpact;
+    [SerializeField, Tooltip("Maxium slope angle the player can go up")] private float maxSlopeAngle;
+    [SerializeField, Tooltip("the amount the player's max speed and acceleration increases by when on a slope")] private float slopeSpeedImpact;
     private RaycastHit slopeHit;
     private bool exitSlope;
     [Space(10)]
     [Header("Jump")]
     [SerializeField] private float jumpForce;
-    [SerializeField] private float maxJumpMultiplier;
-    [SerializeField] private float fallMultiplier;
+    [SerializeField, Tooltip("applies a force once player releases jump so it reaches thye apex faster  ")] private float maxJumpMultiplier;
+    [SerializeField, Tooltip("applies a a force when player falls so they fall quicker  ")] private float fallMultiplier;
     [SerializeField] private float jumpCooldown;
     [Space(5)]
-    [SerializeField] private float coyoteTime = 0.2f;
+    [SerializeField, Tooltip("duration of coyote time")] private float coyoteTime = 0.2f;
     private float coyoteTimeCounter;
     private bool canJump = true;
     private bool jumpReleased;
@@ -55,8 +56,11 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
     [Header("Ground Check")]
     [SerializeField] private Transform groundCheckPosition;
     [SerializeField] private float groundCheckRange;
-    [SerializeField] private LayerMask groundCheck;
+    [SerializeField] private LayerMask groundMask;
     private bool isGrounded;
+
+    [Header("Wall Check& Kick")]
+    [SerializeField] private float wallKickRange;
 
     [Header("Events")]
     [SerializeField] private UnityEvent EventPrimaryClick = new();
@@ -71,23 +75,19 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
     }
 
     void Update() {
-        velocity = playerRigidBody.linearVelocity;
-        //Debug.Log(velocity);
+        WallCheck();
+        GroundCheck();
         PlayerMovementInput();
         MovementSpeed();
-        GroundCheck();
-        GetLastAirVelocity();
-        PerserveMomentumOnLand();
 
         if (isGrounded) {
             coyoteTimeCounter = coyoteTime;
         }
         else {
             coyoteTimeCounter -= Time.deltaTime;
+            GetLastAirVelocity();
         }
-
-        if (Input.GetKey(KeyCode.LeftShift)) { playerRigidBody.AddForce(orientation.forward * 1000); }
-        if (playerRigidBody.linearVelocity.magnitude > maxMovementSpeed +.3f) { Debug.Log("Too Fast: " + playerRigidBody.linearVelocity.magnitude); }
+        PerserveMomentumOnLand();
     }
     void FixedUpdate() {
         MovePlayer();
@@ -100,6 +100,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
     private void PlayerMovementInput() {
         horizontalInput = Input.GetAxisRaw("Horizontal");
         verticalInput = Input.GetAxisRaw("Vertical");
+
 
         if (Input.GetButton("Jump") && canJump && coyoteTimeCounter > 0) {
             Jump();
@@ -126,6 +127,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
 
         if (SlopeCheck() && !exitSlope){
             playerRigidBody.AddForce(GetSlopeMovementDiretion() * movementSpeed * 20f, ForceMode.Force);
+
 
             if ((Input.GetButton("Horizontal") || Input.GetButton("Vertical"))) { 
                 playerRigidBody.AddForce(Vector3.down * 80f, ForceMode.Force);
@@ -164,9 +166,9 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
     /// Ensures the player does not move faster than the max speed 
     /// Calls functions to increase max speed when on slopes or in air
     /// </summary>
-    private void MaxSpeed() {        
-        SlopeSpeedIncrease();
+    private void MaxSpeed() {               
         AirSpeedIncrease();
+        SlopeSpeedIncrease();
 
         if (SlopeCheck() && !exitSlope && playerRigidBody.linearVelocity.magnitude > maxMovementSpeed) {
             playerRigidBody.linearVelocity = playerRigidBody.linearVelocity.normalized * movementSpeed;
@@ -201,6 +203,9 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
         }
     }
 
+    /// <summary>
+    /// If the player is in air they will beable to move faster
+    /// </summary>
     private void AirSpeedIncrease() {
         if (!isGrounded) {
             if (playerRigidBody.linearVelocity.y < 0) {
@@ -227,8 +232,16 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
                 maxMovementSpeed = maxSpeedStorage;
                 acceleration = accelerationStorage;
             }
+        } 
+        else if (isGrounded) {
+            maxMovementSpeed = maxSpeedStorage;
+            acceleration = accelerationStorage;
         }
     }
+
+    /// <summary>
+    /// Uses the last stored air velocity and replaces the player's velocity with it
+    /// </summary>
     private void PerserveMomentumOnLand() {
         bool previousGround = isGrounded;
         GroundCheck();
@@ -238,9 +251,8 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
         }
     }
     private void GetLastAirVelocity() {
-        if (!isGrounded) {  
             lastAirVelocity = playerRigidBody.linearVelocity;
-        }
+        
     }
     #endregion  ========================= Movement =========================
 
@@ -272,13 +284,32 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
     #endregion  ========================= Jump =========================
 
     #region  ========================= Wall Kick =========================
-     //When player runs into a wall & interacts the player will "kick" it and reverse its momentum
+    /// <summary>
+    /// Performs a check to see if a wall is closeenough for the wall kick
+    /// </summary>
+    private void WallCheck() {
+        if (Input.GetMouseButtonDown(0)) {
+            RaycastHit wallHit;
+            isGrounded = Physics.Raycast(groundCheckPosition.position, orientation.forward, out wallHit, wallKickRange, groundMask);
+            if (wallHit.collider != null) {
+                WallKick();
+            }
+        }
+    }
+    /// <summary>
+    /// Inverses the x & z velocity of the player
+    /// </summary>
+    private void WallKick() {
+        playerRigidBody.linearVelocity = new Vector3(-playerRigidBody.linearVelocity.x, 
+                                                     playerRigidBody.linearVelocity.y, 
+                                                     -playerRigidBody.linearVelocity.z);
+    }
     #endregion  ========================= Wall Kick =========================
 
     #region     ========================= Ground Check =========================
     private void GroundCheck() {
         RaycastHit hit;
-        isGrounded = Physics.Raycast(groundCheckPosition.position, Vector3.down, out hit, groundCheckRange, groundCheck);
+        isGrounded = Physics.Raycast(groundCheckPosition.position, Vector3.down, out hit, groundCheckRange, groundMask);
     }
     /// <summary>
     /// Casts a ray to find the angle the ground is at to detect if its a slope
