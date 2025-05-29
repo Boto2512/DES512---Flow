@@ -40,12 +40,14 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
     [SerializeField, Tooltip("the amount the player's max speed and acceleration increases by when on a slope")] private float slopeSpeedImpact;
     private RaycastHit slopeHit;
     private bool exitSlope;
+
     [Space(10)]
     [Header("Jump")]
     [SerializeField] private float jumpForce;
     [SerializeField, Tooltip("applies a force once player releases jump so it reaches thye apex faster  ")] private float maxJumpMultiplier;
     [SerializeField, Tooltip("applies a a force when player falls so they fall quicker  ")] private float fallMultiplier;
     [SerializeField] private float jumpCooldown;
+
     [Space(5)]
     [SerializeField, Tooltip("duration of coyote time")] private float coyoteTime = 0.2f;
     private float coyoteTimeCounter;
@@ -77,6 +79,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
     void Update() {
         WallCheck();
         GroundCheck();
+
         PlayerMovementInput();
         MovementSpeed();
 
@@ -108,7 +111,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
             jumpReleased = false;
             exitSlope = true;
 
-            Invoke(nameof(ResetJump), jumpCooldown);
+            this.Invoke(ResetJump, jumpCooldown);
         }
         else if (Input.GetButtonUp("Jump") && !isGrounded) {
             jumpReleased = true;
@@ -129,7 +132,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
             playerRigidBody.AddForce(GetSlopeMovementDiretion() * movementSpeed * 20f, ForceMode.Force);
 
 
-            if ((Input.GetButton("Horizontal") || Input.GetButton("Vertical"))) { 
+            if (Input.GetButton("Horizontal") || Input.GetButton("Vertical")) { 
                 playerRigidBody.AddForce(Vector3.down * 80f, ForceMode.Force);
             }
         }
@@ -158,10 +161,12 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
         else {
             float inverseProgress = 1 - accelerationProgress;
             movementSpeed = Mathf.Lerp(maxMovementSpeed, 0, inverseProgress);
+
             accelerationProgress = Time.deltaTime * deceleration * 0.1f;
             accelerationProgress = Mathf.Clamp(accelerationProgress, 0, 1);
         }
     }
+
     /// <summary>
     /// Ensures the player does not move faster than the max speed 
     /// Calls functions to increase max speed when on slopes or in air
@@ -173,7 +178,6 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
         if (SlopeCheck() && !exitSlope && playerRigidBody.linearVelocity.magnitude > maxMovementSpeed) {
             playerRigidBody.linearVelocity = playerRigidBody.linearVelocity.normalized * movementSpeed;
         }
-        
         else {
                 
             Vector3 velocity = new Vector3(playerRigidBody.linearVelocity.x, 0, playerRigidBody.linearVelocity.z);
@@ -219,7 +223,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
         }
     }
     /// <summary>
-    /// If the player is on a slope they will beable to move faster
+    /// If the player is on a slope they will be able to move faster
     /// </summary>
     private void SlopeSpeedIncrease()
     {
@@ -300,16 +304,14 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
     /// Inverses the x & z velocity of the player
     /// </summary>
     private void WallKick() {
-        playerRigidBody.linearVelocity = new Vector3(-playerRigidBody.linearVelocity.x, 
-                                                     playerRigidBody.linearVelocity.y, 
-                                                     -playerRigidBody.linearVelocity.z);
+        Vector3 tempVelocity = playerRigidBody.linearVelocity;
+        playerRigidBody.linearVelocity = new Vector3(-tempVelocity.x, tempVelocity.y, -tempVelocity.z);
     }
     #endregion  ========================= Wall Kick =========================
 
     #region     ========================= Ground Check =========================
     private void GroundCheck() {
-        RaycastHit hit;
-        isGrounded = Physics.Raycast(groundCheckPosition.position, Vector3.down, out hit, groundCheckRange, groundMask);
+        isGrounded = Physics.Raycast(groundCheckPosition.position, Vector3.down, groundCheckRange, groundMask);
     }
     /// <summary>
     /// Casts a ray to find the angle the ground is at to detect if its a slope
@@ -339,5 +341,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
     }
     #endregion  ========================= Momentum Interface  =========================
 
+    #region ========================= Throw Bounce Bomb =========================
 
+    #endregion ========================= Throw Bounce Bomb =========================
 }
