@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class InteractableDoor : MonoBehaviour
 {
-    private bool isPlayerInRange;
+   [SerializeField] private bool isPlayerInRange;
 
      void Update()
     {
