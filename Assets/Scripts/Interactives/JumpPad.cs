@@ -3,9 +3,18 @@ using UnityEngine;
 public class JumpPad : MonoBehaviour
 {
     [SerializeField] private float jumpForce;
+    [SerializeField] private string triggeredTag;
 
-    private void jump(Rigidbody rb)
+    private void OnCollisionEnter(Collision collision)
     {
-        rb.AddForce(rb.transform.up*jumpForce);
+        if (collision.transform.CompareTag(triggeredTag))
+        {
+            Jump(collision.transform.GetComponent<PlayerController>());
+        }
+    }
+
+    private void Jump(IMomentumModifiable entity)
+    {
+        entity.SetMomentum(entity.GetMomentum()+Vector3.up*jumpForce);
     }
 }
