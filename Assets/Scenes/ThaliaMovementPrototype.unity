@@ -1464,17 +1464,25 @@ PrefabInstance:
       propertyPath: m_Mass
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4761299143595612641, guid: 883e63158b6e3b643af400a2629423a3, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5795216341086192065, guid: 883e63158b6e3b643af400a2629423a3, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.5
+      objectReference: {fileID: 0}
     - target: {fileID: 6557319022336841915, guid: 883e63158b6e3b643af400a2629423a3, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -2.45
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6557319022336841915, guid: 883e63158b6e3b643af400a2629423a3, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.85
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6557319022336841915, guid: 883e63158b6e3b643af400a2629423a3, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 1.21428
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6557319022336841915, guid: 883e63158b6e3b643af400a2629423a3, type: 3}
       propertyPath: m_LocalRotation.w
@@ -1521,8 +1529,16 @@ PrefabInstance:
       value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 7543525415685462447, guid: 883e63158b6e3b643af400a2629423a3, type: 3}
+      propertyPath: wallKickRange
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7543525415685462447, guid: 883e63158b6e3b643af400a2629423a3, type: 3}
+      propertyPath: wallCheckRange
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7543525415685462447, guid: 883e63158b6e3b643af400a2629423a3, type: 3}
       propertyPath: airSpeedIncrease
-      value: 100
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 7543525415685462447, guid: 883e63158b6e3b643af400a2629423a3, type: 3}
       propertyPath: maxMovementSpeed
@@ -1530,7 +1546,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7543525415685462447, guid: 883e63158b6e3b643af400a2629423a3, type: 3}
       propertyPath: slopeSpeedImpact
-      value: 4
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7543525415685462447, guid: 883e63158b6e3b643af400a2629423a3, type: 3}
+      propertyPath: groundMask.m_Bits
+      value: 64
       objectReference: {fileID: 0}
     - target: {fileID: 7543525415685462447, guid: 883e63158b6e3b643af400a2629423a3, type: 3}
       propertyPath: velocityDecayTime
@@ -1538,7 +1558,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8868278733414767004, guid: 883e63158b6e3b643af400a2629423a3, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
