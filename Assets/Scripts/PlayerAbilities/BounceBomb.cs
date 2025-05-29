@@ -42,6 +42,10 @@ public class BounceBomb : MonoBehaviour
         }
     }
 
+    private void OnTriggerEnter(Collider other) {
+        if (other.attachedRigidbody) ;
+    }
+
     public void Throw() {
 
     }

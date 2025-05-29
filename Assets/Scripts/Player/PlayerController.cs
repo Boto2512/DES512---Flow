@@ -61,9 +61,19 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
     [SerializeField] private LayerMask groundMask;
     private bool isGrounded;
 
-    [Header("Wall Check& Kick")]
+    [Space(10)]
+    [Header("Wall Check & Kick")]
     [SerializeField] private float wallKickRange;
 
+    [Space(10)]
+    [Header("Bounce Bomb")]
+    [SerializeField] private GameObject bounceBomb;
+    [SerializeField, Min(0f)] private float bombThrowPower = 1f;
+    [SerializeField] private Transform bounceBombSpawnTransform;
+    private Vector3 bounceBombSpawnPosition => bounceBombSpawnTransform.position;
+    private GameObject bounceBombInstance;
+
+    [Space(10)]
     [Header("Events")]
     [SerializeField] private UnityEvent EventPrimaryClick = new();
     [SerializeField] private UnityEvent EventSecondaryClick = new();
@@ -74,6 +84,9 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
         playerRigidBody = GetComponent<Rigidbody>();
         accelerationStorage = acceleration;
         maxSpeedStorage = maxMovementSpeed;
+
+        ValidateBounceBomb();
+        EventSecondaryClick.AddListener(SpawnBounceBomb);
     }
 
     void Update() {
@@ -342,6 +355,28 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
     #endregion  ========================= Momentum Interface  =========================
 
     #region ========================= Throw Bounce Bomb =========================
+    private void ValidateBounceBomb() {
+        if (bounceBomb == null)
+            throw new System.Exception("Cannot reference null Bounce Bomb");
+        if (bounceBomb.GetComponent<BounceBomb>() == null)
+            throw new System.Exception("Bounce Bomb reference doesn't have the required BounceBomb script");
+    }
 
+    private void SpawnBounceBomb() {
+        // spawns BounceBomb and 'throws' it via AddForce()
+        bounceBombInstance = Instantiate(bounceBomb, bounceBombSpawnPosition, playerRigidBody.rotation);
+        bounceBombInstance.GetComponent<Rigidbody>().AddForce(GetMomentum().normalized * bombThrowPower);
+
+        EventSecondaryClick.RemoveListener(SpawnBounceBomb);
+        EventSecondaryClick.AddListener(BounceBombListeners);
+    }
+
+    private void BounceBombListeners() {
+        bounceBombInstance.GetComponent<BounceBomb>().Activate();
+        DestroyImmediate(bounceBombInstance);
+
+        EventSecondaryClick.RemoveListener(BounceBombListeners);
+        EventSecondaryClick.AddListener(SpawnBounceBomb);
+    }
     #endregion ========================= Throw Bounce Bomb =========================
 }
