@@ -53,7 +53,7 @@ MonoBehaviour:
   - {fileID: 8926484042661614576}
   - {fileID: 8926484042661614572}
   - {fileID: 8926484042661614581}
-  m_UIPosition: {x: 705, y: 601}
+  m_UIPosition: {x: 705, y: 694}
   m_UICollapsed: 0
   m_UISuperCollapsed: 0
   m_InputSlots:
@@ -220,9 +220,9 @@ MonoBehaviour:
   uiBounds:
     serializedVersion: 2
     x: 421
-    y: -492
+    y: -758
     width: 2820
-    height: 1934
+    height: 2200
 --- !u!114 &114350483966674976
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -267,12 +267,29 @@ MonoBehaviour:
   - {fileID: 8926484042661614856}
   - {fileID: 8926484042661614861}
   - {fileID: 8926484042661614865}
+  - {fileID: 8926484042661614869}
   m_UIPosition: {x: 0, y: 0}
   m_UICollapsed: 1
   m_UISuperCollapsed: 0
   m_UIInfos: {fileID: 114340500867371532}
   m_CustomAttributes: []
   m_ParameterInfo:
+  - name: Play
+    path: Play
+    tooltip: 
+    space: -1
+    spaceable: 0
+    sheetType: m_Bool
+    realType: Boolean
+    defaultValue:
+      m_Type:
+        m_SerializableType: System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral,
+          PublicKeyToken=b77a5c561934e089
+      m_SerializableObject: False
+    min: -Infinity
+    max: Infinity
+    enumValues: []
+    descendantCount: 0
   - name: Sparks
     path: 
     tooltip: 
@@ -773,7 +790,7 @@ MonoBehaviour:
   m_Parent: {fileID: 114350483966674976}
   m_Children:
   - {fileID: 8926484042661614586}
-  m_UIPosition: {x: 704, y: 238}
+  m_UIPosition: {x: 704, y: 331}
   m_UICollapsed: 0
   m_UISuperCollapsed: 0
   m_InputSlots: []
@@ -876,7 +893,7 @@ MonoBehaviour:
   m_Children:
   - {fileID: 8926484042661614545}
   - {fileID: 8926484042661614562}
-  m_UIPosition: {x: 705, y: -152}
+  m_UIPosition: {x: 705, y: -78}
   m_UICollapsed: 0
   m_UISuperCollapsed: 0
   m_InputSlots:
@@ -1167,7 +1184,8 @@ MonoBehaviour:
       m_SerializableType: System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral,
         PublicKeyToken=b77a5c561934e089
   m_Direction: 0
-  m_LinkedSlots: []
+  m_LinkedSlots:
+  - {fileID: 8926484042661614870}
 --- !u!114 &8926484042661614543
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1191,7 +1209,7 @@ MonoBehaviour:
   - {fileID: 8926484042661614544}
   m_ExposedName: BurstCount
   m_Exposed: 1
-  m_Order: 8
+  m_Order: 9
   m_Category: Explosion
   m_Min:
     m_Type:
@@ -3126,7 +3144,7 @@ MonoBehaviour:
   - {fileID: 8926484042661614613}
   m_ExposedName: VelcoityTwo
   m_Exposed: 1
-  m_Order: 2
+  m_Order: 3
   m_Category: Explosion
   m_Min:
     m_Type:
@@ -3309,7 +3327,7 @@ MonoBehaviour:
   - {fileID: 8926484042661614618}
   m_ExposedName: Turbulence
   m_Exposed: 1
-  m_Order: 4
+  m_Order: 5
   m_Category: Explosion
   m_Min:
     m_Type:
@@ -3399,7 +3417,7 @@ MonoBehaviour:
   - {fileID: 8926484042661614620}
   m_ExposedName: ExplosionColour
   m_Exposed: 1
-  m_Order: 5
+  m_Order: 6
   m_Category: Explosion
   m_Min:
     m_Type:
@@ -3480,7 +3498,7 @@ MonoBehaviour:
   - {fileID: 8926484042661614622}
   m_ExposedName: Size
   m_Exposed: 1
-  m_Order: 7
+  m_Order: 8
   m_Category: Explosion
   m_Min:
     m_Type:
@@ -3794,7 +3812,8 @@ MonoBehaviour:
       m_SerializableType: System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral,
         PublicKeyToken=b77a5c561934e089
   m_Direction: 0
-  m_LinkedSlots: []
+  m_LinkedSlots:
+  - {fileID: 8926484042661614870}
 --- !u!114 &8926484042661614631
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4357,7 +4376,7 @@ MonoBehaviour:
   m_Parent: {fileID: 114350483966674976}
   m_Children:
   - {fileID: 8926484042661614651}
-  m_UIPosition: {x: 1862, y: 245}
+  m_UIPosition: {x: 1862, y: 264}
   m_UICollapsed: 0
   m_UISuperCollapsed: 0
   m_InputSlots: []
@@ -6017,7 +6036,7 @@ MonoBehaviour:
   - {fileID: 8926484042661614704}
   m_ExposedName: Size 1
   m_Exposed: 1
-  m_Order: 11
+  m_Order: 12
   m_Category: Sparks
   m_Min:
     m_Type:
@@ -6170,7 +6189,7 @@ MonoBehaviour:
   - {fileID: 8926484042661614708}
   m_ExposedName: ExplosionColour 1
   m_Exposed: 1
-  m_Order: 6
+  m_Order: 7
   m_Category: Sparks
   m_Min:
     m_Type:
@@ -6251,7 +6270,7 @@ MonoBehaviour:
   - {fileID: 8926484042661614710}
   m_ExposedName: VelcoityTwo 1
   m_Exposed: 1
-  m_Order: 9
+  m_Order: 10
   m_Category: Sparks
   m_Min:
     m_Type:
@@ -6434,7 +6453,7 @@ MonoBehaviour:
   - {fileID: 8926484042661614715}
   m_ExposedName: VelocityOne 1
   m_Exposed: 1
-  m_Order: 10
+  m_Order: 11
   m_Category: Sparks
   m_Min:
     m_Type:
@@ -6617,7 +6636,7 @@ MonoBehaviour:
   - {fileID: 8926484042661614720}
   m_ExposedName: BurstCount 1
   m_Exposed: 1
-  m_Order: 3
+  m_Order: 4
   m_Category: Sparks
   m_Min:
     m_Type:
@@ -6858,7 +6877,8 @@ MonoBehaviour:
       m_SerializableType: System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral,
         PublicKeyToken=b77a5c561934e089
   m_Direction: 0
-  m_LinkedSlots: []
+  m_LinkedSlots:
+  - {fileID: 8926484042661614870}
 --- !u!114 &8926484042661614727
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8312,7 +8332,7 @@ MonoBehaviour:
   - {fileID: 8926484042661614800}
   m_ExposedName: ShockwaveColour
   m_Exposed: 1
-  m_Order: 1
+  m_Order: 2
   m_Category: Shockwave
   m_Min:
     m_Type:
@@ -8393,7 +8413,7 @@ MonoBehaviour:
   - {fileID: 8926484042661614802}
   m_ExposedName: ShockwaveTexture
   m_Exposed: 1
-  m_Order: 12
+  m_Order: 13
   m_Category: Shockwave
   m_Min:
     m_Type:
@@ -8709,7 +8729,7 @@ MonoBehaviour:
   - {fileID: 8926484042661614822}
   m_ExposedName: ShockwaveAngle
   m_Exposed: 1
-  m_Order: 13
+  m_Order: 14
   m_Category: Shockwave
   m_Min:
     m_Type:
@@ -9293,7 +9313,7 @@ MonoBehaviour:
   - {fileID: 8926484042661614857}
   m_ExposedName: ShockwavePosition
   m_Exposed: 1
-  m_Order: 14
+  m_Order: 15
   m_Category: Shockwave
   m_Min:
     m_Type:
@@ -9483,7 +9503,7 @@ MonoBehaviour:
   - {fileID: 8926484042661614862}
   m_ExposedName: LifetimeRandom
   m_Exposed: 1
-  m_Order: 15
+  m_Order: 16
   m_Category: Shockwave
   m_Min:
     m_Type:
@@ -9636,7 +9656,7 @@ MonoBehaviour:
   - {fileID: 8926484042661614866}
   m_ExposedName: MultiplySizeRandom
   m_Exposed: 1
-  m_Order: 0
+  m_Order: 1
   m_Category: Shockwave
   m_Min:
     m_Type:
@@ -9766,3 +9786,90 @@ MonoBehaviour:
   m_Direction: 1
   m_LinkedSlots:
   - {fileID: 8926484042661614743}
+--- !u!114 &8926484042661614869
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 330e0fca1717dde4aaa144f48232aa64, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_UIIgnoredErrors: []
+  m_Parent: {fileID: 114350483966674976}
+  m_Children: []
+  m_UIPosition: {x: 0, y: 0}
+  m_UICollapsed: 1
+  m_UISuperCollapsed: 0
+  m_InputSlots: []
+  m_OutputSlots:
+  - {fileID: 8926484042661614870}
+  m_ExposedName: Play
+  m_Exposed: 1
+  m_Order: 17
+  m_Category: 
+  m_Min:
+    m_Type:
+      m_SerializableType: 
+    m_SerializableObject: 
+  m_Max:
+    m_Type:
+      m_SerializableType: 
+    m_SerializableObject: 
+  m_IsOutput: 0
+  m_EnumValues: []
+  m_ValueFilter: 0
+  m_Tooltip: 
+  m_Nodes:
+  - m_Id: 0
+    linkedSlots:
+    - outputSlot: {fileID: 8926484042661614870}
+      inputSlot: {fileID: 8926484042661614542}
+    - outputSlot: {fileID: 8926484042661614870}
+      inputSlot: {fileID: 8926484042661614630}
+    - outputSlot: {fileID: 8926484042661614870}
+      inputSlot: {fileID: 8926484042661614726}
+    position: {x: 1291.4877, y: -758.0806}
+    expandedSlots: []
+    expanded: 1
+    supecollapsed: 0
+--- !u!114 &8926484042661614870
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b4c11ff25089a324daf359f4b0629b33, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_UIIgnoredErrors: []
+  m_Parent: {fileID: 0}
+  m_Children: []
+  m_UIPosition: {x: 0, y: 0}
+  m_UICollapsed: 1
+  m_UISuperCollapsed: 0
+  m_MasterSlot: {fileID: 8926484042661614870}
+  m_MasterData:
+    m_Owner: {fileID: 8926484042661614869}
+    m_Value:
+      m_Type:
+        m_SerializableType: System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral,
+          PublicKeyToken=b77a5c561934e089
+      m_SerializableObject: False
+    m_Space: -1
+  m_Property:
+    name: o
+    m_serializedType:
+      m_SerializableType: System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+  m_Direction: 1
+  m_LinkedSlots:
+  - {fileID: 8926484042661614542}
+  - {fileID: 8926484042661614630}
+  - {fileID: 8926484042661614726}
