@@ -365,7 +365,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
     private void SpawnBounceBomb() {
         // spawns BounceBomb and 'throws' it via AddForce()
         bounceBombInstance = Instantiate(bounceBomb, bounceBombSpawnPosition, playerRigidBody.rotation);
-        bounceBombInstance.GetComponent<Rigidbody>().AddForce(GetMomentum().normalized * bombThrowPower, ForceMode.VelocityChange);
+        bounceBombInstance.GetComponent<Rigidbody>().AddForce(GetMomentum() + Camera.main.transform.forward * bombThrowPower, ForceMode.VelocityChange);
 
         EventSecondaryClick.RemoveListener(SpawnBounceBomb);
         EventSecondaryClick.AddListener(BounceBombListeners);

@@ -42,7 +42,7 @@ public class BounceBomb : MonoBehaviour
 
     private void OnValidate() {
         if (strongBlastRadius > weakBlastRadius) {
-            strongBlastRadius = weakBlastRadius;
+            weakBlastRadius = strongBlastRadius;
         }
     }
 
