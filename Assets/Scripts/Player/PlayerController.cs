@@ -350,7 +350,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
         return playerRigidBody.position;
     }
     public void SetMomentum(Vector3 value) {
-        playerRigidBody.linearVelocity = value;
+        playerRigidBody.AddForce(value, ForceMode.VelocityChange);
     }
     #endregion  ========================= Momentum Interface  =========================
 
@@ -365,7 +365,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
     private void SpawnBounceBomb() {
         // spawns BounceBomb and 'throws' it via AddForce()
         bounceBombInstance = Instantiate(bounceBomb, bounceBombSpawnPosition, playerRigidBody.rotation);
-        bounceBombInstance.GetComponent<Rigidbody>().AddForce(GetMomentum().normalized * bombThrowPower);
+        bounceBombInstance.GetComponent<Rigidbody>().AddForce(GetMomentum().normalized * bombThrowPower, ForceMode.VelocityChange);
 
         EventSecondaryClick.RemoveListener(SpawnBounceBomb);
         EventSecondaryClick.AddListener(BounceBombListeners);

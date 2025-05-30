@@ -275,6 +275,22 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 7
       objectReference: {fileID: 0}
+    - target: {fileID: 4761299143595612641, guid: 883e63158b6e3b643af400a2629423a3, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4761299143595612641, guid: 883e63158b6e3b643af400a2629423a3, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4761299143595612641, guid: 883e63158b6e3b643af400a2629423a3, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4761299143595612641, guid: 883e63158b6e3b643af400a2629423a3, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6557319022336841915, guid: 883e63158b6e3b643af400a2629423a3, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -333,7 +349,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7543525415685462447, guid: 883e63158b6e3b643af400a2629423a3, type: 3}
       propertyPath: bombThrowPower
-      value: 50
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 7543525415685462447, guid: 883e63158b6e3b643af400a2629423a3, type: 3}
       propertyPath: groundMask.m_Bits
@@ -982,10 +998,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Bounce Bomb
       objectReference: {fileID: 0}
-    - target: {fileID: 6741628666159724105, guid: 905d297ab0a893c4ca79c31d5bac738d, type: 3}
-      propertyPath: m_CollisionDetection
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 7894683785361205773, guid: 905d297ab0a893c4ca79c31d5bac738d, type: 3}
       propertyPath: m_LocalPosition.x
       value: -1.5
@@ -1025,10 +1037,6 @@ PrefabInstance:
     - target: {fileID: 7894683785361205773, guid: 905d297ab0a893c4ca79c31d5bac738d, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8892037320684270493, guid: 905d297ab0a893c4ca79c31d5bac738d, type: 3}
-      propertyPath: m_IsTrigger
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
