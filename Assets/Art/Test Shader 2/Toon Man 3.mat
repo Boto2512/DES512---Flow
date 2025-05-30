@@ -20,7 +20,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Silver
+  m_Name: Toon Man 3
   m_Shader: {fileID: -6465566751694194690, guid: 8d5cbc2790ab64f4db44076cc6de7911, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -33,12 +33,12 @@ Material:
   stringTagMap: {}
   disabledShaderPasses:
   - MOTIONVECTORS
-  m_LockedProperties: 
+  m_LockedProperties: _Outline_Amount
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
     - MainTex:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: afbc4a0d07f1cb84381e14e074614bf2, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - Mask_R_Emission:
@@ -46,7 +46,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Gloss_Texture:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: dffef66376be4fa480fb02b19edbe903, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Normal_Map:
@@ -54,7 +54,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Outline_Texture:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: 038732c885d139d47ae775cf5e748578, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Soft_Outline_Texture:
@@ -75,26 +75,26 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - Brightness_Rim: 2
-    - Rim_Power: 10
-    - Toon_Ramp_Offset: 0.5
+    - Brightness_Rim: 5
+    - Rim_Power: 1
+    - Toon_Ramp_Offset: 0.75
     - Toon_Ramp_Smoothness: 0
-    - _Ambient: 0
-    - _Gloss_amount: 0.267
-    - _Normal_Map_1: 0
+    - _Ambient: 0.25
+    - _Gloss_amount: 0.043
+    - _Normal_Map_1: 1
     - _Normal_Strength: 1
-    - _Outline_Amount: 1
-    - _Outline_Brightness: 0
-    - _Outline_Strength: 0
+    - _Outline_Amount: 0.45
+    - _Outline_Brightness: 1
+    - _Outline_Strength: 0.37
     - _QueueControl: 0
     - _QueueOffset: 0
-    - _Soft_Outline_Amount: 0.39
-    - _Soft_Outline_Brightness: 1
-    - _Soft_Outline_Softness: 2
+    - _Soft_Outline_Amount: 0.05
+    - _Soft_Outline_Brightness: 0
+    - _Soft_Outline_Softness: 17.61
     - _Toon_Ramp_Offset_Point: 0.5
     m_Colors:
-    - Toon_Ramp_Tint: {r: 0.754717, g: 0.754717, b: 0.754717, a: 1}
-    - _Color: {r: 0.7075472, g: 0.7075472, b: 0.7075472, a: 1}
+    - Toon_Ramp_Tint: {r: 0, g: 0, b: 0, a: 1}
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _Gloss_Tint: {r: 1, g: 1, b: 1, a: 1}
     - _Outline_Tint: {r: 1, g: 1, b: 1, a: 1}
     - _Solt_Outline_Tint: {r: 1, g: 1, b: 1, a: 1}
