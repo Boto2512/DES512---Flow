@@ -4,8 +4,10 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 
+[RequireComponent(typeof(Rigidbody))]
 public class BounceBomb : MonoBehaviour
 {
+    [Header("Positioning")]
     [SerializeField] private Transform blastCentre;
     private Vector3 blastOrigin => blastCentre.position;
 
@@ -24,10 +26,12 @@ public class BounceBomb : MonoBehaviour
     [Header("Other")]
     [SerializeField] private bool isDetonable = true;
 
+    private Rigidbody rb;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-
+        rb = GetComponent<Rigidbody>();
     }
 
     // Update is called once per frame
@@ -38,7 +42,13 @@ public class BounceBomb : MonoBehaviour
 
     private void OnValidate() {
         if (strongBlastRadius > weakBlastRadius) {
-            strongBlastRadius = weakBlastRadius;
+            weakBlastRadius = strongBlastRadius;
+        }
+    }
+
+    private void OnTriggerEnter(Collider other) {
+        if (Utility.IsSticky(other.gameObject.layer)) {
+            rb.isKinematic = true;
         }
     }
 
