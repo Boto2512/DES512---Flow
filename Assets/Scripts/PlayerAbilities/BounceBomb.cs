@@ -24,6 +24,7 @@ public class BounceBomb : MonoBehaviour
     [SerializeField, Min(0f)] private float strongSpeedMinimum;
 
     [Header("Other")]
+    [SerializeField, Min(0f), Tooltip("How far ahead the momentum projects the entity position")] private float entityProjectionScale = 0f;
     [SerializeField] private bool isDetonable = true;
 
     private Rigidbody rb;
@@ -66,15 +67,22 @@ public class BounceBomb : MonoBehaviour
         var affectableEntities = FindBlastAffectableEntities();
 
         // sets the momentum of each blast affectable entity to at least the speed minimum of the blast radius it's in, in the direction from itself to the blast origin
-        foreach ((var entity, bool inStrongBlast) in affectableEntities) {
+        foreach ((IMomentumModifiable entity, bool inStrongBlast) in affectableEntities) {
             Vector3 momentum = entity.GetMomentum();
-            Vector3 direction = Vector3.Normalize(entity.GetPosition() - blastOrigin);
+            Vector3 projectedPosition = CalculateProjectedEntityPosition(entity);
+            Vector3 direction = Vector3.Normalize(projectedPosition - blastOrigin);
 
             float speedMinimumToUse = inStrongBlast ? strongSpeedMinimum : weakSpeedMinimum;
             Vector3 newMomentum = direction * MathF.Max(momentum.magnitude, speedMinimumToUse);
 
             entity.SetMomentum(newMomentum);
         }
+    }
+
+    private Vector3 CalculateProjectedEntityPosition(IMomentumModifiable imm) {
+        Vector3 projectedPosition = imm.GetPosition() + imm.GetMomentum() * entityProjectionScale;
+
+        return projectedPosition;
     }
 
     /// <summary>
