@@ -34,14 +34,17 @@ public class DamageDebug : MonoBehaviour, IDamageable
     #region  ========================= Damage Interface =========================
     public int GetHealth() {
         return health;
-        throw new System.NotImplementedException();
     }
 
     public void TakeDamage(int value) {
         Debug.Log($"Taken {value} damage");
         health -= value;
         healthBar.value = health;
-        throw new System.NotImplementedException();
+    }
+
+    public void Kill()
+    {
+        Debug.Log("Enemy Oneshotted - due to speed");
     }
     #endregion  ========================= Damage Interface =========================
 }

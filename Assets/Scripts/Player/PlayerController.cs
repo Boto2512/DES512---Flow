@@ -1,6 +1,7 @@
 using UnityEngine;
 using DG.Tweening;
 using UnityEngine.Events;
+using Unity.Cinemachine;
 public class PlayerController : MonoBehaviour, IMomentumModifiable
 {
     #region     ========================= Variables =========================
@@ -13,9 +14,11 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
     private float velocityDecayTime;
 
     [Space(10)]
-    [SerializeField, Tooltip("the amount the player's max speed and acceleration increases by when in air")] private float airSpeedIncrease;
+    [SerializeField, Tooltip("the amount the player's max speed and acceleration increases by when in air")] 
+    private float airSpeedIncrease;
     [SerializeField] private float maxFallSpeed;
-    [SerializeField, Range(0,1), Tooltip("Controls how much control the player has when in the air (0 is none, 1 is full)")] private float airControlMultiplier;
+    [SerializeField, Range(0,1), Tooltip("Controls how much control the player has when in the air (0 is none, 1 is full)")] 
+    private float airControlMultiplier;
 
     [Space(10)]
     [SerializeField] private Transform orientation;
@@ -33,23 +36,36 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
 
     private float maxSpeedStorage;
     private float accelerationStorage;
-    
+
+    [Space(10)]
+    [Header("Speed Stages")]
+    [SerializeField, Tooltip("the value that controls how fast the player has to be reach the 2nd speed stage")] 
+    private float firstBreakpoint;
+    [SerializeField, Tooltip("the value that controls how fast the player has to be reach the 3rd speed stage")] 
+    private float secondBreakpoint;
+    private int currentStage = 1; //tracks which stage the player's speed is at 
+
     [Space(10)]
     [Header("Slope Movement")]
-    [SerializeField, Tooltip("Maxium slope angle the player can go up")] private float maxSlopeAngle;
-    [SerializeField, Tooltip("the amount the player's max speed and acceleration increases by when on a slope")] private float slopeSpeedImpact;
+    [SerializeField, Tooltip("Maxium slope angle the player can go up")] 
+    private float maxSlopeAngle;
+    [SerializeField, Tooltip("the amount the player's max speed and acceleration increases by when on a slope")] 
+    private float slopeSpeedImpact;
     private RaycastHit slopeHit;
     private bool exitSlope;
 
     [Space(10)]
     [Header("Jump")]
     [SerializeField] private float jumpForce;
-    [SerializeField, Tooltip("applies a force once player releases jump so it reaches thye apex faster  ")] private float maxJumpMultiplier;
-    [SerializeField, Tooltip("applies a a force when player falls so they fall quicker  ")] private float fallMultiplier;
+    [SerializeField, Tooltip("applies a force once player releases jump so it reaches thye apex faster  ")] 
+    private float maxJumpMultiplier;
+    [SerializeField, Tooltip("applies a a force when player falls so they fall quicker  ")] 
+    private float fallMultiplier;
     [SerializeField] private float jumpCooldown;
 
     [Space(5)]
-    [SerializeField, Tooltip("duration of coyote time")] private float coyoteTime = 0.2f;
+    [SerializeField, Tooltip("duration of coyote time")] 
+    private float coyoteTime = 0.2f;
     private float coyoteTimeCounter;
     private bool canJump = true;
     private bool jumpReleased;
@@ -64,6 +80,13 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
     [Space(10)]
     [Header("Wall Check & Kick")]
     [SerializeField] private float wallKickRange;
+
+    [Space(10)]
+    [Header("Attack")]
+    [SerializeField] private Vector3 attackScale;
+    [SerializeField] private float attackRange;
+    [SerializeField] private LayerMask attackMask;
+
 
     [Space(10)]
     [Header("Bounce Bomb")]
@@ -82,11 +105,18 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
 
     void Start() {
         playerRigidBody = GetComponent<Rigidbody>();
+
         accelerationStorage = acceleration;
         maxSpeedStorage = maxMovementSpeed;
 
+        maxFallSpeed = -maxFallSpeed;
+
+        currentStage = 1;
+
         ValidateBounceBomb();
         EventSecondaryClick.AddListener(SpawnBounceBomb);
+
+        EventPrimaryClick.AddListener(Attack);
     }
 
     void Update() {
@@ -95,6 +125,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
 
         PlayerMovementInput();
         MovementSpeed();
+        GetSpeedStage();
 
         if (isGrounded) {
             coyoteTimeCounter = coyoteTime;
@@ -275,6 +306,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
 
     #region     ========================= Jump =========================
     private void Jump() {
+        Debug.Log("Jumping");
         exitSlope = true;
         playerRigidBody.linearVelocity = new Vector3(playerRigidBody.linearVelocity.x, 0, playerRigidBody.linearVelocity.z) ;
         playerRigidBody.AddForce(transform.up * jumpForce, ForceMode.Impulse);
@@ -379,4 +411,57 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
         EventSecondaryClick.AddListener(SpawnBounceBomb);
     }
     #endregion ========================= Throw Bounce Bomb =========================
+
+    #region ========================= Speed Stages =========================
+    private void GetSpeedStage() {
+        float speed = playerRigidBody.linearVelocity.magnitude;
+        if (speed > secondBreakpoint) {
+            // Checks if player is in Stage 3
+            currentStage = 3; 
+            return;
+        }
+        else if (speed > firstBreakpoint) {
+            // Checks if player is in Stage 2
+            currentStage = 2;
+            return;
+        }
+        else { 
+            // Checks if player is in stage 1
+            currentStage = 1;
+            return;
+        }
+    }
+
+
+    #endregion ========================= Speed Stages =========================
+
+    #region ========================= Attack =========================
+
+    private void Attack()
+    {
+        RaycastHit[] enemies = null;
+        if (currentStage == 3) {
+            //larger aoe
+        }
+        else {
+            // normal
+            enemies = Physics.BoxCastAll(Camera.main.transform.position, attackScale / 2, orientation.forward, Quaternion.identity, attackRange, attackMask);
+            Debug.DrawRay(Camera.main.transform.position, orientation.forward, Color.green, 2);
+        }
+
+        if (enemies.Length != 0) {
+            foreach (RaycastHit hit in enemies) {
+
+            }
+        }
+    }
+    #endregion ========================= Attack =========================
+
+    #region ========================= Gizmos =========================
+    private void OnDrawGizmos() {
+        Gizmos.color = Color.yellow;
+        Vector3 attackPosition = new Vector3(Camera.main.transform.position.x + attackRange, Camera.main.transform.position.y, Camera.main.transform.position.z + attackRange);
+        Gizmos.DrawWireCube(attackPosition, attackScale);
+    }
+    #endregion ========================= Gizmos =========================
 }

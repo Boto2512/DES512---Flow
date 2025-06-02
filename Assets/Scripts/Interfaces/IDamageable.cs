@@ -4,4 +4,6 @@ public interface IDamageable
 {
     public int GetHealth();
     public void TakeDamage(int value);
+
+    public void Kill();
 }
