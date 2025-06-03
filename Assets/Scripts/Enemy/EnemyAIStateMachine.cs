@@ -5,7 +5,8 @@ using System.Collections.Generic;
 public enum EnemyAIState {
     Idle,
     Pursue,
-    Attack
+    Attack,
+    Reposition
 }
 
 public class EnemyAIStateMachine : StateMachine<EnemyAIState> {
