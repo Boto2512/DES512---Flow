@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
 using UnityEditor.PackageManager;
+using System.Collections;
 
 public class DamageDebug : MonoBehaviour, IDamageable
 {
@@ -25,12 +26,18 @@ public class DamageDebug : MonoBehaviour, IDamageable
         }
 
         if (health <=0 ) {
-            healthBar.value = healthBar.maxValue;
-            health = healthBar.maxValue;
-            Debug.Log("Player Killed Debug Dummy");
+            StartCoroutine(HealDummy());
         }
     }
 
+    private IEnumerator HealDummy()
+    {
+        yield return new WaitForSeconds(1);
+
+        healthBar.value = healthBar.maxValue;
+        health = healthBar.maxValue;
+        Debug.Log("Player Killed Debug Dummy");
+    }
 
     #region  ========================= Damage Interface =========================
     public float GetHealth() {
@@ -46,6 +53,7 @@ public class DamageDebug : MonoBehaviour, IDamageable
     public void Kill()
     {
         Debug.Log("Enemy Oneshotted - due to speed");
+        healthBar.value = 0;
     }
     #endregion  ========================= Damage Interface =========================
 }

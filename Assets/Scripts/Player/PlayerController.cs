@@ -74,14 +74,18 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
     [Space(10)]
     [Header("Wall Check & Kick")]
     [SerializeField] private float wallKickRange;
+    [SerializeField] private float wallKickCooldown;
+    private float timeOfLastKick;
 
     [Space(10)]
     [Header("Attack")]
     [SerializeField] private Vector3 attackScale;
-    [SerializeField] private Transform attackPosition;
-    [SerializeField] private float attackRange;
-    [SerializeField] private float baseDamage;
     [SerializeField] private LayerMask attackMask;
+    [SerializeField] private float attackRange;
+    [SerializeField] private float attackDamage;
+    [SerializeField] private float attackCooldown;
+
+    private float attackTime;
 
     [Space(10)]
     [Header("Speed Stages")]
@@ -123,50 +127,71 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
     }
 
     void Update() {
-        WallCheck();
         GroundCheck();
 
-        PlayerMovementInput();
+        MovementInput();
+        ActionInputs();
+
         MovementSpeed();
         GetSpeedStage();
 
-        if (isGrounded) {
+        if (isGrounded)
+        {
             coyoteTimeCounter = coyoteTime;
         }
-        else {
+        else
+        {
             coyoteTimeCounter -= Time.deltaTime;
             GetLastAirVelocity();
         }
+
         PerserveMomentumOnLand();
     }
     void FixedUpdate() {
         MovePlayer();
         VariableJump();
     }
-    void LateUpdate(){
+    void LateUpdate() {
         MaxSpeed();
     }
-    #region     ========================= Movement =========================
-    private void PlayerMovementInput() {
+    #region ========================= Inputs =========================
+    private void MovementInput()
+    {
         horizontalInput = Input.GetAxisRaw("Horizontal");
         verticalInput = Input.GetAxisRaw("Vertical");
 
+        if (Input.GetButtonDown("Jump"))
+        {
+            Vector3 wallHit;
+            if (canJump && coyoteTimeCounter > 0) {
+                Jump();
+                canJump = false;
+                jumpReleased = false;
+                exitSlope = true;
 
-        if (Input.GetButton("Jump") && canJump && coyoteTimeCounter > 0) {
-            Jump();
-            canJump = false;
-            jumpReleased = false;
-            exitSlope = true;
-
-            this.Invoke(ResetJump, jumpCooldown);
+                this.Invoke(ResetJump, jumpCooldown);
+            }
+            else if (WallCheck(out wallHit)) {;
+                WallKick(wallHit); 
+            }
+            else if (Input.GetButtonUp("Jump") && !isGrounded) {
+                jumpReleased = true;
+            }
         }
-        else if (Input.GetButtonUp("Jump") && !isGrounded) {
-            jumpReleased = true;
+    }
+    private void ActionInputs() {
+        attackTime += Time.deltaTime;
+        if (Input.GetMouseButtonDown(0) && attackTime >= attackCooldown) { 
+            EventPrimaryClick.Invoke(); 
+            attackTime = 0;
         }
-
-        if (Input.GetMouseButtonDown(0)) { EventPrimaryClick.Invoke(); }
         if (Input.GetMouseButtonDown(1)) { EventSecondaryClick.Invoke(); }
     }
+
+    #endregion  ========================= Inputs =========================
+
+    #region ========================= Movement =========================
+   
     /// <summary>
     /// Gets the movement direction from orintation and applies the vertical and horizontal inputs values 
     /// Adds force to this direction
@@ -305,11 +330,10 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
             lastAirVelocity = playerRigidBody.linearVelocity;
         
     }
-    #endregion  ========================= Movement =========================
+    #endregion ========================= Movement =========================
 
     #region     ========================= Jump =========================
     private void Jump() {
-        Debug.Log("Jumping");
         exitSlope = true;
         playerRigidBody.linearVelocity = new Vector3(playerRigidBody.linearVelocity.x, 0, playerRigidBody.linearVelocity.z) ;
         playerRigidBody.AddForce(transform.up * jumpForce, ForceMode.Impulse);
@@ -339,21 +363,31 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
     /// <summary>
     /// Performs a check to see if a wall is closeenough for the wall kick
     /// </summary>
-    private void WallCheck() {
-        if (Input.GetMouseButtonDown(0)) {
+    private bool WallCheck(out Vector3 wallNormal) {
+        if(Time.time >= timeOfLastKick + wallKickCooldown && !isGrounded) {
             RaycastHit wallHit;
-            isGrounded = Physics.Raycast(groundCheckPosition.position, orientation.forward, out wallHit, wallKickRange, groundMask);
-            if (wallHit.collider != null) {
-                WallKick();
-            }
+            bool isWall = Physics.Raycast(groundCheckPosition.position, orientation.forward, out wallHit, wallKickRange, groundMask);
+            Debug.DrawRay(groundCheckPosition.position, orientation.forward * wallKickRange, Color.blueViolet, 10);
+
+            wallNormal = wallHit.normal;
+            return isWall;
         }
+        else { 
+            wallNormal = Vector3.zero;
+            return false; 
+        }
+        
     }
     /// <summary>
     /// Inverses the x & z velocity of the player
     /// </summary>
-    private void WallKick() {
-        Vector3 tempVelocity = playerRigidBody.linearVelocity;
-        playerRigidBody.linearVelocity = new Vector3(-tempVelocity.x, tempVelocity.y, -tempVelocity.z);
+    private void WallKick(Vector3 wallNormal) {
+        timeOfLastKick = Time.time;
+        
+        Vector3 reflectedDirection = Vector3.Reflect(playerRigidBody.linearVelocity, wallNormal);
+        //reflectedDirection = reflectedDirection * 10;
+        Vector3 newVelocity = new Vector3(reflectedDirection.x, playerRigidBody.linearVelocity.y, reflectedDirection.z);
+        playerRigidBody.linearVelocity = newVelocity;
     }
     #endregion  ========================= Wall Kick =========================
 
@@ -434,29 +468,25 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
             return;
         }
     }
-
-
     #endregion ========================= Speed Stages =========================
 
     #region ========================= Attack =========================
-
+    /// <summary>
+    /// Checks current speedstage then calls attack check to see if it hit anything
+    /// then goes through the array and checks it hit object can take damage
+    /// </summary>
     private void Attack() {
-        RaycastHit[] enemies = null;
-        Vector3 direction = Camera.main.transform.position;
-        float attackDamage = baseDamage;
+        RaycastHit[] enemies;
 
         if (currentStage == 3) {
             // larger aoe && oneshot && vfx
             //VFX GOES HERE
-            attackDamage = baseDamage * 1000000000000;
-
             Vector3 largerScale = attackScale * 2;
             enemies = AttackCheck(largerScale, attackRange +2, Color.red);
         }
         else if (currentStage == 2)  {
             //one shot & VFX
             //VFX GOES HERE
-            attackDamage = baseDamage * 1000000000000;
             enemies = AttackCheck(attackScale, attackRange, Color.yellow);
         }
         else {
@@ -468,12 +498,22 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
             foreach (RaycastHit enemy in enemies) {
                 IDamageable damage = enemy.transform.GetComponent<IDamageable>();
                 if (damage != null) {
-                    damage.TakeDamage(attackDamage);
+                    if (currentStage >= 2) { damage.Kill(); 
+                    } 
+                    else {
+                        damage.TakeDamage(attackDamage); 
+                    }
                 }
             }
         }
     }
-
+    /// <summary>
+    /// Performs a box cast all with the specific conditions 
+    /// </summary>
+    /// <param name="attackSize"> the size of the box </param>
+    /// <param name="range"> the range of the attack </param>
+    /// <param name="colour"> controls the colour of the debug </param>
+    /// <returns> returns an array containing all enemies it by the box cast </returns>
     private RaycastHit[] AttackCheck(Vector3 attackSize, float range, Color colour) {
         RaycastHit[] enemies = null;
         Vector3 direction = Camera.main.transform.position;
