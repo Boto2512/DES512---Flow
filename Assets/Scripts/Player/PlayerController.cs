@@ -445,15 +445,6 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
         EventSecondaryClick.RemoveListener(SpawnBounceBomb);
         EventSecondaryClick.AddListener(DetonateBounceBomb);
     }
-
-    private void BounceBombListeners() {
-        bounceBombInstance.GetComponent<BounceBomb>().Activate();
-        DestroyImmediate(bounceBombInstance);
-
-        EventSecondaryClick.RemoveListener(BounceBombListeners);
-        EventSecondaryClick.AddListener(SpawnBounceBomb);
-=======
-    
     private void DetonateBounceBomb() {
         if (isDetonating)
             return;
@@ -467,7 +458,6 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
             EventSecondaryClick.AddListener(SpawnBounceBomb);
             isDetonating = false;
         }, fuseTime);
->>>>>>> Stashed changes
     }
     #endregion ========================= Throw Bounce Bomb =========================
 
