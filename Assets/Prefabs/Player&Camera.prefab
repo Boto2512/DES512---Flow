@@ -64,6 +64,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 5795216341086192065}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &4391205665294714412
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3626287871208879546}
+  m_Layer: 7
+  m_Name: AttackPosition
+  m_TagString: Untagged
+  m_Icon: {fileID: 7422848464349959988, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3626287871208879546
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4391205665294714412}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 2, y: 0.039000034, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5795216341086192065}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5493714196529963971
 GameObject:
   m_ObjectHideFlags: 0
@@ -292,9 +323,17 @@ PrefabInstance:
       value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 5647639703575495872, guid: d6998a62e3469a342a19f3bcfc1e2fad, type: 3}
+      propertyPath: jumpForce
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 5647639703575495872, guid: d6998a62e3469a342a19f3bcfc1e2fad, type: 3}
       propertyPath: bounceBomb
       value: 
       objectReference: {fileID: 5846553361323844543, guid: 905d297ab0a893c4ca79c31d5bac738d, type: 3}
+    - target: {fileID: 5647639703575495872, guid: d6998a62e3469a342a19f3bcfc1e2fad, type: 3}
+      propertyPath: attackRange
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 5647639703575495872, guid: d6998a62e3469a342a19f3bcfc1e2fad, type: 3}
       propertyPath: acceleration
       value: 6
@@ -304,21 +343,73 @@ PrefabInstance:
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5647639703575495872, guid: d6998a62e3469a342a19f3bcfc1e2fad, type: 3}
-      propertyPath: wallKickRange
+      propertyPath: attackScale.x
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5647639703575495872, guid: d6998a62e3469a342a19f3bcfc1e2fad, type: 3}
+      propertyPath: attackScale.y
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5647639703575495872, guid: d6998a62e3469a342a19f3bcfc1e2fad, type: 3}
+      propertyPath: attackScale.z
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5647639703575495872, guid: d6998a62e3469a342a19f3bcfc1e2fad, type: 3}
+      propertyPath: wallKickRange
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5647639703575495872, guid: d6998a62e3469a342a19f3bcfc1e2fad, type: 3}
+      propertyPath: attackPosition
+      value: 
+      objectReference: {fileID: 3626287871208879546}
+    - target: {fileID: 5647639703575495872, guid: d6998a62e3469a342a19f3bcfc1e2fad, type: 3}
       propertyPath: bombThrowPower
       value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 5647639703575495872, guid: d6998a62e3469a342a19f3bcfc1e2fad, type: 3}
+      propertyPath: fallMultiplier
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 5647639703575495872, guid: d6998a62e3469a342a19f3bcfc1e2fad, type: 3}
+      propertyPath: firstBreakpoint
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5647639703575495872, guid: d6998a62e3469a342a19f3bcfc1e2fad, type: 3}
+      propertyPath: airSpeedIncrease
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5647639703575495872, guid: d6998a62e3469a342a19f3bcfc1e2fad, type: 3}
+      propertyPath: maxMovementSpeed
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 5647639703575495872, guid: d6998a62e3469a342a19f3bcfc1e2fad, type: 3}
+      propertyPath: secondBreakpoint
+      value: 9.75
+      objectReference: {fileID: 0}
+    - target: {fileID: 5647639703575495872, guid: d6998a62e3469a342a19f3bcfc1e2fad, type: 3}
+      propertyPath: slopeSpeedImpact
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5647639703575495872, guid: d6998a62e3469a342a19f3bcfc1e2fad, type: 3}
+      propertyPath: attackMask.m_Bits
+      value: 256
       objectReference: {fileID: 0}
     - target: {fileID: 5647639703575495872, guid: d6998a62e3469a342a19f3bcfc1e2fad, type: 3}
       propertyPath: groundMask.m_Bits
       value: 64
       objectReference: {fileID: 0}
     - target: {fileID: 5647639703575495872, guid: d6998a62e3469a342a19f3bcfc1e2fad, type: 3}
+      propertyPath: velocityDecayTime
+      value: 0.75
+      objectReference: {fileID: 0}
+    - target: {fileID: 5647639703575495872, guid: d6998a62e3469a342a19f3bcfc1e2fad, type: 3}
       propertyPath: bounceBombSpawnTransform
       value: 
       objectReference: {fileID: 2410685417209612456}
+    - target: {fileID: 5647639703575495872, guid: d6998a62e3469a342a19f3bcfc1e2fad, type: 3}
+      propertyPath: EventPrimaryClick.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5647639703575495872, guid: d6998a62e3469a342a19f3bcfc1e2fad, type: 3}
       propertyPath: EventSecondaryClick.m_PersistentCalls.m_Calls.Array.size
       value: 1
@@ -328,12 +419,16 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5647639703575495872, guid: d6998a62e3469a342a19f3bcfc1e2fad, type: 3}
+      propertyPath: EventPrimaryClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5647639703575495872, guid: d6998a62e3469a342a19f3bcfc1e2fad, type: 3}
       propertyPath: EventSecondaryClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5647639703575495872, guid: d6998a62e3469a342a19f3bcfc1e2fad, type: 3}
       propertyPath: EventSecondaryClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: Activate
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 5647639703575495872, guid: d6998a62e3469a342a19f3bcfc1e2fad, type: 3}
       propertyPath: EventSecondaryClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
@@ -349,7 +444,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6763837656486118643, guid: d6998a62e3469a342a19f3bcfc1e2fad, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 0.17
       objectReference: {fileID: 0}
     - target: {fileID: 6763837656486118643, guid: d6998a62e3469a342a19f3bcfc1e2fad, type: 3}
       propertyPath: m_LocalPosition.z
@@ -390,6 +485,9 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 8548729880331279534, guid: d6998a62e3469a342a19f3bcfc1e2fad, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3626287871208879546}
     - targetCorrespondingSourceObject: {fileID: 8548729880331279534, guid: d6998a62e3469a342a19f3bcfc1e2fad, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2410685417209612456}

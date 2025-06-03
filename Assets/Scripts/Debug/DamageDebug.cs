@@ -6,7 +6,7 @@ using UnityEditor.PackageManager;
 public class DamageDebug : MonoBehaviour, IDamageable
 {
     [Header("Health")]
-    [SerializeField] int health;
+    [SerializeField] float health;
     [SerializeField] Slider healthBar;
 
     [Header("Debug Events")]
@@ -26,17 +26,18 @@ public class DamageDebug : MonoBehaviour, IDamageable
 
         if (health <=0 ) {
             healthBar.value = healthBar.maxValue;
+            health = healthBar.maxValue;
             Debug.Log("Player Killed Debug Dummy");
         }
     }
 
 
     #region  ========================= Damage Interface =========================
-    public int GetHealth() {
+    public float GetHealth() {
         return health;
     }
 
-    public void TakeDamage(int value) {
+    public void TakeDamage(float value) {
         Debug.Log($"Taken {value} damage");
         health -= value;
         healthBar.value = health;

@@ -2,6 +2,7 @@ using UnityEngine;
 using DG.Tweening;
 using UnityEngine.Events;
 using Unity.Cinemachine;
+using Unity.Android.Types;
 public class PlayerController : MonoBehaviour, IMomentumModifiable
 {
     #region     ========================= Variables =========================
@@ -37,13 +38,6 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
     private float maxSpeedStorage;
     private float accelerationStorage;
 
-    [Space(10)]
-    [Header("Speed Stages")]
-    [SerializeField, Tooltip("the value that controls how fast the player has to be reach the 2nd speed stage")] 
-    private float firstBreakpoint;
-    [SerializeField, Tooltip("the value that controls how fast the player has to be reach the 3rd speed stage")] 
-    private float secondBreakpoint;
-    private int currentStage = 1; //tracks which stage the player's speed is at 
 
     [Space(10)]
     [Header("Slope Movement")]
@@ -84,9 +78,18 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
     [Space(10)]
     [Header("Attack")]
     [SerializeField] private Vector3 attackScale;
+    [SerializeField] private Transform attackPosition;
     [SerializeField] private float attackRange;
+    [SerializeField] private float baseDamage;
     [SerializeField] private LayerMask attackMask;
 
+    [Space(10)]
+    [Header("Speed Stages")]
+    [SerializeField, Tooltip("the value that controls how fast the player has to be reach the 2nd speed stage")] 
+    private float firstBreakpoint;
+    [SerializeField, Tooltip("the value that controls how fast the player has to be reach the 3rd speed stage")] 
+    private float secondBreakpoint;
+    private int currentStage = 1; //tracks which stage the player's speed is at 
 
     [Space(10)]
     [Header("Bounce Bomb")]
@@ -245,7 +248,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
             }
 
             float yVelocity = Mathf.Abs(playerRigidBody.linearVelocity.y);
-            if (yVelocity >= maxFallSpeed) {
+            if (yVelocity <= maxFallSpeed) {
                 playerRigidBody.linearVelocity = new Vector3(playerRigidBody.linearVelocity.x, maxFallSpeed, playerRigidBody.linearVelocity.z);
             } 
         }
@@ -437,31 +440,51 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
 
     #region ========================= Attack =========================
 
-    private void Attack()
-    {
+    private void Attack() {
         RaycastHit[] enemies = null;
+        Vector3 direction = Camera.main.transform.position;
+        float attackDamage = baseDamage;
+
         if (currentStage == 3) {
-            //larger aoe
+            // larger aoe && oneshot && vfx
+            //VFX GOES HERE
+            attackDamage = baseDamage * 1000000000000;
+
+            Vector3 largerScale = attackScale * 2;
+            enemies = AttackCheck(largerScale, attackRange +2, Color.red);
+        }
+        else if (currentStage == 2)  {
+            //one shot & VFX
+            //VFX GOES HERE
+            attackDamage = baseDamage * 1000000000000;
+            enemies = AttackCheck(attackScale, attackRange, Color.yellow);
         }
         else {
-            // normal
-            enemies = Physics.BoxCastAll(Camera.main.transform.position, attackScale / 2, orientation.forward, Quaternion.identity, attackRange, attackMask);
-            Debug.DrawRay(Camera.main.transform.position, orientation.forward, Color.green, 2);
+            // default
+            enemies = AttackCheck(attackScale, attackRange, Color.green);
         }
 
         if (enemies.Length != 0) {
-            foreach (RaycastHit hit in enemies) {
-
+            foreach (RaycastHit enemy in enemies) {
+                IDamageable damage = enemy.transform.GetComponent<IDamageable>();
+                if (damage != null) {
+                    damage.TakeDamage(attackDamage);
+                }
             }
         }
+    }
+
+    private RaycastHit[] AttackCheck(Vector3 attackSize, float range, Color colour) {
+        RaycastHit[] enemies = null;
+        Vector3 direction = Camera.main.transform.position;
+        enemies = Physics.BoxCastAll(direction, attackSize, Camera.main.transform.forward, Quaternion.identity, range, attackMask);
+        Debug.DrawRay(direction, Camera.main.transform.forward * attackRange, colour, 3f);
+        return enemies;
     }
     #endregion ========================= Attack =========================
 
     #region ========================= Gizmos =========================
     private void OnDrawGizmos() {
-        Gizmos.color = Color.yellow;
-        Vector3 attackPosition = new Vector3(Camera.main.transform.position.x + attackRange, Camera.main.transform.position.y, Camera.main.transform.position.z + attackRange);
-        Gizmos.DrawWireCube(attackPosition, attackScale);
     }
     #endregion ========================= Gizmos =========================
 }

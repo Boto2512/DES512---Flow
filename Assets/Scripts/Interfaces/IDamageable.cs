@@ -2,8 +2,8 @@ using UnityEngine;
 
 public interface IDamageable
 {
-    public int GetHealth();
-    public void TakeDamage(int value);
+    public float GetHealth();
+    public void TakeDamage(float value);
 
     public void Kill();
 }
