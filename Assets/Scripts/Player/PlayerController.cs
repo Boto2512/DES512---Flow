@@ -80,6 +80,10 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
 
     #endregion  ========================= Variables =========================
 
+    void Awake() {
+        Globals.PLAYER = this.gameObject;
+    }
+
     void Start() {
         playerRigidBody = GetComponent<Rigidbody>();
         accelerationStorage = acceleration;
@@ -370,13 +374,19 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
         EventSecondaryClick.RemoveListener(SpawnBounceBomb);
         EventSecondaryClick.AddListener(BounceBombListeners);
     }
-
+    private bool isDetonating = false;
     private void BounceBombListeners() {
-        bounceBombInstance.GetComponent<BounceBomb>().Activate();
-        DestroyImmediate(bounceBombInstance);
+        if (!isDetonating) {
+            isDetonating = true;
+            this.Invoke(() => {
+                bounceBombInstance.GetComponent<BounceBomb>().Activate();
+                DestroyImmediate(bounceBombInstance);
 
-        EventSecondaryClick.RemoveListener(BounceBombListeners);
-        EventSecondaryClick.AddListener(SpawnBounceBomb);
+                EventSecondaryClick.RemoveListener(BounceBombListeners);
+                EventSecondaryClick.AddListener(SpawnBounceBomb);
+                isDetonating = false;
+            }, 0.5f);
+        }
     }
     #endregion ========================= Throw Bounce Bomb =========================
 }
