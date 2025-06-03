@@ -55,7 +55,7 @@ namespace StateMachine {
         protected void TransitionCheck() {
             foreach (var transition in transitions[CurrentState]) {
                 if (transition.Evaluate) {
-                    CurrentState = transition.From;
+                    CurrentState = transition.To;
                     transition.Invoke();
                     break;
                 }
