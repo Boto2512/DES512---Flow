@@ -33,6 +33,8 @@ public class BounceBomb : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        rb.includeLayers = Globals.STICKY_MASK;
+        rb.excludeLayers = ~Globals.STICKY_MASK;
     }
 
     // Update is called once per frame
@@ -47,10 +49,9 @@ public class BounceBomb : MonoBehaviour
         }
     }
 
-    private void OnTriggerEnter(Collider other) {
-        if (Utility.IsSticky(other.gameObject.layer)) {
-            rb.isKinematic = true;
-        }
+    private void OnCollisionEnter(Collision collision) {
+        rb.isKinematic = true;
+        rb.detectCollisions = false;
     }
 
     public void Throw() {
