@@ -3,6 +3,7 @@ using DG.Tweening;
 using UnityEngine.Events;
 using Unity.Cinemachine;
 using Unity.Android.Types;
+using UnityEditorInternal;
 public class PlayerController : MonoBehaviour, IMomentumModifiable
 {
     #region     ========================= Variables =========================
@@ -107,6 +108,10 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
     [Header("Events")]
     [SerializeField] private UnityEvent EventPrimaryClick = new();
     [SerializeField] private UnityEvent EventSecondaryClick = new();
+
+    [Space(10)]
+    [Header("Animation Controller")]
+    [SerializeField] Animator animator;
 
     #endregion  ========================= Variables =========================
 
@@ -487,6 +492,8 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
     /// </summary>
     private void Attack() {
         RaycastHit[] enemies;
+
+        animator.SetTrigger("hasAttacked");
 
         if (currentStage == 3) {
             // larger aoe && oneshot && vfx
