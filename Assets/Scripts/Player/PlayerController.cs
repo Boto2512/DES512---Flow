@@ -484,7 +484,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
                 EventSecondaryClick.RemoveListener(BounceBombListeners);
                 EventSecondaryClick.AddListener(SpawnBounceBomb);
                 isDetonating = false;
-            }, 0.5f);
+            }, 0.1f);
         }
     }
     #endregion ========================= Throw Bounce Bomb =========================
