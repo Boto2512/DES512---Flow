@@ -308,7 +308,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
     /// </summary>
     private void AirSpeedIncrease() {
         if (!isGrounded) {
-            if (playerRigidBody.linearVelocity.y < 0) {
+            if (playerRigidBody.linearVelocity.y != 0) {
                 maxMovementSpeed = maxSpeedStorage + airSpeedIncrease;
                 acceleration = accelerationStorage + airSpeedIncrease;
             }
