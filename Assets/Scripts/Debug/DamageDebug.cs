@@ -2,11 +2,12 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
 using UnityEditor.PackageManager;
+using System.Collections;
 
 public class DamageDebug : MonoBehaviour, IDamageable
 {
     [Header("Health")]
-    [SerializeField] int health;
+    [SerializeField] float health;
     [SerializeField] Slider healthBar;
 
     [Header("Debug Events")]
@@ -25,23 +26,34 @@ public class DamageDebug : MonoBehaviour, IDamageable
         }
 
         if (health <=0 ) {
-            healthBar.value = healthBar.maxValue;
-            Debug.Log("Player Killed Debug Dummy");
+            StartCoroutine(HealDummy());
         }
     }
 
+    private IEnumerator HealDummy()
+    {
+        yield return new WaitForSeconds(1);
 
-    #region  ========================= Damage Interface =========================
-    public int GetHealth() {
-        return health;
-        throw new System.NotImplementedException();
+        healthBar.value = healthBar.maxValue;
+        health = healthBar.maxValue;
+        Debug.Log("Player Killed Debug Dummy");
     }
 
-    public void TakeDamage(int value) {
+    #region  ========================= Damage Interface =========================
+    public float GetHealth() {
+        return health;
+    }
+
+    public void TakeDamage(float value) {
         Debug.Log($"Taken {value} damage");
         health -= value;
         healthBar.value = health;
-        throw new System.NotImplementedException();
+    }
+
+    public void Kill()
+    {
+        Debug.Log("Enemy Oneshotted - due to speed");
+        healthBar.value = 0;
     }
     #endregion  ========================= Damage Interface =========================
 }

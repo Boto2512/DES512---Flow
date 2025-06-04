@@ -1,0 +1,664 @@
+fileFormatVersion: 2
+guid: a449d692ade703f448d4f56248337310
+ModelImporter:
+  serializedVersion: 22200
+  internalIDToNameTable: []
+  externalObjects: {}
+  materials:
+    materialImportMode: 2
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    removeConstantScaleCurves: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 3
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: Attack
+      takeName: Attack
+      internalID: 6720303635017113406
+      firstFrame: 0
+      lastFrame: 15
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: ArmRig
+        weight: 1
+      - path: ArmRig/Camera handle
+        weight: 1
+      - path: ArmRig/Camera handle/Camera handle_end
+        weight: 1
+      - path: ArmRig/Hammer
+        weight: 1
+      - path: ArmRig/Hammer/Hammer_end
+        weight: 1
+      - path: ArmRig/Main
+        weight: 1
+      - path: ArmRig/Main/L_Pole
+        weight: 0
+      - path: ArmRig/Main/L_Pole/L_Pole_end
+        weight: 1
+      - path: ArmRig/Main/L_Target
+        weight: 0
+      - path: ArmRig/Main/L_Target/L_Target_end
+        weight: 1
+      - path: ArmRig/Main/L_UpperArm
+        weight: 0
+      - path: ArmRig/Main/L_UpperArm/L_ForeArm
+        weight: 1
+      - path: ArmRig/Main/L_UpperArm/L_ForeArm/L_Hand
+        weight: 1
+      - path: ArmRig/Main/L_UpperArm/L_ForeArm/L_Hand/L_Index1
+        weight: 1
+      - path: ArmRig/Main/L_UpperArm/L_ForeArm/L_Hand/L_Index1/L_Index2
+        weight: 1
+      - path: ArmRig/Main/L_UpperArm/L_ForeArm/L_Hand/L_Index1/L_Index2/L_Index3
+        weight: 1
+      - path: ArmRig/Main/L_UpperArm/L_ForeArm/L_Hand/L_Index1/L_Index2/L_Index3/L_Index3_end
+        weight: 1
+      - path: ArmRig/Main/L_UpperArm/L_ForeArm/L_Hand/L_Middle1
+        weight: 1
+      - path: ArmRig/Main/L_UpperArm/L_ForeArm/L_Hand/L_Middle1/L_Middle2
+        weight: 1
+      - path: ArmRig/Main/L_UpperArm/L_ForeArm/L_Hand/L_Middle1/L_Middle2/L_Middle3
+        weight: 1
+      - path: ArmRig/Main/L_UpperArm/L_ForeArm/L_Hand/L_Middle1/L_Middle2/L_Middle3/L_Middle3_end
+        weight: 1
+      - path: ArmRig/Main/L_UpperArm/L_ForeArm/L_Hand/L_Pinky1
+        weight: 1
+      - path: ArmRig/Main/L_UpperArm/L_ForeArm/L_Hand/L_Pinky1/L_Pinky2
+        weight: 1
+      - path: ArmRig/Main/L_UpperArm/L_ForeArm/L_Hand/L_Pinky1/L_Pinky2/L_Pinky3
+        weight: 1
+      - path: ArmRig/Main/L_UpperArm/L_ForeArm/L_Hand/L_Pinky1/L_Pinky2/L_Pinky3/L_Pinky3_end
+        weight: 1
+      - path: ArmRig/Main/L_UpperArm/L_ForeArm/L_Hand/L_Ring1
+        weight: 1
+      - path: ArmRig/Main/L_UpperArm/L_ForeArm/L_Hand/L_Ring1/L_Ring2
+        weight: 1
+      - path: ArmRig/Main/L_UpperArm/L_ForeArm/L_Hand/L_Ring1/L_Ring2/L_Ring3
+        weight: 1
+      - path: ArmRig/Main/L_UpperArm/L_ForeArm/L_Hand/L_Ring1/L_Ring2/L_Ring3/L_Ring3_end
+        weight: 1
+      - path: ArmRig/Main/L_UpperArm/L_ForeArm/L_Hand/L_Thumb1
+        weight: 1
+      - path: ArmRig/Main/L_UpperArm/L_ForeArm/L_Hand/L_Thumb1/L_Thumb2
+        weight: 1
+      - path: ArmRig/Main/L_UpperArm/L_ForeArm/L_Hand/L_Thumb1/L_Thumb2/L_Arm3
+        weight: 1
+      - path: ArmRig/Main/L_UpperArm/L_ForeArm/L_Hand/L_Thumb1/L_Thumb2/L_Arm3/L_Arm3_end
+        weight: 1
+      - path: ArmRig/Main/R_Pole
+        weight: 1
+      - path: ArmRig/Main/R_Pole/R_Pole_end
+        weight: 1
+      - path: ArmRig/Main/R_Target
+        weight: 1
+      - path: ArmRig/Main/R_Target/R_Target_end
+        weight: 1
+      - path: ArmRig/Main/R_UpperArm
+        weight: 1
+      - path: ArmRig/Main/R_UpperArm/R_ForeArm
+        weight: 1
+      - path: ArmRig/Main/R_UpperArm/R_ForeArm/R_Hand
+        weight: 1
+      - path: ArmRig/Main/R_UpperArm/R_ForeArm/R_Hand/R_Index1
+        weight: 1
+      - path: ArmRig/Main/R_UpperArm/R_ForeArm/R_Hand/R_Index1/R_Index2
+        weight: 1
+      - path: ArmRig/Main/R_UpperArm/R_ForeArm/R_Hand/R_Index1/R_Index2/R_Index3
+        weight: 1
+      - path: ArmRig/Main/R_UpperArm/R_ForeArm/R_Hand/R_Index1/R_Index2/R_Index3/R_Index3_end
+        weight: 1
+      - path: ArmRig/Main/R_UpperArm/R_ForeArm/R_Hand/R_Middle1
+        weight: 1
+      - path: ArmRig/Main/R_UpperArm/R_ForeArm/R_Hand/R_Middle1/R_Middle2
+        weight: 1
+      - path: ArmRig/Main/R_UpperArm/R_ForeArm/R_Hand/R_Middle1/R_Middle2/R_Middle3
+        weight: 1
+      - path: ArmRig/Main/R_UpperArm/R_ForeArm/R_Hand/R_Middle1/R_Middle2/R_Middle3/R_Middle3_end
+        weight: 1
+      - path: ArmRig/Main/R_UpperArm/R_ForeArm/R_Hand/R_Pinky1
+        weight: 1
+      - path: ArmRig/Main/R_UpperArm/R_ForeArm/R_Hand/R_Pinky1/R_Pinky2
+        weight: 1
+      - path: ArmRig/Main/R_UpperArm/R_ForeArm/R_Hand/R_Pinky1/R_Pinky2/R_Pinky3
+        weight: 1
+      - path: ArmRig/Main/R_UpperArm/R_ForeArm/R_Hand/R_Pinky1/R_Pinky2/R_Pinky3/R_Pinky3_end
+        weight: 1
+      - path: ArmRig/Main/R_UpperArm/R_ForeArm/R_Hand/R_Ring1
+        weight: 1
+      - path: ArmRig/Main/R_UpperArm/R_ForeArm/R_Hand/R_Ring1/R_Ring2
+        weight: 1
+      - path: ArmRig/Main/R_UpperArm/R_ForeArm/R_Hand/R_Ring1/R_Ring2/R_Ring3
+        weight: 1
+      - path: ArmRig/Main/R_UpperArm/R_ForeArm/R_Hand/R_Ring1/R_Ring2/R_Ring3/R_Ring3_end
+        weight: 1
+      - path: ArmRig/Main/R_UpperArm/R_ForeArm/R_Hand/R_Thumb1
+        weight: 1
+      - path: ArmRig/Main/R_UpperArm/R_ForeArm/R_Hand/R_Thumb1/R_Thumb2
+        weight: 1
+      - path: ArmRig/Main/R_UpperArm/R_ForeArm/R_Hand/R_Thumb1/R_Thumb2/R_Arm3
+        weight: 1
+      - path: ArmRig/Main/R_UpperArm/R_ForeArm/R_Hand/R_Thumb1/R_Thumb2/R_Arm3/R_Arm3_end
+        weight: 1
+      - path: Cylinder
+        weight: 1
+      - path: Man.008
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: ArmRig|Attack
+      takeName: ArmRig|Attack
+      internalID: 3792008045107849063
+      firstFrame: 0
+      lastFrame: 49
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: ArmRig|Attack Alt End
+      takeName: ArmRig|Attack Alt End
+      internalID: -4711880152197992791
+      firstFrame: 0
+      lastFrame: 44
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: ArmRig|Test Poses
+      takeName: ArmRig|Test Poses
+      internalID: -8467302558039237231
+      firstFrame: 0
+      lastFrame: 1
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    isReadable: 0
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 0.1
+    meshCompression: 0
+    addColliders: 0
+    useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
+    importPhysicalCameras: 1
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    nodeNameCollisionStrategy: 1
+    fileIdsGeneration: 2
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    keepQuads: 0
+    weldVertices: 1
+    bakeAxisConversion: 0
+    preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    optimizeBones: 1
+    meshOptimizationFlags: -1
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVMarginMethod: 1
+    secondaryUVMinLightmapResolution: 40
+    secondaryUVMinObjectScale: 1
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+    strictVertexDataChecks: 0
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  referencedClips: []
+  importAnimation: 1
+  humanDescription:
+    serializedVersion: 3
+    human: []
+    skeleton:
+    - name: FPS Rig Test Attack faster(Clone)
+      parentName: 
+      position: {x: 0, y: 0, z: 0}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Man.008
+      parentName: FPS Rig Test Attack faster(Clone)
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 100, y: 100, z: 100}
+    - name: ArmRig
+      parentName: FPS Rig Test Attack faster(Clone)
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 100, y: 100, z: 100}
+    - name: Main
+      parentName: ArmRig
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0.7071068, y: -0, z: -0, w: 0.7071068}
+      scale: {x: 1, y: 0.9999998, z: 0.9999998}
+    - name: R_UpperArm
+      parentName: Main
+      position: {x: -0.002022441, y: -0.0028180566, z: -0.0022927923}
+      rotation: {x: 0.7071067, y: 0.7071068, z: 0.0000016093251, w: -0.0000015497204}
+      scale: {x: 1.0000004, y: 1, z: 0.9999999}
+    - name: R_ForeArm
+      parentName: R_UpperArm
+      position: {x: -7.450581e-11, y: 0.0020141893, z: 1.1175871e-11}
+      rotation: {x: -0.038325444, y: -0.0010771696, z: -0.004454851, w: 0.9992548}
+      scale: {x: 0.99999994, y: 1.0000001, z: 0.99999994}
+    - name: R_Hand
+      parentName: R_ForeArm
+      position: {x: -1.4901162e-11, y: 0.0018722416, z: 6.183982e-10}
+      rotation: {x: 0.06445828, y: -0.00000011769589, z: 0.011586077, w: 0.9978532}
+      scale: {x: 1.000001, y: 1.0000007, z: 1.0000002}
+    - name: R_Thumb1
+      parentName: R_Hand
+      position: {x: -0.00010999155, y: 0.00040031518, z: -0.00028017076}
+      rotation: {x: -0.41934603, y: -0.08765193, z: 0.10483223, w: 0.8974833}
+      scale: {x: 1.0000002, y: 0.99999994, z: 1.0000004}
+    - name: R_Thumb2
+      parentName: R_Thumb1
+      position: {x: -3.5762787e-10, y: 0.00034010294, z: 7.450581e-11}
+      rotation: {x: 0.036587607, y: -0.011652546, z: -0.0024540971, w: 0.99925953}
+      scale: {x: 1, y: 1.0000008, z: 0.99999934}
+    - name: R_Arm3
+      parentName: R_Thumb2
+      position: {x: -2.8312208e-10, y: 0.0002854612, z: -4.768372e-10}
+      rotation: {x: -0.034734495, y: 0.05123817, z: 0.010727268, w: 0.9980247}
+      scale: {x: 1.0000002, y: 1.0000004, z: 1.0000002}
+    - name: R_Arm3_end
+      parentName: R_Arm3
+      position: {x: -0, y: 0.00031911663, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: R_Index1
+      parentName: R_Hand
+      position: {x: 0.000060179864, y: 0.00095618813, z: -0.00034195287}
+      rotation: {x: -0.034392815, y: -0.00369157, z: 0.047233496, w: 0.9982848}
+      scale: {x: 1.0000002, y: 1.0000001, z: 1.0000002}
+    - name: R_Index2
+      parentName: R_Index1
+      position: {x: -7.450581e-11, y: 0.00039861447, z: 1.192093e-10}
+      rotation: {x: 0.0000002384185, y: 0.00000010011714, z: -0.03957444, w: 0.9992166}
+      scale: {x: 0.9999994, y: 1.0000004, z: 1.0000005}
+    - name: R_Index3
+      parentName: R_Index2
+      position: {x: -0, y: 0.00030809655, z: -2.384186e-10}
+      rotation: {x: -0.00000043835215, y: -0.00000003034807, z: -0.039125063, w: 0.9992343}
+      scale: {x: 1.0000001, y: 0.9999998, z: 0.99999994}
+    - name: R_Index3_end
+      parentName: R_Index3
+      position: {x: -0, y: 0.00022848, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: R_Middle1
+      parentName: R_Hand
+      position: {x: 0.0000506132, y: 0.0009813629, z: -0.00012995595}
+      rotation: {x: -0.02831707, y: -0.0021494075, z: 0.045587305, w: 0.9985567}
+      scale: {x: 1.0000001, y: 1, z: 1.0000002}
+    - name: R_Middle2
+      parentName: R_Middle1
+      position: {x: -4.4703485e-10, y: 0.00042844831, z: 0}
+      rotation: {x: -0.000121073754, y: 0.0000061041187, z: -0.040543683, w: 0.99917775}
+      scale: {x: 0.99999994, y: 0.99999994, z: 1.0000001}
+    - name: R_Middle3
+      parentName: R_Middle2
+      position: {x: 5.960465e-11, y: 0.00033091736, z: 1.192093e-10}
+      rotation: {x: 0.00022783825, y: 0.000019875994, z: -0.03966017, w: 0.9992133}
+      scale: {x: 1.0000005, y: 1.000001, z: 1.0000001}
+    - name: R_Middle3_end
+      parentName: R_Middle3
+      position: {x: -0, y: 0.00022467012, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: R_Ring1
+      parentName: R_Hand
+      position: {x: 0.00005874378, y: 0.0009169441, z: 0.00006895322}
+      rotation: {x: -0.03174627, y: -0.0029490178, z: 0.04663137, w: 0.9984032}
+      scale: {x: 1, y: 1.0000001, z: 1.0000004}
+    - name: R_Ring2
+      parentName: R_Ring1
+      position: {x: -0, y: 0.00038997573, z: -1.7881394e-10}
+      rotation: {x: -0.00000008568165, y: 0.000000019557767, z: -0.04021252, w: 0.99919116}
+      scale: {x: 1.0000001, y: 1.0000008, z: 1.0000001}
+    - name: R_Ring3
+      parentName: R_Ring2
+      position: {x: -8.940697e-11, y: 0.0002727295, z: 0}
+      rotation: {x: -0.00000027131253, y: 0.00000027418938, z: -0.03933701, w: 0.99922603}
+      scale: {x: 1.0000005, y: 0.9999999, z: 1.0000004}
+    - name: R_Ring3_end
+      parentName: R_Ring3
+      position: {x: -0, y: 0.00019989532, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: R_Pinky1
+      parentName: R_Hand
+      position: {x: -0.000052409352, y: 0.0008213249, z: 0.00023398169}
+      rotation: {x: -0.036045436, y: -0.0042232946, z: 0.04751127, w: 0.9982112}
+      scale: {x: 0.9999998, y: 0.99999976, z: 1.0000002}
+    - name: R_Pinky2
+      parentName: R_Pinky1
+      position: {x: -1.192093e-10, y: 0.00026417413, z: -2.9802324e-10}
+      rotation: {x: 0.00000029429788, y: 0.0000002169981, z: -0.04000984, w: 0.99919933}
+      scale: {x: 0.9999998, y: 1.0000004, z: 0.9999997}
+    - name: R_Pinky3
+      parentName: R_Pinky2
+      position: {x: -1.4901162e-11, y: 0.00018021312, z: 5.960465e-11}
+      rotation: {x: -0.00000055018086, y: 0.000000084969955, z: -0.039177813, w: 0.9992323}
+      scale: {x: 1.0000005, y: 1.0000002, z: 1.0000004}
+    - name: R_Pinky3_end
+      parentName: R_Pinky3
+      position: {x: -0, y: 0.00017659662, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: R_Pole
+      parentName: Main
+      position: {x: -0.0018011011, y: -0.0049716784, z: -0.0051412135}
+      rotation: {x: 0.7071068, y: 0.0000001376788, z: 0.0000001376788, w: 0.7071068}
+      scale: {x: 1, y: 0.9999997, z: 0.9999997}
+    - name: R_Pole_end
+      parentName: R_Pole
+      position: {x: -0, y: 0.001, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: R_Target
+      parentName: Main
+      position: {x: -0.0018161315, y: -0.0019075499, z: -0.0054806904}
+      rotation: {x: 0.000000059604645, y: -0, z: 0.7071068, w: 0.7071068}
+      scale: {x: 1.0000005, y: 1, z: 1.0000001}
+    - name: R_Target_end
+      parentName: R_Target
+      position: {x: -0, y: 0.001, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: L_UpperArm
+      parentName: Main
+      position: {x: 0.0011774291, y: -0.0026083044, z: -0.0024197814}
+      rotation: {x: 0.7071069, y: -0.70710665, z: 0.0000014007088, w: 0.0000014007088}
+      scale: {x: 1.0000007, y: 1.0000004, z: 1.0000002}
+    - name: L_ForeArm
+      parentName: L_UpperArm
+      position: {x: -1.192093e-10, y: 0.0020141888, z: 0}
+      rotation: {x: -0.038325425, y: 0.0010771212, z: 0.004454971, w: 0.9992548}
+      scale: {x: 1.0000011, y: 1.0000001, z: 1.0000005}
+    - name: L_Hand
+      parentName: L_ForeArm
+      position: {x: -1.192093e-10, y: 0.0018722414, z: 2.9802324e-11}
+      rotation: {x: 0.064458296, y: 0.00000011513475, z: -0.011585958, w: 0.9978532}
+      scale: {x: 1.0000002, y: 1.0000001, z: 1}
+    - name: L_Thumb1
+      parentName: L_Hand
+      position: {x: 0.00010999191, y: 0.00040031574, z: -0.00028017015}
+      rotation: {x: 0.41977295, y: -0.08841732, z: 0.103220075, w: -0.89739555}
+      scale: {x: 1.0000005, y: 1.0000007, z: 1.0000004}
+    - name: L_Thumb2
+      parentName: L_Thumb1
+      position: {x: 9.685755e-11, y: 0.0003401033, z: -4.768372e-10}
+      rotation: {x: 0.036586504, y: 0.011652285, z: 0.0024546634, w: 0.99925953}
+      scale: {x: 1.0000006, y: 1.0000004, z: 1.0000001}
+    - name: L_Arm3
+      parentName: L_Thumb2
+      position: {x: -9.685755e-11, y: 0.00028546134, z: 5.960465e-11}
+      rotation: {x: -0.034731686, y: -0.051238254, z: -0.010726276, w: 0.99802476}
+      scale: {x: 1.0000008, y: 1.0000006, z: 1.0000007}
+    - name: L_Arm3_end
+      parentName: L_Arm3
+      position: {x: -0, y: 0.00031911663, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: L_Index1
+      parentName: L_Hand
+      position: {x: -0.00007307714, y: 0.00096169574, z: -0.00034143677}
+      rotation: {x: -0.03492859, y: 0.0037590882, z: -0.0447189, w: 0.99838173}
+      scale: {x: 1.0000001, y: 1.0000002, z: 1.0000002}
+    - name: L_Index2
+      parentName: L_Index1
+      position: {x: 1.192093e-10, y: 0.00039861441, z: -2.9802324e-11}
+      rotation: {x: 0.00000012293455, y: -0.00000012293455, z: 0.039574645, w: 0.9992167}
+      scale: {x: 0.9999992, y: 1.0000007, z: 1.0000004}
+    - name: L_Index3
+      parentName: L_Index2
+      position: {x: 1.4901162e-11, y: 0.00030809696, z: -1.0430813e-10}
+      rotation: {x: -0.00000045491151, y: 0.000000062581776, z: 0.039125625, w: 0.9992343}
+      scale: {x: 0.9999998, y: 1.0000002, z: 1}
+    - name: L_Index3_end
+      parentName: L_Index3
+      position: {x: -0, y: 0.00022848, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: L_Middle1
+      parentName: L_Hand
+      position: {x: -0.000055721644, y: 0.0009809161, z: -0.00012999673}
+      rotation: {x: -0.029007755, y: 0.002217682, z: -0.043200593, w: 0.9986428}
+      scale: {x: 1.0000004, y: 0.9999999, z: 1.0000002}
+    - name: L_Middle2
+      parentName: L_Middle1
+      position: {x: 2.9802324e-10, y: 0.0004284483, z: 2.0861626e-10}
+      rotation: {x: -0.00012128794, y: -0.000006172105, z: 0.040542826, w: 0.9991779}
+      scale: {x: 1.0000004, y: 1.0000007, z: 1}
+    - name: L_Middle3
+      parentName: L_Middle2
+      position: {x: 2.6077033e-11, y: 0.00033091745, z: -2.9802324e-11}
+      rotation: {x: 0.00022868662, y: -0.000019841656, z: 0.03966028, w: 0.9992132}
+      scale: {x: 1, y: 1.000001, z: 1.0000004}
+    - name: L_Middle3_end
+      parentName: L_Middle3
+      position: {x: -0, y: 0.00022467012, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: L_Ring1
+      parentName: L_Hand
+      position: {x: -0.000074189666, y: 0.0009826549, z: 0.000084110085}
+      rotation: {x: -0.032347787, y: 0.003017056, z: -0.044167615, w: 0.9984958}
+      scale: {x: 1.0000005, y: 1.0000005, z: 1.0000002}
+    - name: L_Ring2
+      parentName: L_Ring1
+      position: {x: -0, y: 0.00038997518, z: 0}
+      rotation: {x: 0.000000108033355, y: -0.000000095227676, z: 0.04021149, w: 0.99919116}
+      scale: {x: 0.9999999, y: 1.0000004, z: 0.9999998}
+    - name: L_Ring3
+      parentName: L_Ring2
+      position: {x: -5.960465e-11, y: 0.00027272885, z: 2.9802324e-11}
+      rotation: {x: 0.00000066236134, y: -0.00000021961063, z: 0.039338768, w: 0.999226}
+      scale: {x: 0.9999997, y: 1.0000004, z: 1.0000004}
+    - name: L_Ring3_end
+      parentName: L_Ring3
+      position: {x: -0, y: 0.00019989532, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: L_Pinky1
+      parentName: L_Hand
+      position: {x: -0.00008966041, y: 0.0009377372, z: 0.00030198618}
+      rotation: {x: -0.03654284, y: 0.004289925, z: -0.04496858, w: 0.9983106}
+      scale: {x: 1.0000005, y: 1.0000007, z: 1}
+    - name: L_Pinky2
+      parentName: L_Pinky1
+      position: {x: -1.192093e-10, y: 0.00026417416, z: 1.192093e-10}
+      rotation: {x: -0.00000023096794, y: -0.000000027008348, z: 0.040009864, w: 0.99919933}
+      scale: {x: 0.9999999, y: 1.000001, z: 1.0000005}
+    - name: L_Pinky3
+      parentName: L_Pinky2
+      position: {x: -1.192093e-10, y: 0.00018021319, z: 1.7881394e-10}
+      rotation: {x: -0.0000008404106, y: -0.000000060710576, z: 0.03918288, w: 0.9992321}
+      scale: {x: 1.0000002, y: 1.0000006, z: 0.99999994}
+    - name: L_Pinky3_end
+      parentName: L_Pinky3
+      position: {x: -0, y: 0.00017659662, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: L_Pole
+      parentName: Main
+      position: {x: 0.0038830684, y: -0.0022160627, z: -0.007038855}
+      rotation: {x: 0.7071068, y: -0.0000001376788, z: -0.0000001376788, w: 0.7071068}
+      scale: {x: 1, y: 0.9999997, z: 0.9999997}
+    - name: L_Pole_end
+      parentName: L_Pole
+      position: {x: -0, y: 0.001, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: L_Target
+      parentName: Main
+      position: {x: 0.0018144031, y: -0.0016202199, z: -0.005181623}
+      rotation: {x: 0.000000029802322, y: 0.000000059604645, z: -0.7071068, w: 0.7071068}
+      scale: {x: 1.0000004, y: 1.0000001, z: 1.0000004}
+    - name: L_Target_end
+      parentName: L_Target
+      position: {x: -0, y: 0.001, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Hammer
+      parentName: ArmRig
+      position: {x: -0.0017272067, y: 0.005801266, z: -0.0012185653}
+      rotation: {x: 0.055512946, y: -0.70492446, z: 0.7049242, w: 0.055512957}
+      scale: {x: 1, y: 0.9999998, z: 0.9999999}
+    - name: Hammer_end
+      parentName: Hammer
+      position: {x: -0, y: 0.001, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Camera handle
+      parentName: ArmRig
+      position: {x: -0, y: 0.002044739, z: 0}
+      rotation: {x: 0.7071068, y: -0, z: -0, w: 0.7071068}
+      scale: {x: 1, y: 0.9999998, z: 0.9999998}
+    - name: Camera handle_end
+      parentName: Camera handle
+      position: {x: -0, y: 0.001, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cylinder
+      parentName: FPS Rig Test Attack faster(Clone)
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 17.13192, y: 17.131924, z: 107.29557}
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    globalScale: 0.1
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+    hasExtraRoot: 1
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  autoGenerateAvatarMappingIfUnspecified: 1
+  animationType: 2
+  humanoidOversampling: 1
+  avatarSetup: 1
+  addHumanoidExtraRootOnlyWhenUsingAvatar: 1
+  importBlendShapeDeformPercent: 1
+  remapMaterialsIfMaterialImportModeIsNone: 0
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

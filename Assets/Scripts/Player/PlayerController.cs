@@ -1,21 +1,31 @@
 using UnityEngine;
 using DG.Tweening;
 using UnityEngine.Events;
+using Unity.Cinemachine;
+using Unity.Android.Types;
+using UnityEditorInternal;
+using Unity.VisualScripting;
+using System.Collections;
 public class PlayerController : MonoBehaviour, IMomentumModifiable
 {
     #region     ========================= Variables =========================
     [Header("Movement")]
     [SerializeField] private float acceleration;
     [SerializeField] private float deceleration;
+    [SerializeField] private float startSpeed;
     [SerializeField] private float maxMovementSpeed;
     [SerializeField] private float groundDrag;
     [SerializeField, Tooltip("Controls how long it takes for velocity takes to return to max speed when the player goes over it")] 
     private float velocityDecayTime;
+    [SerializeField,Tooltip("How often velocity is stored in seconds, used for the wall kick")] 
+    private float veloctiyStorageTime;
 
     [Space(10)]
-    [SerializeField, Tooltip("the amount the player's max speed and acceleration increases by when in air")] private float airSpeedIncrease;
+    [SerializeField, Tooltip("the amount the player's max speed and acceleration increases by when in air")] 
+    private float airSpeedIncrease;
     [SerializeField] private float maxFallSpeed;
-    [SerializeField, Range(0,1), Tooltip("Controls how much control the player has when in the air (0 is none, 1 is full)")] private float airControlMultiplier;
+    [SerializeField, Range(0,1), Tooltip("Controls how much control the player has when in the air (0 is none, 1 is full)")] 
+    private float airControlMultiplier;
 
     [Space(10)]
     [SerializeField] private Transform orientation;
@@ -27,29 +37,37 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
     private float movementSpeed;
     private float horizontalInput, verticalInput;
     private float speedLerpProgress;
+
     private Vector3 moveDirection;
-    private Vector3 velocity;
     private Vector3 lastAirVelocity;
+
+    private Vector3 veloctiyStorage;
+    private bool storeVelocity = true;
 
     private float maxSpeedStorage;
     private float accelerationStorage;
-    
+
     [Space(10)]
     [Header("Slope Movement")]
-    [SerializeField, Tooltip("Maxium slope angle the player can go up")] private float maxSlopeAngle;
-    [SerializeField, Tooltip("the amount the player's max speed and acceleration increases by when on a slope")] private float slopeSpeedImpact;
+    [SerializeField, Tooltip("Maxium slope angle the player can go up")] 
+    private float maxSlopeAngle;
+    [SerializeField, Tooltip("the amount the player's max speed and acceleration increases by when on a slope")] 
+    private float slopeSpeedImpact;
     private RaycastHit slopeHit;
     private bool exitSlope;
 
     [Space(10)]
     [Header("Jump")]
     [SerializeField] private float jumpForce;
-    [SerializeField, Tooltip("applies a force once player releases jump so it reaches thye apex faster  ")] private float maxJumpMultiplier;
-    [SerializeField, Tooltip("applies a a force when player falls so they fall quicker  ")] private float fallMultiplier;
+    [SerializeField, Tooltip("applies a force once player releases jump so it reaches thye apex faster  ")] 
+    private float maxJumpMultiplier;
+    [SerializeField, Tooltip("applies a a force when player falls so they fall quicker  ")] 
+    private float fallMultiplier;
     [SerializeField] private float jumpCooldown;
 
     [Space(5)]
-    [SerializeField, Tooltip("duration of coyote time")] private float coyoteTime = 0.2f;
+    [SerializeField, Tooltip("duration of coyote time")] 
+    private float coyoteTime = 0.2f;
     private float coyoteTimeCounter;
     private bool canJump = true;
     private bool jumpReleased;
@@ -64,6 +82,27 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
     [Space(10)]
     [Header("Wall Check & Kick")]
     [SerializeField] private float wallKickRange;
+    [SerializeField] private float wallKickCooldown;
+    private float timeOfLastKick;
+    private bool kickOnce;
+
+    [Space(10)]
+    [Header("Attack")]
+    [SerializeField] private Vector3 attackScale;
+    [SerializeField] private LayerMask attackMask;
+    [SerializeField] private float attackRange;
+    [SerializeField] private float attackDamage;
+    [SerializeField] private float attackCooldown;
+
+    private float attackTime;
+
+    [Space(10)]
+    [Header("Speed Stages")]
+    [SerializeField, Tooltip("the value that controls how fast the player has to be reach the 2nd speed stage")] 
+    private float firstBreakpoint;
+    [SerializeField, Tooltip("the value that controls how fast the player has to be reach the 3rd speed stage")] 
+    private float secondBreakpoint;
+    private int currentStage = 1; //tracks which stage the player's speed is at 
 
     [Space(10)]
     [Header("Bounce Bomb")]
@@ -78,23 +117,41 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
     [SerializeField] private UnityEvent EventPrimaryClick = new();
     [SerializeField] private UnityEvent EventSecondaryClick = new();
 
+    [Space(10)]
+    [Header("Animation Controller")]
+    [SerializeField] Animator animator;
+
     #endregion  ========================= Variables =========================
+
+    void Awake() {
+        Globals.PLAYER = this.gameObject;
+    }
 
     void Start() {
         playerRigidBody = GetComponent<Rigidbody>();
+
         accelerationStorage = acceleration;
         maxSpeedStorage = maxMovementSpeed;
 
+        maxFallSpeed = -maxFallSpeed;
+
+        currentStage = 1;
+
         ValidateBounceBomb();
         EventSecondaryClick.AddListener(SpawnBounceBomb);
+
+        EventPrimaryClick.AddListener(Attack);
     }
 
     void Update() {
-        WallCheck();
         GroundCheck();
 
-        PlayerMovementInput();
+        MovementInput();
+        ActionInputs();
+
         MovementSpeed();
+        if (storeVelocity) { StartCoroutine(GetVelocity()); }
+        GetSpeedStage();
 
         if (isGrounded) {
             coyoteTimeCounter = coyoteTime;
@@ -103,36 +160,63 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
             coyoteTimeCounter -= Time.deltaTime;
             GetLastAirVelocity();
         }
+
         PerserveMomentumOnLand();
     }
     void FixedUpdate() {
         MovePlayer();
         VariableJump();
     }
-    void LateUpdate(){
+    void LateUpdate() {
         MaxSpeed();
     }
-    #region     ========================= Movement =========================
-    private void PlayerMovementInput() {
+
+    #region ========================= Inputs =========================
+    private void MovementInput()
+    {
         horizontalInput = Input.GetAxisRaw("Horizontal");
         verticalInput = Input.GetAxisRaw("Vertical");
 
+        if (Input.GetButton("Jump"))
+        {
+            if (canJump && coyoteTimeCounter > 0 ) {
+                Jump();
 
-        if (Input.GetButton("Jump") && canJump && coyoteTimeCounter > 0) {
-            Jump();
-            canJump = false;
-            jumpReleased = false;
-            exitSlope = true;
+                canJump = false;
+                jumpReleased = false;
+                exitSlope = true;
 
-            this.Invoke(ResetJump, jumpCooldown);
+                this.Invoke(ResetJump, jumpCooldown);
+            }
+            else if (Input.GetButtonUp("Jump") && !isGrounded) {
+                jumpReleased = true;
+            }
         }
-        else if (Input.GetButtonUp("Jump") && !isGrounded) {
-            jumpReleased = true;
-        }
 
-        if (Input.GetMouseButtonDown(0)) { EventPrimaryClick.Invoke(); }
+        if (Input.GetButtonDown("Jump") && !isGrounded) {
+            Vector3 wallHit;
+            
+            if (WallCheck(out wallHit) && !kickOnce) {
+                WallKick(wallHit);
+            }
+        }
+        else if (Input.GetButtonUp("Jump")) {
+            kickOnce = false;
+
+        }
+    }
+    private void ActionInputs() {
+        attackTime += Time.deltaTime;
+        if (Input.GetMouseButtonDown(0) && attackTime >= attackCooldown) { 
+            EventPrimaryClick.Invoke(); 
+            attackTime = 0;
+        }
         if (Input.GetMouseButtonDown(1)) { EventSecondaryClick.Invoke(); }
     }
+    #endregion  ========================= Inputs =========================
+
+    #region ========================= Movement =========================
+   
     /// <summary>
     /// Gets the movement direction from orintation and applies the vertical and horizontal inputs values 
     /// Adds force to this direction
@@ -167,7 +251,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
     /// </summary>
     private void MovementSpeed() {
         if (Input.GetButton("Horizontal") || Input.GetButton("Vertical")) {
-            movementSpeed = Mathf.Lerp(0, maxMovementSpeed, accelerationProgress);
+            movementSpeed = Mathf.Lerp(startSpeed, maxMovementSpeed, accelerationProgress);
             accelerationProgress += Time.deltaTime * (acceleration * 0.1f);
             accelerationProgress = Mathf.Clamp(accelerationProgress, 0, 1);
         }
@@ -191,8 +275,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
         if (SlopeCheck() && !exitSlope && playerRigidBody.linearVelocity.magnitude > maxMovementSpeed) {
             playerRigidBody.linearVelocity = playerRigidBody.linearVelocity.normalized * movementSpeed;
         }
-        else {
-                
+        else {                
             Vector3 velocity = new Vector3(playerRigidBody.linearVelocity.x, 0, playerRigidBody.linearVelocity.z);
             Vector3 maxVelocity = velocity.normalized * maxMovementSpeed;
 
@@ -214,7 +297,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
             }
 
             float yVelocity = Mathf.Abs(playerRigidBody.linearVelocity.y);
-            if (yVelocity >= maxFallSpeed) {
+            if (yVelocity <= maxFallSpeed) {
                 playerRigidBody.linearVelocity = new Vector3(playerRigidBody.linearVelocity.x, maxFallSpeed, playerRigidBody.linearVelocity.z);
             } 
         }
@@ -269,9 +352,15 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
     }
     private void GetLastAirVelocity() {
             lastAirVelocity = playerRigidBody.linearVelocity;
-        
     }
-    #endregion  ========================= Movement =========================
+
+    private IEnumerator GetVelocity() {
+        storeVelocity = false;
+        yield return new WaitForSeconds(veloctiyStorageTime);
+        veloctiyStorage = playerRigidBody.linearVelocity;
+        storeVelocity = true;
+    }
+    #endregion ========================= Movement =========================
 
     #region     ========================= Jump =========================
     private void Jump() {
@@ -301,24 +390,38 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
     #endregion  ========================= Jump =========================
 
     #region  ========================= Wall Kick =========================
-    /// <summary>
-    /// Performs a check to see if a wall is closeenough for the wall kick
-    /// </summary>
-    private void WallCheck() {
-        if (Input.GetMouseButtonDown(0)) {
+  /// <summary>
+  /// checks if there is a wall to kick off of
+  /// </summary>
+  /// <param name="wallNormal"> Returns the wall's normal </param>
+  /// <returns> Returns a boolean value depending on if a wall was hit</returns>
+    private bool WallCheck(out Vector3 wallNormal) {
+        if(Time.time >= timeOfLastKick + wallKickCooldown && !isGrounded) {
+
+            timeOfLastKick = Time.time; 
             RaycastHit wallHit;
-            isGrounded = Physics.Raycast(groundCheckPosition.position, orientation.forward, out wallHit, wallKickRange, groundMask);
-            if (wallHit.collider != null) {
-                WallKick();
-            }
+            bool isWall = Physics.Raycast(groundCheckPosition.position, orientation.forward, out wallHit, wallKickRange, groundMask);
+            Debug.DrawRay(groundCheckPosition.position, orientation.forward * wallKickRange, Color.blueViolet, 10);
+
+            wallNormal = wallHit.normal;
+            return isWall;
+        }
+        else { 
+            wallNormal = Vector3.zero;
+            return false; 
         }
     }
     /// <summary>
-    /// Inverses the x & z velocity of the player
+    /// Deflects the players velocity off the wall
     /// </summary>
-    private void WallKick() {
-        Vector3 tempVelocity = playerRigidBody.linearVelocity;
-        playerRigidBody.linearVelocity = new Vector3(-tempVelocity.x, tempVelocity.y, -tempVelocity.z);
+    /// <param name="wallNormal"> the wall's normal from the wall kick </param>
+    private void WallKick(Vector3 wallNormal) {
+        kickOnce = true;
+        Debug.Log("Wall Kick");
+        Vector3 reflectedDirection = Vector3.Reflect(veloctiyStorage, wallNormal);
+        //reflectedDirection = reflectedDirection * 1000;
+        Vector3 newVelocity = new Vector3(reflectedDirection.x, playerRigidBody.linearVelocity.y, reflectedDirection.z);
+        playerRigidBody.linearVelocity = newVelocity;
     }
     #endregion  ========================= Wall Kick =========================
 
@@ -370,13 +473,100 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
         EventSecondaryClick.RemoveListener(SpawnBounceBomb);
         EventSecondaryClick.AddListener(BounceBombListeners);
     }
-
+    private bool isDetonating = false;
     private void BounceBombListeners() {
-        bounceBombInstance.GetComponent<BounceBomb>().Activate();
-        DestroyImmediate(bounceBombInstance);
+        if (!isDetonating) {
+            isDetonating = true;
+            this.Invoke(() => {
+                bounceBombInstance.GetComponent<BounceBomb>().Activate();
+                DestroyImmediate(bounceBombInstance);
 
-        EventSecondaryClick.RemoveListener(BounceBombListeners);
-        EventSecondaryClick.AddListener(SpawnBounceBomb);
+                EventSecondaryClick.RemoveListener(BounceBombListeners);
+                EventSecondaryClick.AddListener(SpawnBounceBomb);
+                isDetonating = false;
+            }, 0.5f);
+        }
     }
     #endregion ========================= Throw Bounce Bomb =========================
+
+    #region ========================= Speed Stages =========================
+    private void GetSpeedStage() {
+        float speed = playerRigidBody.linearVelocity.magnitude;
+        if (speed > secondBreakpoint) {
+            // Checks if player is in Stage 3
+            currentStage = 3; 
+            return;
+        }
+        else if (speed > firstBreakpoint) {
+            // Checks if player is in Stage 2
+            currentStage = 2;
+            return;
+        }
+        else { 
+            // Checks if player is in stage 1
+            currentStage = 1;
+            return;
+        }
+    }
+    #endregion ========================= Speed Stages =========================
+
+    #region ========================= Attack =========================
+    /// <summary>
+    /// Checks current speedstage then calls attack check to see if it hit anything
+    /// then goes through the array and checks it hit object can take damage
+    /// </summary>
+    private void Attack() {
+        RaycastHit[] enemies;
+
+        animator.SetTrigger("hasAttacked");
+
+        if (currentStage == 3) {
+            // larger aoe && oneshot && vfx
+            //VFX GOES HERE
+            Vector3 largerScale = attackScale * 2;
+            enemies = AttackCheck(largerScale, attackRange +2, Color.red);
+        }
+        else if (currentStage == 2)  {
+            //one shot & VFX
+            //VFX GOES HERE
+            enemies = AttackCheck(attackScale, attackRange, Color.yellow);
+        }
+        else {
+            // default
+            enemies = AttackCheck(attackScale, attackRange, Color.green);
+        }
+
+        if (enemies.Length != 0) {
+            foreach (RaycastHit enemy in enemies) {
+                IDamageable damage = enemy.transform.GetComponent<IDamageable>();
+                if (damage != null) {
+                    if (currentStage >= 2) { damage.Kill(); 
+                    } 
+                    else {
+                        damage.TakeDamage(attackDamage); 
+                    }
+                }
+            }
+        }
+    }
+    /// <summary>
+    /// Performs a box cast all with the specific conditions 
+    /// </summary>
+    /// <param name="attackSize"> the size of the box </param>
+    /// <param name="range"> the range of the attack </param>
+    /// <param name="colour"> controls the colour of the debug </param>
+    /// <returns> returns an array containing all enemies it by the box cast </returns>
+    private RaycastHit[] AttackCheck(Vector3 attackSize, float range, Color colour) {
+        RaycastHit[] enemies = null;
+        Vector3 direction = Camera.main.transform.position;
+        enemies = Physics.BoxCastAll(direction, attackSize, Camera.main.transform.forward, Quaternion.identity, range, attackMask);
+        Debug.DrawRay(direction, Camera.main.transform.forward * attackRange, colour, 3f);
+        return enemies;
+    }
+    #endregion ========================= Attack =========================
+
+    #region ========================= Gizmos =========================
+    private void OnDrawGizmos() {
+    }
+    #endregion ========================= Gizmos =========================
 }
