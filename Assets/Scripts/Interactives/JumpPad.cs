@@ -15,6 +15,6 @@ public class JumpPad : MonoBehaviour
 
     private void Jump(IMomentumModifiable entity)
     {
-        entity.SetMomentum(entity.GetMomentum()+Vector3.up*jumpForce);
+        entity.SetMomentum(entity.GetMomentum()+transform.up * jumpForce);
     }
 }
