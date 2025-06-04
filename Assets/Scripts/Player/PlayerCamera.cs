@@ -10,10 +10,10 @@ public class PlayerCamera : MonoBehaviour
     #region ========================= Camera =========================
 
     private void Start(){
-        /*
+        
          Cursor.lockState = CursorLockMode.Locked;
-         Cursor.visible = false;
-         */
+         //Cursor.visible = false;
+         
     }
     /// <summary>
     /// Gets mouse input and uses it to rotate the player camera
