@@ -6,7 +6,8 @@ using Unity.Android.Types;
 using UnityEditorInternal;
 using Unity.VisualScripting;
 using System.Collections;
-public class PlayerController : MonoBehaviour, IMomentumModifiable
+using UnityEngine.VFX;
+public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable
 {
     #region     ========================= Variables =========================
     [Header("Movement")]
@@ -119,7 +120,13 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
 
     [Space(10)]
     [Header("Animation Controller")]
-    [SerializeField] Animator animator;
+    [SerializeField] private Animator animator;
+
+    [Space(10)]
+    [Header("Visual Effects")]
+    [SerializeField] private VisualEffect runningLines;
+    [SerializeField] private Vector2 minSpeedOfLines, maxSpeedOfLines;
+    [SerializeField] private float minSpawnRate, maxSpawnRate;
 
     #endregion  ========================= Variables =========================
 
@@ -139,8 +146,9 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
 
         ValidateBounceBomb();
         EventSecondaryClick.AddListener(SpawnBounceBomb);
-
         EventPrimaryClick.AddListener(Attack);
+
+        DOTween.Init();
     }
 
     void Update() {
@@ -228,7 +236,6 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
         if (SlopeCheck() && !exitSlope){
             playerRigidBody.AddForce(GetSlopeMovementDiretion() * movementSpeed * 20f, ForceMode.Force);
 
-
             if (Input.GetButton("Horizontal") || Input.GetButton("Vertical")) { 
                 playerRigidBody.AddForce(Vector3.down * 80f, ForceMode.Force);
             }
@@ -285,7 +292,6 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
             else if (velocity.magnitude > maxMovementSpeed) {
                 float distance = Vector3.Distance(maxVelocity, playerRigidBody.linearVelocity);
 
-                DOTween.Init();
                 DOTween.To(() => speedLerpProgress, x => speedLerpProgress = x, 1, velocityDecayTime);
 
                 Vector3 lerpedVelocity = Vector3.Lerp(playerRigidBody.linearVelocity, maxVelocity, speedLerpProgress);
@@ -445,18 +451,6 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
     }
     #endregion  ========================= Ground Check =========================
 
-    #region  ========================= Momentum Interface =========================
-    public Vector3 GetMomentum() {
-        return playerRigidBody.linearVelocity;
-    }
-    public Vector3 GetPosition() {
-        return playerRigidBody.position;
-    }
-    public void SetMomentum(Vector3 value) {
-        playerRigidBody.AddForce(value, ForceMode.VelocityChange);
-    }
-    #endregion  ========================= Momentum Interface  =========================
-
     #region ========================= Throw Bounce Bomb =========================
     private void ValidateBounceBomb() {
         if (bounceBomb == null)
@@ -494,17 +488,20 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
         float speed = playerRigidBody.linearVelocity.magnitude;
         if (speed > secondBreakpoint) {
             // Checks if player is in Stage 3
-            currentStage = 3; 
+            currentStage = 3;
+            RunningLinesIntensity(maxSpeedOfLines,maxSpawnRate);
             return;
         }
         else if (speed > firstBreakpoint) {
             // Checks if player is in Stage 2
             currentStage = 2;
+            RunningLinesIntensity(minSpeedOfLines, maxSpawnRate);
             return;
         }
         else { 
             // Checks if player is in stage 1
             currentStage = 1;
+            runningLines.enabled = false;
             return;
         }
     }
@@ -565,8 +562,55 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
     }
     #endregion ========================= Attack =========================
 
+    #region ========================= Visual Effects =========================
+    /// <summary>
+    /// Controls the intensity of the running lines visual effect
+    /// </summary>
+    /// <param name="speedOfLines"> how fast the speedlines will go </param>
+    /// <param name="spawnRate"> how fast speed lines will spawn </param>
+    private void RunningLinesIntensity(Vector2 speedOfLines, float spawnRate) {
+        runningLines.enabled = true;
+        if (runningLines.HasVector2("SpeedOfLines")) { 
+            runningLines.SetVector2("SpeedOfLines",speedOfLines);
+        }
+        if (runningLines.HasFloat("SpawnRate")) {
+            runningLines.SetFloat("SpawnRate", spawnRate);
+        }
+    }
+    #endregion ========================= Visual Effects =========================
+
+    #region  ========================= Momentum Interface =========================
+    public Vector3 GetMomentum() {
+        return playerRigidBody.linearVelocity;
+    }
+    public Vector3 GetPosition() {
+        return playerRigidBody.position;
+    }
+    public void SetMomentum(Vector3 value) {
+        playerRigidBody.AddForce(value, ForceMode.VelocityChange);
+    }
+    #endregion  ========================= Momentum Interface  =========================
+
+    #region  ========================= Damage Interface  =========================
+    public float GetHealth()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void TakeDamage(float value)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void Kill()
+    {
+        throw new System.NotImplementedException();
+    }
+    #endregion  ========================= Damage Interface  =========================
+
     #region ========================= Gizmos =========================
     private void OnDrawGizmos() {
     }
+
     #endregion ========================= Gizmos =========================
 }
