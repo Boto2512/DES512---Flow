@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace StateMachine {
     public class StateMachine<TEnum> where TEnum : Enum {
         //private IEnumerable<TEnum> states => transitions.Keys;
-        private Dictionary<TEnum, List<Transition<TEnum>>> transitions = new();
+        private readonly Dictionary<TEnum, List<Transition<TEnum>>> transitions = new();
 
         public TEnum CurrentState { get; protected set; }
 

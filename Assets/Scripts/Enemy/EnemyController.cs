@@ -30,16 +30,16 @@ public class EnemyController : MonoBehaviour
     [Tooltip("The minimum range from the target this agent will attempt to get into")]
     [SerializeField, Min(0f)] private float maxComfortableRange = 20f;
     [SerializeField, Min(0f)] private float attackRange = 40f;
-    private float attackRangeSquared;       // for optimised attack range checks
+    private float attackRangeSquared = 1600f;               // for optimised attack range checks
 
     private Rigidbody rb;
 
     private void Awake() {
         transitions = new() {
-            new(EnemyAIState.Idle, EnemyAIState.Pursue, IdleToPursueCheck, null),
-            new(EnemyAIState.Idle, EnemyAIState.Attack, IdleToAttackCheck, null),
-            new(EnemyAIState.Pursue, EnemyAIState.Attack, PursueToAttackCheck, null),
-            new(EnemyAIState.Attack, EnemyAIState.Pursue, AttackToPursueCheck, null)
+            new(EnemyAIState.Idle, EnemyAIState.Attack, IdleToAttackCheck, IdleToAttackCallback),
+            new(EnemyAIState.Idle, EnemyAIState.Pursue, IdleToPursueCheck, IdleToPursueCallback),
+            new(EnemyAIState.Pursue, EnemyAIState.Attack, PursueToAttackCheck, PursueToAttackCallback),
+            new(EnemyAIState.Attack, EnemyAIState.Pursue, AttackToPursueCheck, AttackToPursueCallback)
         };
     }
 
@@ -105,6 +105,10 @@ public class EnemyController : MonoBehaviour
         }
     }
     private void Pursue() {
+        if (agent.isStopped) {
+            return;
+        }
+
         agent.SetDestination(GetPursueDestination());
     }
 
@@ -124,12 +128,14 @@ public class EnemyController : MonoBehaviour
 
     private bool TargetInAttackRange() {
         return (targetPosition - rb.position).sqrMagnitude <= attackRangeSquared;
+        //return Vector3.Distance(targetPosition, rb.position) <= attackRange;
     }
 
     private bool TargetInView() {
         Vector3 enemyToTarget = targetPosition - rb.position;
 
-        return Physics.Raycast(rb.position, enemyToTarget.normalized, out _, enemyToTarget.magnitude, Globals.OBSTACLE_MASK, QueryTriggerInteraction.Collide);
+        // 0.5f (half player width) for example
+        return !Physics.SphereCast(rb.position, 0.5f, enemyToTarget.normalized, out RaycastHit hitInfo, enemyToTarget.magnitude, Globals.OBSTACLE_MASK);
     }
 
     private bool TargetInComfortableRange() {
@@ -153,6 +159,8 @@ public class EnemyController : MonoBehaviour
 
     #region State Machine Transitions
 
+    #region State Machine Predicates
+
     private bool IdleToAttackCheck() {
         return isTargetInAttackRange && isTargetInView;
     }
@@ -162,12 +170,38 @@ public class EnemyController : MonoBehaviour
     }
 
     private bool PursueToAttackCheck() {
-        return isTargetInView && isInComfortableRange;
+        return isTargetInView && (isInComfortableRange || (!isTargetReachable && isTargetInAttackRange));
     }
 
     private bool AttackToPursueCheck() {
         return !isTargetInAttackRange || !isTargetInView;
     }
+
+    #endregion State Machine Predicates
+
+    #region State Machine Callbacks
+
+    private void IdleToPursueCallback() {
+        agent.isStopped = false;
+        Debug.Log("Idle -> Pursue");
+    }
+
+    private void IdleToAttackCallback() {
+        Debug.Log("Idle -> Attack");
+    }
+
+    private void PursueToAttackCallback() {
+        agent.isStopped = true;
+        agent.ResetPath();
+        Debug.Log("Pursue -> Attack");
+    }
+
+    private void AttackToPursueCallback() {
+        agent.isStopped = false;
+        Debug.Log("Attack -> Pursue");
+    }
+
+    #endregion State Machine Callbacks
 
     #endregion State Machine Transitions
 }

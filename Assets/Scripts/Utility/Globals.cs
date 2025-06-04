@@ -6,6 +6,7 @@ public static class Globals {
 
     #region Layers
 
+    public static readonly LayerMask PLAYER_MASK = Utility.LayerToLayerMask(LayerMask.NameToLayer("Player"));
     public static readonly LayerMask DEFAULT_MASK = Utility.LayerToLayerMask(LayerMask.NameToLayer("Default"));
     public static readonly LayerMask GROUND_MASK = Utility.LayerToLayerMask(LayerMask.NameToLayer("Ground"));
     public static readonly LayerMask HAZARD_MASK;
