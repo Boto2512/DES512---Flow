@@ -3,12 +3,19 @@ using UnityEngine;
 using UnityEngine.Events;
 
 public static class Globals {
+
     #region Layers
-    public static readonly LayerMask DEFAULT_LAYERMASK = Utility.LayerToLayerMask(LayerMask.NameToLayer("Default"));
-    public static readonly LayerMask GROUND_LAYERMASK = Utility.LayerToLayerMask(LayerMask.NameToLayer("Ground"));
+
+    public static readonly LayerMask PLAYER_MASK = Utility.LayerToLayerMask(LayerMask.NameToLayer("Player"));
+    public static readonly LayerMask DEFAULT_MASK = Utility.LayerToLayerMask(LayerMask.NameToLayer("Default"));
+    public static readonly LayerMask GROUND_MASK = Utility.LayerToLayerMask(LayerMask.NameToLayer("Ground"));
+    public static readonly LayerMask HAZARD_MASK;
+    public static readonly LayerMask INTERACTABLE_MASK;
         
-    public static readonly LayerMask STICKY_MASK = DEFAULT_LAYERMASK | GROUND_LAYERMASK;
+    public static readonly LayerMask OBSTACLE_MASK = DEFAULT_MASK | GROUND_MASK | HAZARD_MASK | INTERACTABLE_MASK;
+    public static readonly LayerMask STICKY_MASK = DEFAULT_MASK | GROUND_MASK | HAZARD_MASK | INTERACTABLE_MASK;
     public static readonly HashSet<string> STICKY_TAGS = new() { };
+
     #endregion Layers
 
     private static GameObject player;

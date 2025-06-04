@@ -109,8 +109,10 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
     [SerializeField] private GameObject bounceBomb;
     [SerializeField, Min(0f)] private float bombThrowPower = 1f;
     [SerializeField] private Transform bounceBombSpawnTransform;
+    [SerializeField, Min(0f)] private float fuseTime = 0.2f;
     private Vector3 bounceBombSpawnPosition => bounceBombSpawnTransform.position;
     private GameObject bounceBombInstance;
+    private bool isDetonating = false;
 
     [Space(10)]
     [Header("Events")]
@@ -471,21 +473,21 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
         bounceBombInstance.GetComponent<Rigidbody>().AddForce(GetMomentum() + Camera.main.transform.forward * bombThrowPower, ForceMode.VelocityChange);
 
         EventSecondaryClick.RemoveListener(SpawnBounceBomb);
-        EventSecondaryClick.AddListener(BounceBombListeners);
+        EventSecondaryClick.AddListener(DetonateBounceBomb);
     }
-    private bool isDetonating = false;
-    private void BounceBombListeners() {
-        if (!isDetonating) {
-            isDetonating = true;
-            this.Invoke(() => {
-                bounceBombInstance.GetComponent<BounceBomb>().Activate();
-                DestroyImmediate(bounceBombInstance);
+    private void DetonateBounceBomb() {
+        if (isDetonating)
+            return;
 
-                EventSecondaryClick.RemoveListener(BounceBombListeners);
-                EventSecondaryClick.AddListener(SpawnBounceBomb);
-                isDetonating = false;
-            }, 0.5f);
-        }
+        isDetonating = true;
+        this.Invoke(() => {
+            bounceBombInstance.GetComponent<BounceBomb>().Activate();
+            DestroyImmediate(bounceBombInstance);
+
+            EventSecondaryClick.RemoveListener(DetonateBounceBomb);
+            EventSecondaryClick.AddListener(SpawnBounceBomb);
+            isDetonating = false;
+        }, fuseTime);
     }
     #endregion ========================= Throw Bounce Bomb =========================
 
