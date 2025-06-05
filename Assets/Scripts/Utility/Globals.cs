@@ -18,11 +18,11 @@ public static class Globals {
 
     #endregion Layers
 
-    private static GameObject player;
+    private static PlayerController player;
     /// <summary>
     /// Invokes EVENT_PLAYER_MODIFIED when PLAYER is set
     /// </summary>
-    public static GameObject PLAYER {
+    public static PlayerController PLAYER {
         get { return player; }
         set {
             player = value;
