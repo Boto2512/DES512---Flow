@@ -1,16 +1,20 @@
 using UnityEngine;
 using DG.Tweening;
 using UnityEngine.Events;
+using System.Collections;
 public class PlayerController : MonoBehaviour, IMomentumModifiable, ITargetable
 {
     #region     ========================= Variables =========================
     [Header("Movement")]
     [SerializeField] private float acceleration;
     [SerializeField] private float deceleration;
+    [SerializeField] private float startSpeed;
     [SerializeField] private float maxMovementSpeed;
     [SerializeField] private float groundDrag;
     [SerializeField, Tooltip("Controls how long it takes for velocity takes to return to max speed when the player goes over it")] 
     private float velocityDecayTime;
+    [SerializeField,Tooltip("How often velocity is stored in seconds, used for the wall kick")] 
+    private float veloctiyStorageTime;
 
     [Space(10)]
     [SerializeField, Tooltip("the amount the player's max speed and acceleration increases by when in air")] 
@@ -29,13 +33,15 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, ITargetable
     private float movementSpeed;
     private float horizontalInput, verticalInput;
     private float speedLerpProgress;
+
     private Vector3 moveDirection;
-    private Vector3 velocity;
     private Vector3 lastAirVelocity;
+
+    private Vector3 veloctiyStorage;
+    private bool storeVelocity = true;
 
     private float maxSpeedStorage;
     private float accelerationStorage;
-
 
     [Space(10)]
     [Header("Slope Movement")]
@@ -74,6 +80,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, ITargetable
     [SerializeField] private float wallKickRange;
     [SerializeField] private float wallKickCooldown;
     private float timeOfLastKick;
+    private bool kickOnce;
 
     [Space(10)]
     [Header("Attack")]
@@ -147,14 +154,13 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, ITargetable
         ActionInputs();
 
         MovementSpeed();
+        if (storeVelocity) { StartCoroutine(GetVelocity()); }
         GetSpeedStage();
 
-        if (isGrounded)
-        {
+        if (isGrounded) {
             coyoteTimeCounter = coyoteTime;
         }
-        else
-        {
+        else {
             coyoteTimeCounter -= Time.deltaTime;
             GetLastAirVelocity();
         }
@@ -168,29 +174,39 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, ITargetable
     void LateUpdate() {
         MaxSpeed();
     }
+
     #region ========================= Inputs =========================
     private void MovementInput()
     {
         horizontalInput = Input.GetAxisRaw("Horizontal");
         verticalInput = Input.GetAxisRaw("Vertical");
 
-        if (Input.GetButtonDown("Jump"))
+        if (Input.GetButton("Jump"))
         {
-            Vector3 wallHit;
-            if (canJump && coyoteTimeCounter > 0) {
+            if (canJump && coyoteTimeCounter > 0 ) {
                 Jump();
+
                 canJump = false;
                 jumpReleased = false;
                 exitSlope = true;
 
                 this.Invoke(ResetJump, jumpCooldown);
             }
-            else if (WallCheck(out wallHit)) {;
-                WallKick(wallHit); 
-            }
             else if (Input.GetButtonUp("Jump") && !isGrounded) {
                 jumpReleased = true;
             }
+        }
+
+        if (Input.GetButtonDown("Jump") && !isGrounded) {
+            Vector3 wallHit;
+            
+            if (WallCheck(out wallHit) && !kickOnce) {
+                WallKick(wallHit);
+            }
+        }
+        else if (Input.GetButtonUp("Jump")) {
+            kickOnce = false;
+
         }
     }
     private void ActionInputs() {
@@ -201,7 +217,6 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, ITargetable
         }
         if (Input.GetMouseButtonDown(1)) { EventSecondaryClick.Invoke(); }
     }
-
     #endregion  ========================= Inputs =========================
 
     #region ========================= Movement =========================
@@ -240,7 +255,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, ITargetable
     /// </summary>
     private void MovementSpeed() {
         if (Input.GetButton("Horizontal") || Input.GetButton("Vertical")) {
-            movementSpeed = Mathf.Lerp(0, maxMovementSpeed, accelerationProgress);
+            movementSpeed = Mathf.Lerp(startSpeed, maxMovementSpeed, accelerationProgress);
             accelerationProgress += Time.deltaTime * (acceleration * 0.1f);
             accelerationProgress = Mathf.Clamp(accelerationProgress, 0, 1);
         }
@@ -264,8 +279,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, ITargetable
         if (SlopeCheck() && !exitSlope && playerRigidBody.linearVelocity.magnitude > maxMovementSpeed) {
             playerRigidBody.linearVelocity = playerRigidBody.linearVelocity.normalized * movementSpeed;
         }
-        else {
-                
+        else {                
             Vector3 velocity = new Vector3(playerRigidBody.linearVelocity.x, 0, playerRigidBody.linearVelocity.z);
             Vector3 maxVelocity = velocity.normalized * maxMovementSpeed;
 
@@ -342,7 +356,13 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, ITargetable
     }
     private void GetLastAirVelocity() {
             lastAirVelocity = playerRigidBody.linearVelocity;
-        
+    }
+
+    private IEnumerator GetVelocity() {
+        storeVelocity = false;
+        yield return new WaitForSeconds(veloctiyStorageTime);
+        veloctiyStorage = playerRigidBody.linearVelocity;
+        storeVelocity = true;
     }
     #endregion ========================= Movement =========================
 
@@ -374,11 +394,15 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, ITargetable
     #endregion  ========================= Jump =========================
 
     #region  ========================= Wall Kick =========================
-    /// <summary>
-    /// Performs a check to see if a wall is closeenough for the wall kick
-    /// </summary>
+  /// <summary>
+  /// checks if there is a wall to kick off of
+  /// </summary>
+  /// <param name="wallNormal"> Returns the wall's normal </param>
+  /// <returns> Returns a boolean value depending on if a wall was hit</returns>
     private bool WallCheck(out Vector3 wallNormal) {
         if(Time.time >= timeOfLastKick + wallKickCooldown && !isGrounded) {
+
+            timeOfLastKick = Time.time; 
             RaycastHit wallHit;
             bool isWall = Physics.Raycast(groundCheckPosition.position, orientation.forward, out wallHit, wallKickRange, groundMask);
             Debug.DrawRay(groundCheckPosition.position, orientation.forward * wallKickRange, Color.blueViolet, 10);
@@ -390,16 +414,16 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, ITargetable
             wallNormal = Vector3.zero;
             return false; 
         }
-        
     }
     /// <summary>
-    /// Inverses the x & z velocity of the player
+    /// Deflects the players velocity off the wall
     /// </summary>
+    /// <param name="wallNormal"> the wall's normal from the wall kick </param>
     private void WallKick(Vector3 wallNormal) {
-        timeOfLastKick = Time.time;
-        
-        Vector3 reflectedDirection = Vector3.Reflect(playerRigidBody.linearVelocity, wallNormal);
-        //reflectedDirection = reflectedDirection * 10;
+        kickOnce = true;
+        Debug.Log("Wall Kick");
+        Vector3 reflectedDirection = Vector3.Reflect(veloctiyStorage, wallNormal);
+        //reflectedDirection = reflectedDirection * 1000;
         Vector3 newVelocity = new Vector3(reflectedDirection.x, playerRigidBody.linearVelocity.y, reflectedDirection.z);
         playerRigidBody.linearVelocity = newVelocity;
     }
