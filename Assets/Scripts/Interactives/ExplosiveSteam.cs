@@ -8,7 +8,7 @@ public class ExplosiveSteam : MonoBehaviour
 
     private void Update()
     {
-        if (isInteracting && Input.GetKeyDown(KeyCode.E))
+        if (isInteracting)
         {
             Jump(interactingEntity);
             Destroy(gameObject);
