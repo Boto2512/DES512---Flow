@@ -43,7 +43,7 @@ public class Projectile : MonoBehaviour
         if (other.gameObject == null)
             return;
 
-        if (other.gameObject.CompareTag(Globals.PLAYER_TAG)) {
+        if (Utility.DoesMaskContainLayer(Globals.PLAYER_MASK, other.gameObject.layer)) {
             IDamageable damageable = other.attachedRigidbody.gameObject.GetComponent<IDamageable>();
             damageable.TakeDamage(damageAmount);
             Destroy(this.gameObject);

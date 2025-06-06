@@ -186,7 +186,7 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
             return;
 
         isAttacking = true;
-        Instantiate(projectile, attackTransform);
+        Instantiate(projectile, attackTransform.position, attackTransform.rotation);
         this.Invoke(() => isAttacking = false, attackCooldown);
     }
 
