@@ -1,15 +1,20 @@
 using UnityEngine;
 using DG.Tweening;
 using UnityEngine.Events;
-using Unity.Cinemachine;
-using Unity.Android.Types;
-using UnityEditorInternal;
-using Unity.VisualScripting;
 using System.Collections;
 using UnityEngine.VFX;
+using UnityEngine.UI;
+using TMPro;
 public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable
 {
     #region     ========================= Variables =========================
+
+    [SerializeField] private TextMeshProUGUI speedText;
+    [Header("Health")]
+    [SerializeField] private float health;
+    [SerializeField] private Slider healthBar;
+    [SerializeField] private GameObject gameOver;
+        
     [Header("Movement")]
     [SerializeField] private float acceleration;
     [SerializeField] private float deceleration;
@@ -20,6 +25,8 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable
     private float velocityDecayTime;
     [SerializeField,Tooltip("How often velocity is stored in seconds, used for the wall kick")] 
     private float veloctiyStorageTime;
+    private bool doesVeloctiyTweenExist = false;
+    private Tween velocityTween;
 
     [Space(10)]
     [SerializeField, Tooltip("the amount the player's max speed and acceleration increases by when in air")] 
@@ -52,6 +59,8 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable
     [Header("Slope Movement")]
     [SerializeField, Tooltip("Maxium slope angle the player can go up")] 
     private float maxSlopeAngle;
+    [SerializeField, Tooltip("Minimum slope angle the player gets a speed boost from")]
+    private float minSlopeAngle;
     [SerializeField, Tooltip("the amount the player's max speed and acceleration increases by when on a slope")] 
     private float slopeSpeedImpact;
     private RaycastHit slopeHit;
@@ -129,11 +138,9 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable
     [SerializeField] private float minSpawnRate, maxSpawnRate;
 
     #endregion  ========================= Variables =========================
-
     void Awake() {
         Globals.PLAYER = this.gameObject;
     }
-
     void Start() {
         playerRigidBody = GetComponent<Rigidbody>();
 
@@ -144,14 +151,23 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable
 
         currentStage = 1;
 
+        healthBar.maxValue = health;
+        healthBar.value = health;
+
         ValidateBounceBomb();
         EventSecondaryClick.AddListener(SpawnBounceBomb);
         EventPrimaryClick.AddListener(Attack);
 
-        DOTween.Init();
+        DOTween.Init(); 
+        if (!doesVeloctiyTweenExist) {
+            velocityTween = DOTween.To(() => speedLerpProgress, x => speedLerpProgress = x, 1, velocityDecayTime).SetAutoKill(true);
+            velocityTween.Pause();
+        }
     }
-
     void Update() {
+
+        if (DeathCheck()) { return; }
+
         GroundCheck();
 
         MovementInput();
@@ -168,14 +184,12 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable
             coyoteTimeCounter -= Time.deltaTime;
             GetLastAirVelocity();
         }
-
-        PerserveMomentumOnLand();
+        speedText.text = playerRigidBody.linearVelocity.magnitude.ToString();
     }
     void FixedUpdate() {
         MovePlayer();
         VariableJump();
-    }
-    void LateUpdate() {
+        PerserveMomentumOnLand();
         MaxSpeed();
     }
 
@@ -290,15 +304,20 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable
                 playerRigidBody.linearVelocity = new Vector3(maxVelocity.x * 3, playerRigidBody.linearVelocity.y, maxVelocity.z * 3);
             }
             else if (velocity.magnitude > maxMovementSpeed) {
-                float distance = Vector3.Distance(maxVelocity, playerRigidBody.linearVelocity);
 
-                DOTween.To(() => speedLerpProgress, x => speedLerpProgress = x, 1, velocityDecayTime);
+                if (!velocityTween.IsPlaying()) { velocityTween.Play(); }
+                float distance = Vector3.Distance(maxVelocity, playerRigidBody.linearVelocity);
 
                 Vector3 lerpedVelocity = Vector3.Lerp(playerRigidBody.linearVelocity, maxVelocity, speedLerpProgress);
                 playerRigidBody.linearVelocity = new Vector3(lerpedVelocity.x, playerRigidBody.linearVelocity.y, lerpedVelocity.z);
                 
-                if (speedLerpProgress >= 1) {
+                if (playerRigidBody.linearVelocity.magnitude  <= maxMovementSpeed +.5f && velocityTween != null)
+                {
+                    Debug.Log("ResetTween & PRogress");
                     speedLerpProgress = 0;
+
+                    velocityTween.Restart();
+                    velocityTween.Pause();
                 }
             }
 
@@ -442,7 +461,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable
     private bool SlopeCheck(){
         if (Physics.Raycast(groundCheckPosition.position, Vector3.down, out slopeHit, groundCheckRange)) {
             float angle = Vector3.Angle(Vector3.up, slopeHit.normal);
-            return angle < maxSlopeAngle && angle != 0;
+            return angle < maxSlopeAngle && angle > minSlopeAngle;
         }
         return false;
     }
@@ -592,21 +611,30 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable
     #endregion  ========================= Momentum Interface  =========================
 
     #region  ========================= Damage Interface  =========================
-    public float GetHealth()
-    {
+    public float GetHealth() {
+        return health;
         throw new System.NotImplementedException();
     }
-
-    public void TakeDamage(float value)
-    {
-        throw new System.NotImplementedException();
+    public void TakeDamage(float value) {
+        health -= value;
+        healthBar.value = health;
     }
-
-    public void Kill()
-    {
+    public void Kill() {
+        Debug.LogError("Player should not be oneshotted");
         throw new System.NotImplementedException();
     }
     #endregion  ========================= Damage Interface  =========================
+
+    #region  ========================= Death  =========================
+    private bool DeathCheck() {
+        if (health <= 0) {
+            Time.timeScale = 0;
+            gameObject.SetActive(true);
+            return true;
+        }
+        return false;
+    }
+    #endregion  ========================= Death  =========================
 
     #region ========================= Gizmos =========================
     private void OnDrawGizmos() {
