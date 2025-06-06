@@ -167,7 +167,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
 
         DOTween.Init(); 
         if (!doesVeloctiyTweenExist) {
-            velocityTween = DOTween.To(() => speedLerpProgress, x => speedLerpProgress = x, 1, velocityDecayTime).SetAutoKill(true);
+            velocityTween = DOTween.To(() => speedLerpProgress, x => speedLerpProgress = x, 1, velocityDecayTime);
             velocityTween.Pause();
         }
     }
