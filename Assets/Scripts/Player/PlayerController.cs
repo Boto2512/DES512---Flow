@@ -5,7 +5,7 @@ using System.Collections;
 using UnityEngine.VFX;
 using UnityEngine.UI;
 using TMPro;
-public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable
+public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable, ITargetable
 {
     #region     ========================= Variables =========================
 
@@ -119,13 +119,17 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable
     [SerializeField] private GameObject bounceBomb;
     [SerializeField, Min(0f)] private float bombThrowPower = 1f;
     [SerializeField] private Transform bounceBombSpawnTransform;
+    [SerializeField, Min(0f)] private float fuseTime = 0.2f;
     private Vector3 bounceBombSpawnPosition => bounceBombSpawnTransform.position;
     private GameObject bounceBombInstance;
+    private bool isDetonating = false;
 
+#if DEBUG
     [Space(10)]
     [Header("Events")]
     [SerializeField] private UnityEvent EventPrimaryClick = new();
     [SerializeField] private UnityEvent EventSecondaryClick = new();
+#endif 
 
     [Space(10)]
     [Header("Animation Controller")]
@@ -137,9 +141,12 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable
     [SerializeField] private Vector2 minSpeedOfLines, maxSpeedOfLines;
     [SerializeField] private float minSpawnRate, maxSpawnRate;
 
+    [Space(10)]
+    [Header("Target")]
+    [SerializeField] private Transform target;
     #endregion  ========================= Variables =========================
     void Awake() {
-        Globals.PLAYER = this.gameObject;
+        Globals.PLAYER = this;
     }
     void Start() {
         playerRigidBody = GetComponent<Rigidbody>();
@@ -484,21 +491,21 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable
         bounceBombInstance.GetComponent<Rigidbody>().AddForce(GetMomentum() + Camera.main.transform.forward * bombThrowPower, ForceMode.VelocityChange);
 
         EventSecondaryClick.RemoveListener(SpawnBounceBomb);
-        EventSecondaryClick.AddListener(BounceBombListeners);
+        EventSecondaryClick.AddListener(DetonateBounceBomb);
     }
-    private bool isDetonating = false;
-    private void BounceBombListeners() {
-        if (!isDetonating) {
-            isDetonating = true;
-            this.Invoke(() => {
-                bounceBombInstance.GetComponent<BounceBomb>().Activate();
-                DestroyImmediate(bounceBombInstance);
+    private void DetonateBounceBomb() {
+        if (isDetonating)
+            return;
 
-                EventSecondaryClick.RemoveListener(BounceBombListeners);
-                EventSecondaryClick.AddListener(SpawnBounceBomb);
-                isDetonating = false;
-            }, 0.5f);
-        }
+        isDetonating = true;
+        this.Invoke(() => {
+            bounceBombInstance.GetComponent<BounceBomb>().Activate();
+            Destroy(bounceBombInstance);
+
+            EventSecondaryClick.RemoveListener(DetonateBounceBomb);
+            EventSecondaryClick.AddListener(SpawnBounceBomb);
+            isDetonating = false;
+        }, fuseTime);
     }
     #endregion ========================= Throw Bounce Bomb =========================
 
@@ -641,4 +648,10 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable
     }
 
     #endregion ========================= Gizmos =========================
+
+    #region ========================= Targetable =========================
+    public Transform Target {
+        get => target;
+    }
+    #endregion ========================= Targetable =========================
 }
