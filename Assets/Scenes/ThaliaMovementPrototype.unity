@@ -1064,8 +1064,24 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 416695639}
     - target: {fileID: 7543525415685462447, guid: 68a54f4cc7dfef44e8875930330d29ee, type: 3}
+      propertyPath: minSlopeAngle
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7543525415685462447, guid: 68a54f4cc7dfef44e8875930330d29ee, type: 3}
+      propertyPath: airSpeedIncrease
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 7543525415685462447, guid: 68a54f4cc7dfef44e8875930330d29ee, type: 3}
+      propertyPath: slopeSpeedImpact
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 7543525415685462447, guid: 68a54f4cc7dfef44e8875930330d29ee, type: 3}
       propertyPath: velocityDecayTime
       value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 7543525415685462447, guid: 68a54f4cc7dfef44e8875930330d29ee, type: 3}
+      propertyPath: veloctiyStorageTime
+      value: 0.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
