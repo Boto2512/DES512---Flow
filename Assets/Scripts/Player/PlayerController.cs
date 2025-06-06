@@ -1,9 +1,6 @@
 using UnityEngine;
 using DG.Tweening;
 using UnityEngine.Events;
-using Unity.Cinemachine;
-using Unity.Android.Types;
-using UnityEditorInternal;
 public class PlayerController : MonoBehaviour, IMomentumModifiable, ITargetable
 {
     #region     ========================= Variables =========================
