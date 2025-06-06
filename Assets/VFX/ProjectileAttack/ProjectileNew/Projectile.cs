@@ -16,10 +16,11 @@ public class Projectile : MonoBehaviour
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start() {
+    void Start()
+    {
         playerLocation = Globals.PLAYER.transform.position;
 
-        rb = GetComponent<Rigidbody>();    
+        rb = GetComponent<Rigidbody>();
 
         direction = (playerLocation - rb.position).normalized;
 
@@ -33,8 +34,9 @@ public class Projectile : MonoBehaviour
     }
 
 
-    
-    void Update() {
+
+    void Update()
+    {
 
         rb.position += direction * projectileSpeed * Time.deltaTime;
     }
@@ -50,6 +52,9 @@ public class Projectile : MonoBehaviour
             //visualEffect.SendEvent("OnPlay", eventAttribute);
             //Play VFX explosion
             //delay the destroying the game object
+
+            other.GetComponent<IDamageable>().TakeDamage(damageAmount);
+
             Destroy(gameObject);
         }
         else
