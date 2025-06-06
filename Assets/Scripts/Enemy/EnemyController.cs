@@ -1,9 +1,19 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.AI;
+using UnityEngine.Events;
 
-public class EnemyController : MonoBehaviour
-{
+public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
+    #region Damage Variables
+    [Header("Health")]
+    [SerializeField, Min(0f)] float health = 100;
+    [SerializeField] Slider healthBar;
+
+    [Header("Debug Events")]
+    [SerializeField] private UnityEvent takeDamage = new();
+    #endregion Damage Variables
+
     #region AI Variables
 
     private NavMeshAgent agent;
@@ -38,6 +48,9 @@ public class EnemyController : MonoBehaviour
 
     private Rigidbody rb;
 
+    [Header("Momentum")]
+    [SerializeField] private Transform momentumPosition;
+
     private void Awake() {
         transitions = new() {
             new(EnemyAIState.Idle, EnemyAIState.Attack, IdleToAttackCheck, IdleToAttackCallback),
@@ -52,6 +65,9 @@ public class EnemyController : MonoBehaviour
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start() {
+        healthBar.maxValue = health;
+        healthBar.value = healthBar.maxValue;
+
         SetTarget();
         agent = this.GetComponent<NavMeshAgent>();
         rb = this.GetComponent<Rigidbody>();
@@ -75,6 +91,30 @@ public class EnemyController : MonoBehaviour
 
         attackRangeSquared = attackRange * attackRange;
     }
+
+    #region Damage Interface
+
+    public float GetHealth() {
+        return health;
+    }
+
+    public void TakeDamage(float value) {
+        Debug.Log($"Taken {value} damage");
+        health -= value;
+        healthBar.value = health;
+
+        if (health <= 0) {
+            Kill();
+        }
+    }
+
+    public void Kill() {
+        Debug.Log("Enemy Oneshotted - due to speed");
+        healthBar.value = 0;
+        Destroy(this.gameObject);
+    }
+
+    #endregion Damage Interface
 
     #region AI Agent Methods
 
@@ -245,4 +285,20 @@ public class EnemyController : MonoBehaviour
     #endregion State Machine Callbacks
 
     #endregion State Machine Transitions
+
+    #region Momentum Modifiable Interface
+
+    public Vector3 GetPosition() {
+        return momentumPosition.position;
+    }
+
+    public Vector3 GetMomentum() {
+        return rb.linearVelocity;
+    }
+
+    public void SetMomentum(Vector3 value) {
+        rb.AddForce(value, ForceMode.Impulse);
+    }
+
+    #endregion Momentum Modifiable Interface
 }
