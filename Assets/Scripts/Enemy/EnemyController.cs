@@ -9,8 +9,8 @@ public class EnemyController : MonoBehaviour
     private NavMeshAgent agent;
     private EnemyAIStateMachine stateMachine;
 
-    private GameObject target;
-    private Vector3 targetPosition => target.transform.position;
+    private ITargetable target;
+    private Vector3 targetPosition => target.Target.position;
     private void SetTarget() => target = Globals.PLAYER;
     private Vector3 desiredDestination = Vector3.zero;                  // only use when isTargetReachable is true
 
@@ -18,7 +18,11 @@ public class EnemyController : MonoBehaviour
     private bool isTargetInAttackRange = false;
     private bool isTargetInView = false;
     private bool isInComfortableRange = false;
+    private bool isTargetTooClose = false;
     private bool isTargetReachable = false;
+    private bool isTargetTooFar => !(isInComfortableRange || isTargetTooClose);
+
+    private bool inPursuit = false;
 
     private List<StateMachine.Transition<EnemyAIState>> transitions;
 
@@ -30,7 +34,7 @@ public class EnemyController : MonoBehaviour
     [Tooltip("The minimum range from the target this agent will attempt to get into")]
     [SerializeField, Min(0f)] private float maxComfortableRange = 20f;
     [SerializeField, Min(0f)] private float attackRange = 40f;
-    private float attackRangeSquared = 1600f;               // for optimised attack range checks
+    private float attackRangeSquared = 1600f;                           // for optimised attack range checks
 
     private Rigidbody rb;
 
@@ -39,7 +43,10 @@ public class EnemyController : MonoBehaviour
             new(EnemyAIState.Idle, EnemyAIState.Attack, IdleToAttackCheck, IdleToAttackCallback),
             new(EnemyAIState.Idle, EnemyAIState.Pursue, IdleToPursueCheck, IdleToPursueCallback),
             new(EnemyAIState.Pursue, EnemyAIState.Attack, PursueToAttackCheck, PursueToAttackCallback),
-            new(EnemyAIState.Attack, EnemyAIState.Pursue, AttackToPursueCheck, AttackToPursueCallback)
+            new(EnemyAIState.Attack, EnemyAIState.Pursue, AttackToPursueCheck, AttackToPursueCallback)/*,
+            new(EnemyAIState.Attack, EnemyAIState.Reposition, AttackToRepositionCheck, AttackToRepositionCallback),
+            new(EnemyAIState.Reposition, EnemyAIState.Attack, RepositionToAttackCheck, RepositionToAttackCallback),
+            new(EnemyAIState.Reposition, EnemyAIState.Pursue, RepositionToPursueCheck, RepositionToPursueCallback)*/
         };
     }
 
@@ -76,6 +83,7 @@ public class EnemyController : MonoBehaviour
             isTargetInAttackRange = false;
             isTargetInView = false;
             isInComfortableRange = false;
+            isTargetTooClose = false;
             isTargetReachable = false;
 
             return;
@@ -83,7 +91,7 @@ public class EnemyController : MonoBehaviour
 
         isTargetInAttackRange = TargetInAttackRange();
         isTargetInView = TargetInView();
-        isInComfortableRange = TargetInComfortableRange();
+        (isInComfortableRange, isTargetTooClose) = TargetRangeCheck();
         isTargetReachable = TargetReachable();
     }
 
@@ -100,16 +108,28 @@ public class EnemyController : MonoBehaviour
                 Attack();
                 break;
 
+            case EnemyAIState.Reposition:
+                Reposition();
+                break;
+
             default:
                 break;
         }
     }
-    private void Pursue() {
-        if (agent.isStopped) {
-            return;
-        }
 
+    private void Attack() {
+        Debug.Log("Attack");
+    }
+    
+    private void Pursue() {
         agent.SetDestination(GetPursueDestination());
+    }
+
+    private void Reposition() {
+        Vector3 toComfortableRange = (rb.position - targetPosition).normalized * (minComfortableRange + maxComfortableRange) / 2f;
+        if (NavMesh.SamplePosition(targetPosition + toComfortableRange, out NavMeshHit hit, maxComfortableRange - minComfortableRange, NavMesh.AllAreas)) {
+            agent.SetDestination(hit.position);
+        }
     }
 
     private Vector3 GetPursueDestination() {
@@ -120,10 +140,6 @@ public class EnemyController : MonoBehaviour
             return desiredDestination;
 
         return rb.position;
-    }
-
-    private void Attack() {
-        Debug.Log("Attack");
     }
 
     private bool TargetInAttackRange() {
@@ -138,16 +154,16 @@ public class EnemyController : MonoBehaviour
         return !Physics.SphereCast(rb.position, 0.5f, enemyToTarget.normalized, out RaycastHit hitInfo, enemyToTarget.magnitude, Globals.OBSTACLE_MASK);
     }
 
-    private bool TargetInComfortableRange() {
+    private (bool inComfortableRange, bool tooClose) TargetRangeCheck() {
         float distanceToTarget = Vector3.Distance(targetPosition, rb.position);
 
-        return distanceToTarget <= maxComfortableRange && distanceToTarget >= minComfortableRange;
+        return (distanceToTarget <= maxComfortableRange && distanceToTarget >= minComfortableRange, distanceToTarget < minComfortableRange);
     }
 
     private bool TargetReachable() {
-        float desiredDistance = Mathf.Clamp(Vector3.Distance(rb.position, targetPosition), minComfortableRange, maxComfortableRange);
-        Vector3 directionToTarget = (targetPosition - rb.position).normalized;
-        Vector3 desiredPosition = targetPosition - directionToTarget * desiredDistance;
+        //float desiredDistance = Mathf.Clamp(Vector3.Distance(rb.position, targetPosition), minComfortableRange, maxComfortableRange);
+        //Vector3 directionToTarget = (targetPosition - rb.position).normalized;
+        //Vector3 desiredPosition = targetPosition - directionToTarget * desiredDistance;
 
         bool result = NavMesh.SamplePosition(targetPosition, out NavMeshHit hit, attackRange, NavMesh.AllAreas);
         desiredDestination = hit.position;
@@ -177,12 +193,24 @@ public class EnemyController : MonoBehaviour
         return !isTargetInAttackRange || !isTargetInView;
     }
 
+    private bool AttackToRepositionCheck() {
+        return isTargetInView && isTargetTooClose;
+    }
+
+    private bool RepositionToAttackCheck() {
+        return isTargetInView && isInComfortableRange;
+    }
+
+    private bool RepositionToPursueCheck() {
+        return !isTargetInView || isTargetTooFar;
+    }
+
     #endregion State Machine Predicates
 
     #region State Machine Callbacks
 
     private void IdleToPursueCallback() {
-        agent.isStopped = false;
+        inPursuit = true;
         Debug.Log("Idle -> Pursue");
     }
 
@@ -191,14 +219,27 @@ public class EnemyController : MonoBehaviour
     }
 
     private void PursueToAttackCallback() {
-        agent.isStopped = true;
+        inPursuit = false;
         agent.ResetPath();
         Debug.Log("Pursue -> Attack");
     }
 
     private void AttackToPursueCallback() {
-        agent.isStopped = false;
+        inPursuit = true;
         Debug.Log("Attack -> Pursue");
+    }
+
+    private void AttackToRepositionCallback() {
+        Debug.Log("Attack -> Reposition");
+    }
+
+    private void RepositionToAttackCallback() {
+        Debug.Log("Reposition -> Attack");
+    }
+
+    private void RepositionToPursueCallback() {
+        inPursuit = true;
+        Debug.Log("Reposition -> Pursue");
     }
 
     #endregion State Machine Callbacks

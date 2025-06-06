@@ -6,7 +6,7 @@ using Unity.Android.Types;
 using UnityEditorInternal;
 using Unity.VisualScripting;
 using System.Collections;
-public class PlayerController : MonoBehaviour, IMomentumModifiable
+public class PlayerController : MonoBehaviour, IMomentumModifiable, ITargetable
 {
     #region     ========================= Variables =========================
     [Header("Movement")]
@@ -114,19 +114,25 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
     private GameObject bounceBombInstance;
     private bool isDetonating = false;
 
+#if DEBUG
     [Space(10)]
     [Header("Events")]
     [SerializeField] private UnityEvent EventPrimaryClick = new();
     [SerializeField] private UnityEvent EventSecondaryClick = new();
+#endif 
 
     [Space(10)]
     [Header("Animation Controller")]
     [SerializeField] Animator animator;
 
+    [Space(10)]
+    [Header("Target")]
+    [SerializeField] private Transform target;
+
     #endregion  ========================= Variables =========================
 
     void Awake() {
-        Globals.PLAYER = this.gameObject;
+        Globals.PLAYER = this;
     }
 
     void Start() {
@@ -482,7 +488,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
         isDetonating = true;
         this.Invoke(() => {
             bounceBombInstance.GetComponent<BounceBomb>().Activate();
-            DestroyImmediate(bounceBombInstance);
+            Destroy(bounceBombInstance);
 
             EventSecondaryClick.RemoveListener(DetonateBounceBomb);
             EventSecondaryClick.AddListener(SpawnBounceBomb);
@@ -571,4 +577,10 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
     private void OnDrawGizmos() {
     }
     #endregion ========================= Gizmos =========================
+
+    #region ========================= Targetable =========================
+    public Transform Target {
+        get => target;
+    }
+    #endregion ========================= Targetable =========================
 }
