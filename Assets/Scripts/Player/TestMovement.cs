@@ -280,7 +280,7 @@ public class TestMovement : MonoBehaviour, IMomentumModifiable, IDamageable, ITa
         }
         if (isGrounded && IsMaxSpeed())
         {
-            Debug.Log("WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW");
+            Debug.Log("WWWWWWWWWWWWWWWWWWWWWWWWWWW W WWWWWWWWWWWWWWWWWWWWWWWWW");
             playerRigidBody.AddForce(moveDirection.normalized * movementSpeed * 10, ForceMode.Force);
         }
         else

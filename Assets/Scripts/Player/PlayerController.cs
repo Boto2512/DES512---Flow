@@ -55,6 +55,8 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
     private float maxSpeedStorage;
     private float accelerationStorage;
 
+    private float dragTimer;
+
     [Space(10)]
     [Header("Slope Movement")]
     [SerializeField, Tooltip("Maxium slope angle the player can go up")]
@@ -167,12 +169,12 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
 
         DOTween.Init();
         if (!doesVeloctiyTweenExist) {
-            velocityTween = DOTween.To(() => speedLerpProgress, x => speedLerpProgress = x, 1, velocityDecayTime).SetAutoKill(true);
+            velocityTween = DOTween.To(() => speedLerpProgress, x => speedLerpProgress = x, 1, velocityDecayTime);
             velocityTween.Pause();
         }
     }
     void Update() {
-
+        Debug.Log(Time.deltaTime);
         if (DeathCheck()) { return; }
 
         GroundCheck();
@@ -192,6 +194,8 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
             GetLastAirVelocity();
         }
         speedText.text = playerRigidBody.linearVelocity.magnitude.ToString();
+
+        if (Input.GetKey(KeyCode.LeftShift)) { playerRigidBody.AddForce(orientation.forward * 3, ForceMode.Impulse); }
     }
     void FixedUpdate() {
         MovePlayer();
@@ -257,7 +261,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
         if (SlopeCheck() && !exitSlope) {
             playerRigidBody.AddForce(GetSlopeMovementDiretion() * movementSpeed * 20f, ForceMode.Force);
 
-            if (Input.GetButton("Horizontal") || Input.GetButton("Vertical")) {
+            if (horizontalInput != 0 || verticalInput != 0) {
                 playerRigidBody.AddForce(Vector3.down * 80f, ForceMode.Force);
             }
         }
@@ -267,19 +271,46 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
         }
         else {
             playerRigidBody.AddForce(moveDirection.normalized * movementSpeed * 10 * airControlMultiplier, ForceMode.Force);
-
-            playerRigidBody.linearDamping = 0;
+            playerRigidBody.linearDamping = 0f;
         }
 
         playerRigidBody.useGravity = !SlopeCheck();
+        PlayerDrag();
+    }
+
+    private void PlayerDrag() {
+        //if in air 0
+        //if moving
+            // if above max speed increase drag
+            // if below decrease drag
+        if (!isGrounded) { 
+            playerRigidBody.linearDamping = 0;
+            dragTimer = 0;
+        }/*
+        else if (horizontalInput != 0 || verticalInput != 0 && playerRigidBody.linearVelocity.magnitude > maxMovementSpeed) {
+            dragTimer += Time.deltaTime;
+            float dragValue = playerRigidBody.linearDamping;
+            playerRigidBody.linearDamping = Mathf.MoveTowards(dragValue, groundDrag, .5f * dragTimer);
+            playerRigidBody.linearDamping = dragValue;
+        }*/
+        else if (horizontalInput != 0 || verticalInput != 0 && playerRigidBody.linearVelocity.magnitude < maxMovementSpeed) { 
+            playerRigidBody.linearDamping = 0; 
+        }
+        else { 
+            playerRigidBody.linearDamping = groundDrag; 
+            dragTimer = 0;
+        }
     }
 
     /// <summary>
     /// Lerps the current movement speed from 0 to the maximum movement speed when the player is using player input
     /// Does the reverse when the player is not inputing movement controls
+    /// 
+    /// Controls the amount of force applied to the player
     /// </summary>
     private void MovementSpeed() {
-        if (Input.GetButton("Horizontal") || Input.GetButton("Vertical")) {
+
+        if (horizontalInput != 0 || verticalInput != 0) {
             movementSpeed = Mathf.Lerp(startSpeed, maxMovementSpeed, accelerationProgress);
             accelerationProgress += Time.deltaTime * (acceleration * 0.1f);
             accelerationProgress = Mathf.Clamp(accelerationProgress, 0, 1);
@@ -300,18 +331,19 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
     private void MaxSpeed() {
         AirSpeedIncrease();
         SlopeSpeedIncrease();
-            Vector3 velocity = new Vector3(playerRigidBody.linearVelocity.x, 0, playerRigidBody.linearVelocity.z);
-            Vector3 maxVelocity = velocity.normalized * maxMovementSpeed;
+        Vector3 velocity = new Vector3(playerRigidBody.linearVelocity.x, 0, playerRigidBody.linearVelocity.z);
+        Vector3 maxVelocity = velocity.normalized * maxMovementSpeed;
+        Vector3 combinedVelocity = new Vector3(maxVelocity.x, playerRigidBody.linearVelocity.y, maxVelocity.z);
 
         if (SlopeCheck() && !exitSlope && velocity.magnitude > maxMovementSpeed) {
             playerRigidBody.linearVelocity = playerRigidBody.linearVelocity.normalized * movementSpeed;
         }
         else {
-
+            //Tween & Lerp for speed reduction
             /*if (velocity.magnitude > maxMovementSpeed * 3) {
                 playerRigidBody.linearVelocity = new Vector3(maxVelocity.x * 3, playerRigidBody.linearVelocity.y, maxVelocity.z * 3);
             }
-            /*else if (velocity.magnitude > maxMovementSpeed) {
+             if (velocity.magnitude > maxMovementSpeed && isGrounded) {
 
                 if (!velocityTween.IsPlaying()) { velocityTween.Play(); }
 
@@ -328,18 +360,28 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
                 }
             }*/
 
-            if (velocity.magnitude > maxMovementSpeed && isGrounded) {
+            //Vector3.Movetowards to reduce mvoement speed;
+            /*if (velocity.magnitude > maxMovementSpeed && isGrounded) {
                 Debug.Log("Reducing speed to MaxSpeed");
                 Vector3 horizontalVelocity = Vector3.MoveTowards(velocity, maxVelocity, velocityDecayTime * Time.deltaTime);
                 playerRigidBody.linearVelocity = new Vector3(horizontalVelocity.x, playerRigidBody.linearVelocity.y, horizontalVelocity.z);
+            } */
+
+            /* Mathf.movetowards */
+            if (velocity.magnitude > maxSpeedStorage && isGrounded) {
+                float targetSpeed = Mathf.MoveTowards(maxMovementSpeed, maxSpeedStorage, velocityDecayTime *Time.deltaTime);
             } 
 
-
-            float yVelocity = Mathf.Abs(playerRigidBody.linearVelocity.y);
+                float yVelocity = Mathf.Abs(playerRigidBody.linearVelocity.y);
             if (yVelocity <= maxFallSpeed) {
                 playerRigidBody.linearVelocity = new Vector3(playerRigidBody.linearVelocity.x, maxFallSpeed, playerRigidBody.linearVelocity.z);
             } 
         }
+    }
+
+    private IEnumerator ReducingMovementSpeed()
+    {
+        yield return null;
     }
 
     /// <summary>
@@ -456,7 +498,6 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
     /// <param name="wallNormal"> the wall's normal from the wall kick </param>
     private void WallKick(Vector3 wallNormal) {
         kickOnce = true;
-        Debug.Log("Wall Kick");
         Vector3 reflectedDirection = Vector3.Reflect(veloctiyStorage, wallNormal);
         //reflectedDirection = reflectedDirection * 1000;
         Vector3 newVelocity = new Vector3(reflectedDirection.x, playerRigidBody.linearVelocity.y, reflectedDirection.z);
@@ -467,7 +508,6 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
     #region     ========================= Ground Check =========================
     private void GroundCheck() {
         isGrounded = Physics.Raycast(groundCheckPosition.position, Vector3.down, groundCheckRange, groundMask);
-        if (isGrounded) { Debug.Log("OnGROUND"); }
     }
     /// <summary>
     /// Casts a ray to find the angle the ground is at to detect if its a slope
