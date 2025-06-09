@@ -17,7 +17,7 @@ public static class MonoBehaviourExtension
 
     private static IEnumerator CoroutineToInvoke(Action method, float time) {
         yield return new WaitForSeconds(time);
-        method();
+        method?.Invoke();
     }
 
     /// <summary>
@@ -26,29 +26,37 @@ public static class MonoBehaviourExtension
     /// </summary>
     /// <param name="key">Identifier string for the inner coroutine (key not shared amonst different MonoBehaviour instances)</param>
     /// <param name="action">Action to invoke</param>
-    /// <param name="delay">Time till invokation</param>
+    /// <param name="delay">Time till invocation</param>
     public static void Invoke(this MonoBehaviour self, string key, Action action, float delay) {
         InvokeManager.Invoke(self, key, action, delay);
     }
 
     /// <summary>
-    /// Invokes the action in delay seconds if a same action isn't currently pending invokation.
+    /// Invokes the action in delay seconds if a same action isn't currently pending invocation.
     /// </summary>
     /// <param name="key">Identifier string for the inner coroutine (key not shared amonst different MonoBehaviour instances)</param>
     /// <param name="action">Action to invoke</param>
-    /// <param name="delay">Time till invokation</param>
+    /// <param name="delay">Time till invocation</param>
     public static void InvokeExclusive(this MonoBehaviour self, string key, Action action, float delay) {
         InvokeManager.InvokeExclusive(self, key, action, delay);
     }
 
 
     /// <summary>
-    /// Invokes the action in delay seconds, cancelling any of the same action that's currently pending invokation.
+    /// Invokes the action in delay seconds, cancelling any of the same action that's currently pending invocation.
     /// </summary>
     /// <param name="key">Identifier string for the inner coroutine (key not shared amonst different MonoBehaviour instances)</param>
     /// <param name="action">Action to invoke</param>
-    /// <param name="delay">Time till invokation</param>
+    /// <param name="delay">Time till invocation</param>
     public static void InvokeOverwrite(this MonoBehaviour self, string key, Action action, float delay) {
         InvokeManager.InvokeOverwrite(self, key, action, delay);
+    }
+
+    /// <summary>
+    /// Cancels any pending invocation attached to this MonoBehaviour object with the same key.
+    /// </summary>
+    /// <param name="key">Identifier string for the inner coroutine (key not shared amonst different MonoBehaviour instances)</param>
+    public static bool CancelInvoke(this MonoBehaviour self, string key) {
+        return InvokeManager.CancelInvoke(self, key);
     }
 }

@@ -15,7 +15,7 @@ public static class InvokeManager {
 
     private static IEnumerator CoroutineToInvoke(Hash128 hash, Action action, float delay) {
         yield return new WaitForSeconds(delay);
-        action();
+        action?.Invoke();
 
         lock (invokedTasks) {
             invokedTasks.Remove(hash);
@@ -40,7 +40,7 @@ public static class InvokeManager {
     }
 
     /// <summary>
-    /// Invokes the action in delay seconds if a same action isn't currently pending invokation.
+    /// Invokes the action in delay seconds if a same action isn't currently pending invocation.
     /// </summary>
     /// <param name="mb"></param>
     /// <param name="key"></param>
@@ -59,7 +59,7 @@ public static class InvokeManager {
     }
 
     /// <summary>
-    /// Invokes the action in delay seconds, cancelling any of the same action that's currently pending invokation.
+    /// Invokes the action in delay seconds, cancelling any of the same action that's currently pending invocation.
     /// </summary>
     /// <param name="mb"></param>
     /// <param name="key"></param>
@@ -69,12 +69,34 @@ public static class InvokeManager {
         Hash128 hash = GenerateHash(mb, key);
 
         lock (invokedTasks) {
-            if (invokedTasks.TryGetValue(hash, out var running)) {
-                mb.StopCoroutine(running);
+            if (invokedTasks.TryGetValue(hash, out var pendingInvocation)) {
+                mb.StopCoroutine(pendingInvocation);
             }
 
             Coroutine invokedCoroutine = mb.StartCoroutine(CoroutineToInvoke(hash, action, delay));
             invokedTasks[hash] = invokedCoroutine;
         }
+    }
+
+    /// <summary>
+    /// Cancels any pending invocation attached to the MonoBehaviour object with the same key.
+    /// </summary>
+    /// <param name="mb"></param>
+    /// <param name="key"></param>
+    /// <returns>Signifies whether a pending invocation was cancelled</returns>
+    public static bool CancelInvoke(MonoBehaviour mb, string key) {
+        Hash128 hash = GenerateHash(mb, key);
+
+        bool cancelled = false;
+        lock (invokedTasks) {
+            if (invokedTasks.TryGetValue(hash, out var pendingInvocation)) {
+                mb.StopCoroutine(pendingInvocation);
+                invokedTasks.Remove(hash);
+
+                cancelled = true;
+            }
+        }
+
+        return cancelled;
     }
 }
