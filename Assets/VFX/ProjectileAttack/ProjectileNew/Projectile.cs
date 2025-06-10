@@ -16,11 +16,10 @@ public class Projectile : MonoBehaviour
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        playerLocation = Globals.PLAYER.transform.position;
+    void Start() {
+        playerLocation = Globals.PLAYER.Target.position;
 
-        rb = GetComponent<Rigidbody>();
+        rb = GetComponent<Rigidbody>();    
 
         direction = (playerLocation - rb.position).normalized;
 
@@ -34,32 +33,44 @@ public class Projectile : MonoBehaviour
     }
 
 
-
-    void Update()
-    {
+    
+    void Update() {
 
         rb.position += direction * projectileSpeed * Time.deltaTime;
     }
 
-    private void OnTriggerEnter(Collider other)
-    {
+    private void OnTriggerEnter(Collider other) {
+        if (other.gameObject == null)
+            return;
+
+        if (Utility.DoesMaskContainLayer(Globals.PLAYER_MASK, other.gameObject.layer)) {
+            IDamageable damageable = other.attachedRigidbody.gameObject.GetComponent<IDamageable>();
+            damageable.TakeDamage(damageAmount);
+            Destroy(this.gameObject);
+            Debug.Log("hit player");
+        }
+        else if (Utility.IsObstacle(other.gameObject.layer)) {
+            Destroy(this.gameObject);
+            Debug.Log("hit obstacle");
+        }
+        else {
+            Debug.Log("hit something");
+        }
+
         //
-        if (other.attachedRigidbody.CompareTag(Globals.PLAYER_TAG))
-        {
-            Debug.Log("Steve");
-            //Damage player
-            //VFXEventAttribute eventAttribute = visualEffect.CreateVFXEventAttribute();
-            //visualEffect.SendEvent("OnPlay", eventAttribute);
-            //Play VFX explosion
-            //delay the destroying the game object
-
-            other.GetComponent<IDamageable>().TakeDamage(damageAmount);
-
-            Destroy(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
+        //if (other.attachedRigidbody.CompareTag(Globals.PLAYER_TAG))
+        //{
+        //    Debug.Log("Steve");
+        //    //Damage player
+        //    //VFXEventAttribute eventAttribute = visualEffect.CreateVFXEventAttribute();
+        //    //visualEffect.SendEvent("OnPlay", eventAttribute);
+        //    //Play VFX explosion
+        //    //delay the destroying the game object
+        //    Destroy(gameObject);
+        //}
+        //else
+        //{
+        //    Destroy(gameObject);
+        //}
     }
 }

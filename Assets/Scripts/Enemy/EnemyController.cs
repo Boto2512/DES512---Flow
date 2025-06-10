@@ -1,9 +1,19 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.AI;
+using UnityEngine.Events;
 
-public class EnemyController : MonoBehaviour
-{
+public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
+    #region Damage Variables
+    [Header("Health")]
+    [SerializeField, Min(0f)] float health = 100;
+    [SerializeField] Slider healthBar;
+
+    [Header("Debug Events")]
+    [SerializeField] private UnityEvent takeDamage = new();
+    #endregion Damage Variables
+
     #region AI Variables
 
     private NavMeshAgent agent;
@@ -21,28 +31,43 @@ public class EnemyController : MonoBehaviour
     private bool isTargetTooClose = false;
     private bool isTargetReachable = false;
     private bool isTargetTooFar => !(isInComfortableRange || isTargetTooClose);
+    private bool bombBounced = false;
 
-    private bool inPursuit = false;
+    [Header("Attack")]
+    [SerializeField] private GameObject projectile;
+    [SerializeField] private Transform attackTransform;
+    [SerializeField, Min(0f)] private float attackCooldown = 1f;
+    private bool isAttacking = false;
 
     private List<StateMachine.Transition<EnemyAIState>> transitions;
 
     #endregion AI Variables
 
     [Header("Ranges")]
+    [SerializeField, Min(0f)] private float attackRange = 40f;
+    [Tooltip("The maximum range from the target this agent will attempt to get into")]
+    [SerializeField, Min(0f)] private float maxComfortableRange = 20f;
     [Tooltip("The minimum range from the target this agent will attempt to get into")]
     [SerializeField, Min(0f)] private float minComfortableRange = 10f;
-    [Tooltip("The minimum range from the target this agent will attempt to get into")]
-    [SerializeField, Min(0f)] private float maxComfortableRange = 20f;
-    [SerializeField, Min(0f)] private float attackRange = 40f;
     private float attackRangeSquared = 1600f;                           // for optimised attack range checks
 
     private Rigidbody rb;
+
+    [Header("Ground Checking")]
+    [SerializeField] private Transform groundCheckPosition;
+    [SerializeField, Min(0f)] private float groundCheckRange = 0.25f;
+    private bool isGrounded = true;
+
+    [Header("Momentum")]
+    [SerializeField] private Transform momentumPosition;
 
     private void Awake() {
         transitions = new() {
             new(EnemyAIState.Idle, EnemyAIState.Attack, IdleToAttackCheck, IdleToAttackCallback),
             new(EnemyAIState.Idle, EnemyAIState.Pursue, IdleToPursueCheck, IdleToPursueCallback),
+            new(EnemyAIState.Pursue, EnemyAIState.Idle, PursueToIdleCheck, PursueToIdleCallback),
             new(EnemyAIState.Pursue, EnemyAIState.Attack, PursueToAttackCheck, PursueToAttackCallback),
+            new(EnemyAIState.Attack, EnemyAIState.Idle, AttackToIdleCheck, AttackToIdleCallback),
             new(EnemyAIState.Attack, EnemyAIState.Pursue, AttackToPursueCheck, AttackToPursueCallback)/*,
             new(EnemyAIState.Attack, EnemyAIState.Reposition, AttackToRepositionCheck, AttackToRepositionCallback),
             new(EnemyAIState.Reposition, EnemyAIState.Attack, RepositionToAttackCheck, RepositionToAttackCallback),
@@ -52,6 +77,9 @@ public class EnemyController : MonoBehaviour
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start() {
+        healthBar.maxValue = health;
+        healthBar.value = healthBar.maxValue;
+
         SetTarget();
         agent = this.GetComponent<NavMeshAgent>();
         rb = this.GetComponent<Rigidbody>();
@@ -76,6 +104,30 @@ public class EnemyController : MonoBehaviour
         attackRangeSquared = attackRange * attackRange;
     }
 
+    #region Damage Interface
+
+    public float GetHealth() {
+        return health;
+    }
+
+    public void TakeDamage(float value) {
+        Debug.Log($"Taken {value} damage");
+        health -= value;
+        healthBar.value = health;
+
+        if (health <= 0) {
+            Kill();
+        }
+    }
+
+    public void Kill() {
+        Debug.Log("Enemy Oneshotted - due to speed");
+        healthBar.value = 0;
+        Destroy(this.gameObject);
+    }
+
+    #endregion Damage Interface
+
     #region AI Agent Methods
 
     private void UpdateAIFlags() {
@@ -93,11 +145,13 @@ public class EnemyController : MonoBehaviour
         isTargetInView = TargetInView();
         (isInComfortableRange, isTargetTooClose) = TargetRangeCheck();
         isTargetReachable = TargetReachable();
+        isGrounded = GroundCheck();
     }
 
     private void DecideAction() {
         switch (stateMachine.CurrentState) {
             case EnemyAIState.Idle:
+                Idle();
                 break;
 
             case EnemyAIState.Pursue:
@@ -117,12 +171,23 @@ public class EnemyController : MonoBehaviour
         }
     }
 
-    private void Attack() {
-        Debug.Log("Attack");
+    private void Idle() {
+        if (isGrounded && bombBounced) {
+            bombBounced = false;
+        }
     }
     
     private void Pursue() {
         agent.SetDestination(GetPursueDestination());
+    }
+
+    private void Attack() {
+        if (isAttacking)
+            return;
+
+        isAttacking = true;
+        Instantiate(projectile, attackTransform.position, attackTransform.rotation);
+        this.Invoke(() => isAttacking = false, attackCooldown);
     }
 
     private void Reposition() {
@@ -144,7 +209,6 @@ public class EnemyController : MonoBehaviour
 
     private bool TargetInAttackRange() {
         return (targetPosition - rb.position).sqrMagnitude <= attackRangeSquared;
-        //return Vector3.Distance(targetPosition, rb.position) <= attackRange;
     }
 
     private bool TargetInView() {
@@ -178,11 +242,19 @@ public class EnemyController : MonoBehaviour
     #region State Machine Predicates
 
     private bool IdleToAttackCheck() {
-        return isTargetInAttackRange && isTargetInView;
+        return isTargetInAttackRange && isTargetInView && isGrounded && !bombBounced;
     }
 
     private bool IdleToPursueCheck() {
-        return isTargetReachable;
+        return isTargetReachable && isGrounded && !bombBounced;
+    }
+
+    private bool AttackToIdleCheck() {
+        return !isGrounded || bombBounced;
+    }
+
+    private bool PursueToIdleCheck() {
+        return !isGrounded || bombBounced;
     }
 
     private bool PursueToAttackCheck() {
@@ -190,7 +262,7 @@ public class EnemyController : MonoBehaviour
     }
 
     private bool AttackToPursueCheck() {
-        return !isTargetInAttackRange || !isTargetInView;
+        return !isTargetInAttackRange || !isTargetInView || bombBounced;
     }
 
     private bool AttackToRepositionCheck() {
@@ -210,22 +282,34 @@ public class EnemyController : MonoBehaviour
     #region State Machine Callbacks
 
     private void IdleToPursueCallback() {
-        inPursuit = true;
+        agent.enabled = true;
+        rb.isKinematic = true;
+
         Debug.Log("Idle -> Pursue");
     }
 
     private void IdleToAttackCallback() {
+        agent.enabled = true;
+        rb.isKinematic = true;
+
         Debug.Log("Idle -> Attack");
     }
 
+    private void AttackToIdleCallback() {
+        Debug.Log("Attack -> Idle");
+    }
+
+    private void PursueToIdleCallback() {
+        agent.ResetPath();
+        Debug.Log("Pursue -> Idle");
+    }
+
     private void PursueToAttackCallback() {
-        inPursuit = false;
         agent.ResetPath();
         Debug.Log("Pursue -> Attack");
     }
 
     private void AttackToPursueCallback() {
-        inPursuit = true;
         Debug.Log("Attack -> Pursue");
     }
 
@@ -238,11 +322,34 @@ public class EnemyController : MonoBehaviour
     }
 
     private void RepositionToPursueCallback() {
-        inPursuit = true;
         Debug.Log("Reposition -> Pursue");
     }
 
     #endregion State Machine Callbacks
 
     #endregion State Machine Transitions
+
+    #region Momentum Modifiable Interface
+
+    public Vector3 GetPosition() {
+        return momentumPosition.position;
+    }
+
+    public Vector3 GetMomentum() {
+        return rb.linearVelocity;
+    }
+
+    public void SetMomentum(Vector3 value) {
+        agent.enabled = false;
+        rb.isKinematic = false;
+
+        rb.AddForce(value, ForceMode.VelocityChange);
+        this.Invoke(() => bombBounced = true, 0.1f);
+    }
+
+    #endregion Momentum Modifiable Interface
+
+    private bool GroundCheck() {
+        return Physics.Raycast(groundCheckPosition.position, Vector3.down, groundCheckRange, Globals.OBSTACLE_MASK);
+    }
 }
