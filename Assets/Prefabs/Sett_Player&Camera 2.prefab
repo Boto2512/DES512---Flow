@@ -262,6 +262,37 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
+--- !u!1 &3973408232565177611
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3872316538982371683}
+  m_Layer: 7
+  m_Name: Momentum Transform
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3872316538982371683
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3973408232565177611}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6354360966481962314}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7092554519116078696
 GameObject:
   m_ObjectHideFlags: 0
@@ -355,9 +386,21 @@ PrefabInstance:
       value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 5647639703575495872, guid: d6998a62e3469a342a19f3bcfc1e2fad, type: 3}
+      propertyPath: health
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 5647639703575495872, guid: d6998a62e3469a342a19f3bcfc1e2fad, type: 3}
+      propertyPath: target
+      value: 
+      objectReference: {fileID: 3872316538982371683}
+    - target: {fileID: 5647639703575495872, guid: d6998a62e3469a342a19f3bcfc1e2fad, type: 3}
       propertyPath: animator
       value: 
       objectReference: {fileID: 7863473114150812153}
+    - target: {fileID: 5647639703575495872, guid: d6998a62e3469a342a19f3bcfc1e2fad, type: 3}
+      propertyPath: fuseTime
+      value: 0.15
+      objectReference: {fileID: 0}
     - target: {fileID: 5647639703575495872, guid: d6998a62e3469a342a19f3bcfc1e2fad, type: 3}
       propertyPath: jumpForce
       value: 7
@@ -432,7 +475,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5647639703575495872, guid: d6998a62e3469a342a19f3bcfc1e2fad, type: 3}
       propertyPath: attackMask.m_Bits
-      value: 0
+      value: 256
       objectReference: {fileID: 0}
     - target: {fileID: 5647639703575495872, guid: d6998a62e3469a342a19f3bcfc1e2fad, type: 3}
       propertyPath: groundMask.m_Bits
@@ -529,6 +572,9 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 6763837656486118643, guid: d6998a62e3469a342a19f3bcfc1e2fad, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3872316538982371683}
     - targetCorrespondingSourceObject: {fileID: 8548729880331279534, guid: d6998a62e3469a342a19f3bcfc1e2fad, type: 3}
       insertIndex: -1
       addedObject: {fileID: 4865499144198003588}
