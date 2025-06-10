@@ -1,19 +1,32 @@
 using UnityEngine;
 using DG.Tweening;
 using UnityEngine.Events;
-using Unity.Cinemachine;
-using Unity.Android.Types;
-using UnityEditorInternal;
-public class PlayerController : MonoBehaviour, IMomentumModifiable
+using System.Collections;
+using UnityEngine.VFX;
+using UnityEngine.UI;
+using TMPro;
+public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable, ITargetable
 {
     #region     ========================= Variables =========================
+
+    [SerializeField] private TextMeshProUGUI speedText;
+    [Header("Health")]
+    [SerializeField] private float health;
+    [SerializeField] private Slider healthBar;
+    [SerializeField] private GameObject gameOver;
+        
     [Header("Movement")]
     [SerializeField] private float acceleration;
     [SerializeField] private float deceleration;
+    [SerializeField] private float startSpeed;
     [SerializeField] private float maxMovementSpeed;
     [SerializeField] private float groundDrag;
     [SerializeField, Tooltip("Controls how long it takes for velocity takes to return to max speed when the player goes over it")] 
     private float velocityDecayTime;
+    [SerializeField,Tooltip("How often velocity is stored in seconds, used for the wall kick")] 
+    private float veloctiyStorageTime;
+    private bool doesVeloctiyTweenExist = false;
+    private Tween velocityTween;
 
     [Space(10)]
     [SerializeField, Tooltip("the amount the player's max speed and acceleration increases by when in air")] 
@@ -32,18 +45,22 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
     private float movementSpeed;
     private float horizontalInput, verticalInput;
     private float speedLerpProgress;
+
     private Vector3 moveDirection;
-    private Vector3 velocity;
     private Vector3 lastAirVelocity;
+
+    private Vector3 veloctiyStorage;
+    private bool storeVelocity = true;
 
     private float maxSpeedStorage;
     private float accelerationStorage;
-
 
     [Space(10)]
     [Header("Slope Movement")]
     [SerializeField, Tooltip("Maxium slope angle the player can go up")] 
     private float maxSlopeAngle;
+    [SerializeField, Tooltip("Minimum slope angle the player gets a speed boost from")]
+    private float minSlopeAngle;
     [SerializeField, Tooltip("the amount the player's max speed and acceleration increases by when on a slope")] 
     private float slopeSpeedImpact;
     private RaycastHit slopeHit;
@@ -77,6 +94,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
     [SerializeField] private float wallKickRange;
     [SerializeField] private float wallKickCooldown;
     private float timeOfLastKick;
+    private bool kickOnce;
 
     [Space(10)]
     [Header("Attack")]
@@ -106,21 +124,30 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
     private GameObject bounceBombInstance;
     private bool isDetonating = false;
 
+#if DEBUG
     [Space(10)]
     [Header("Events")]
     [SerializeField] private UnityEvent EventPrimaryClick = new();
     [SerializeField] private UnityEvent EventSecondaryClick = new();
+#endif 
 
     [Space(10)]
     [Header("Animation Controller")]
-    [SerializeField] Animator animator;
+    [SerializeField] private Animator animator;
 
+    [Space(10)]
+    [Header("Visual Effects")]
+    [SerializeField] private VisualEffect runningLines;
+    [SerializeField] private Vector2 minSpeedOfLines, maxSpeedOfLines;
+    [SerializeField] private float minSpawnRate, maxSpawnRate;
+
+    [Space(10)]
+    [Header("Target")]
+    [SerializeField] private Transform target;
     #endregion  ========================= Variables =========================
-
     void Awake() {
-        Globals.PLAYER = this.gameObject;
+        Globals.PLAYER = this;
     }
-
     void Start() {
         playerRigidBody = GetComponent<Rigidbody>();
 
@@ -131,63 +158,80 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
 
         currentStage = 1;
 
+        healthBar.maxValue = health;
+        healthBar.value = health;
+
         ValidateBounceBomb();
         EventSecondaryClick.AddListener(SpawnBounceBomb);
-
         EventPrimaryClick.AddListener(Attack);
-    }
 
+        DOTween.Init(); 
+        if (!doesVeloctiyTweenExist) {
+            velocityTween = DOTween.To(() => speedLerpProgress, x => speedLerpProgress = x, 1, velocityDecayTime).SetAutoKill(true);
+            velocityTween.Pause();
+        }
+    }
     void Update() {
+
+        if (DeathCheck()) { return; }
+
         GroundCheck();
 
         MovementInput();
         ActionInputs();
 
         MovementSpeed();
+        if (storeVelocity) { StartCoroutine(GetVelocity()); }
         GetSpeedStage();
 
-        if (isGrounded)
-        {
+        if (isGrounded) {
             coyoteTimeCounter = coyoteTime;
         }
-        else
-        {
+        else {
             coyoteTimeCounter -= Time.deltaTime;
             GetLastAirVelocity();
         }
-
-        PerserveMomentumOnLand();
+        speedText.text = playerRigidBody.linearVelocity.magnitude.ToString();
     }
     void FixedUpdate() {
         MovePlayer();
         VariableJump();
-    }
-    void LateUpdate() {
+        PerserveMomentumOnLand();
         MaxSpeed();
     }
+
     #region ========================= Inputs =========================
     private void MovementInput()
     {
         horizontalInput = Input.GetAxisRaw("Horizontal");
         verticalInput = Input.GetAxisRaw("Vertical");
 
-        if (Input.GetButtonDown("Jump"))
+        if (Input.GetButton("Jump"))
         {
-            Vector3 wallHit;
-            if (canJump && coyoteTimeCounter > 0) {
+            if (canJump && coyoteTimeCounter > 0 ) {
                 Jump();
+
                 canJump = false;
                 jumpReleased = false;
                 exitSlope = true;
 
                 this.Invoke(ResetJump, jumpCooldown);
             }
-            else if (WallCheck(out wallHit)) {;
-                WallKick(wallHit); 
-            }
             else if (Input.GetButtonUp("Jump") && !isGrounded) {
                 jumpReleased = true;
             }
+        }
+
+        if (Input.GetButtonDown("Jump") && !isGrounded) {
+            Vector3 wallHit;
+            
+            if (WallCheck(out wallHit) && !kickOnce) {
+                WallKick(wallHit);
+            }
+        }
+        else if (Input.GetButtonUp("Jump")) {
+            kickOnce = false;
+
         }
     }
     private void ActionInputs() {
@@ -198,7 +242,6 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
         }
         if (Input.GetMouseButtonDown(1)) { EventSecondaryClick.Invoke(); }
     }
-
     #endregion  ========================= Inputs =========================
 
     #region ========================= Movement =========================
@@ -213,7 +256,6 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
 
         if (SlopeCheck() && !exitSlope){
             playerRigidBody.AddForce(GetSlopeMovementDiretion() * movementSpeed * 20f, ForceMode.Force);
-
 
             if (Input.GetButton("Horizontal") || Input.GetButton("Vertical")) { 
                 playerRigidBody.AddForce(Vector3.down * 80f, ForceMode.Force);
@@ -237,7 +279,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
     /// </summary>
     private void MovementSpeed() {
         if (Input.GetButton("Horizontal") || Input.GetButton("Vertical")) {
-            movementSpeed = Mathf.Lerp(0, maxMovementSpeed, accelerationProgress);
+            movementSpeed = Mathf.Lerp(startSpeed, maxMovementSpeed, accelerationProgress);
             accelerationProgress += Time.deltaTime * (acceleration * 0.1f);
             accelerationProgress = Mathf.Clamp(accelerationProgress, 0, 1);
         }
@@ -261,8 +303,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
         if (SlopeCheck() && !exitSlope && playerRigidBody.linearVelocity.magnitude > maxMovementSpeed) {
             playerRigidBody.linearVelocity = playerRigidBody.linearVelocity.normalized * movementSpeed;
         }
-        else {
-                
+        else {                
             Vector3 velocity = new Vector3(playerRigidBody.linearVelocity.x, 0, playerRigidBody.linearVelocity.z);
             Vector3 maxVelocity = velocity.normalized * maxMovementSpeed;
 
@@ -270,16 +311,20 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
                 playerRigidBody.linearVelocity = new Vector3(maxVelocity.x * 3, playerRigidBody.linearVelocity.y, maxVelocity.z * 3);
             }
             else if (velocity.magnitude > maxMovementSpeed) {
-                float distance = Vector3.Distance(maxVelocity, playerRigidBody.linearVelocity);
 
-                DOTween.Init();
-                DOTween.To(() => speedLerpProgress, x => speedLerpProgress = x, 1, velocityDecayTime);
+                if (!velocityTween.IsPlaying()) { velocityTween.Play(); }
+                float distance = Vector3.Distance(maxVelocity, playerRigidBody.linearVelocity);
 
                 Vector3 lerpedVelocity = Vector3.Lerp(playerRigidBody.linearVelocity, maxVelocity, speedLerpProgress);
                 playerRigidBody.linearVelocity = new Vector3(lerpedVelocity.x, playerRigidBody.linearVelocity.y, lerpedVelocity.z);
                 
-                if (speedLerpProgress >= 1) {
+                if (playerRigidBody.linearVelocity.magnitude  <= maxMovementSpeed +.5f && velocityTween != null)
+                {
+                    Debug.Log("ResetTween & PRogress");
                     speedLerpProgress = 0;
+
+                    velocityTween.Restart();
+                    velocityTween.Pause();
                 }
             }
 
@@ -295,7 +340,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
     /// </summary>
     private void AirSpeedIncrease() {
         if (!isGrounded) {
-            if (playerRigidBody.linearVelocity.y < 0) {
+            if (playerRigidBody.linearVelocity.y != 0) {
                 maxMovementSpeed = maxSpeedStorage + airSpeedIncrease;
                 acceleration = accelerationStorage + airSpeedIncrease;
             }
@@ -339,7 +384,13 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
     }
     private void GetLastAirVelocity() {
             lastAirVelocity = playerRigidBody.linearVelocity;
-        
+    }
+
+    private IEnumerator GetVelocity() {
+        storeVelocity = false;
+        yield return new WaitForSeconds(veloctiyStorageTime);
+        veloctiyStorage = playerRigidBody.linearVelocity;
+        storeVelocity = true;
     }
     #endregion ========================= Movement =========================
 
@@ -371,11 +422,15 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
     #endregion  ========================= Jump =========================
 
     #region  ========================= Wall Kick =========================
-    /// <summary>
-    /// Performs a check to see if a wall is closeenough for the wall kick
-    /// </summary>
+  /// <summary>
+  /// checks if there is a wall to kick off of
+  /// </summary>
+  /// <param name="wallNormal"> Returns the wall's normal </param>
+  /// <returns> Returns a boolean value depending on if a wall was hit</returns>
     private bool WallCheck(out Vector3 wallNormal) {
         if(Time.time >= timeOfLastKick + wallKickCooldown && !isGrounded) {
+
+            timeOfLastKick = Time.time; 
             RaycastHit wallHit;
             bool isWall = Physics.Raycast(groundCheckPosition.position, orientation.forward, out wallHit, wallKickRange, groundMask);
             Debug.DrawRay(groundCheckPosition.position, orientation.forward * wallKickRange, Color.blueViolet, 10);
@@ -387,16 +442,16 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
             wallNormal = Vector3.zero;
             return false; 
         }
-        
     }
     /// <summary>
-    /// Inverses the x & z velocity of the player
+    /// Deflects the players velocity off the wall
     /// </summary>
+    /// <param name="wallNormal"> the wall's normal from the wall kick </param>
     private void WallKick(Vector3 wallNormal) {
-        timeOfLastKick = Time.time;
-        
-        Vector3 reflectedDirection = Vector3.Reflect(playerRigidBody.linearVelocity, wallNormal);
-        //reflectedDirection = reflectedDirection * 10;
+        kickOnce = true;
+        Debug.Log("Wall Kick");
+        Vector3 reflectedDirection = Vector3.Reflect(veloctiyStorage, wallNormal);
+        //reflectedDirection = reflectedDirection * 1000;
         Vector3 newVelocity = new Vector3(reflectedDirection.x, playerRigidBody.linearVelocity.y, reflectedDirection.z);
         playerRigidBody.linearVelocity = newVelocity;
     }
@@ -413,7 +468,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
     private bool SlopeCheck(){
         if (Physics.Raycast(groundCheckPosition.position, Vector3.down, out slopeHit, groundCheckRange)) {
             float angle = Vector3.Angle(Vector3.up, slopeHit.normal);
-            return angle < maxSlopeAngle && angle != 0;
+            return angle < maxSlopeAngle && angle > minSlopeAngle;
         }
         return false;
     }
@@ -421,18 +476,6 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
         return Vector3.ProjectOnPlane(moveDirection,slopeHit.normal).normalized;
     }
     #endregion  ========================= Ground Check =========================
-
-    #region  ========================= Momentum Interface =========================
-    public Vector3 GetMomentum() {
-        return playerRigidBody.linearVelocity;
-    }
-    public Vector3 GetPosition() {
-        return playerRigidBody.position;
-    }
-    public void SetMomentum(Vector3 value) {
-        playerRigidBody.AddForce(value, ForceMode.VelocityChange);
-    }
-    #endregion  ========================= Momentum Interface  =========================
 
     #region ========================= Throw Bounce Bomb =========================
     private void ValidateBounceBomb() {
@@ -457,7 +500,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
         isDetonating = true;
         this.Invoke(() => {
             bounceBombInstance.GetComponent<BounceBomb>().Activate();
-            DestroyImmediate(bounceBombInstance);
+            Destroy(bounceBombInstance);
 
             EventSecondaryClick.RemoveListener(DetonateBounceBomb);
             EventSecondaryClick.AddListener(SpawnBounceBomb);
@@ -471,17 +514,20 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
         float speed = playerRigidBody.linearVelocity.magnitude;
         if (speed > secondBreakpoint) {
             // Checks if player is in Stage 3
-            currentStage = 3; 
+            currentStage = 3;
+            RunningLinesIntensity(maxSpeedOfLines,maxSpawnRate);
             return;
         }
         else if (speed > firstBreakpoint) {
             // Checks if player is in Stage 2
             currentStage = 2;
+            RunningLinesIntensity(minSpeedOfLines, maxSpawnRate);
             return;
         }
         else { 
             // Checks if player is in stage 1
             currentStage = 1;
+            runningLines.enabled = false;
             return;
         }
     }
@@ -542,8 +588,70 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
     }
     #endregion ========================= Attack =========================
 
+    #region ========================= Visual Effects =========================
+    /// <summary>
+    /// Controls the intensity of the running lines visual effect
+    /// </summary>
+    /// <param name="speedOfLines"> how fast the speedlines will go </param>
+    /// <param name="spawnRate"> how fast speed lines will spawn </param>
+    private void RunningLinesIntensity(Vector2 speedOfLines, float spawnRate) {
+        runningLines.enabled = true;
+        if (runningLines.HasVector2("SpeedOfLines")) { 
+            runningLines.SetVector2("SpeedOfLines",speedOfLines);
+        }
+        if (runningLines.HasFloat("SpawnRate")) {
+            runningLines.SetFloat("SpawnRate", spawnRate);
+        }
+    }
+    #endregion ========================= Visual Effects =========================
+
+    #region  ========================= Momentum Interface =========================
+    public Vector3 GetMomentum() {
+        return playerRigidBody.linearVelocity;
+    }
+    public Vector3 GetPosition() {
+        return playerRigidBody.position;
+    }
+    public void SetMomentum(Vector3 value) {
+        playerRigidBody.AddForce(value, ForceMode.VelocityChange);
+    }
+    #endregion  ========================= Momentum Interface  =========================
+
+    #region  ========================= Damage Interface  =========================
+    public float GetHealth() {
+        return health;
+        throw new System.NotImplementedException();
+    }
+    public void TakeDamage(float value) {
+        health -= value;
+        healthBar.value = health;
+    }
+    public void Kill() {
+        Debug.LogError("Player should not be oneshotted");
+        throw new System.NotImplementedException();
+    }
+    #endregion  ========================= Damage Interface  =========================
+
+    #region  ========================= Death  =========================
+    private bool DeathCheck() {
+        if (health <= 0) {
+            Time.timeScale = 0;
+            gameObject.SetActive(true);
+            return true;
+        }
+        return false;
+    }
+    #endregion  ========================= Death  =========================
+
     #region ========================= Gizmos =========================
     private void OnDrawGizmos() {
     }
+
     #endregion ========================= Gizmos =========================
+
+    #region ========================= Targetable =========================
+    public Transform Target {
+        get => target;
+    }
+    #endregion ========================= Targetable =========================
 }
