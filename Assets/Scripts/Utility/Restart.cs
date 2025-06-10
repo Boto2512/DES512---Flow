@@ -7,7 +7,7 @@ public class Restart : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.R)) {
             Scene currentScene = SceneManager.GetActiveScene();
             SceneManager.LoadScene(currentScene.name);
-            Time.timeScale = 0f;
+            Time.timeScale = 1f;
         }
     }
 }
