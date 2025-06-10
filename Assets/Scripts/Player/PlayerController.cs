@@ -442,6 +442,9 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
 
     private void SpawnBounceBomb() {
         // spawns BounceBomb and 'throws' it via AddForce()
+
+        animator.SetTrigger("HasBombed");
+
         bounceBombInstance = Instantiate(bounceBomb, bounceBombSpawnPosition, playerRigidBody.rotation);
         bounceBombInstance.GetComponent<Rigidbody>().AddForce(GetMomentum() + Camera.main.transform.forward * bombThrowPower, ForceMode.VelocityChange);
 
@@ -451,6 +454,9 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
     private bool isDetonating = false;
     private void BounceBombListeners() {
         if (!isDetonating) {
+
+            animator.SetTrigger("HasDetonate");
+
             isDetonating = true;
             this.Invoke(() => {
                 bounceBombInstance.GetComponent<BounceBomb>().Activate();
@@ -459,7 +465,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable
                 EventSecondaryClick.RemoveListener(BounceBombListeners);
                 EventSecondaryClick.AddListener(SpawnBounceBomb);
                 isDetonating = false;
-            }, 0.5f);
+            }, 0.15f);
         }
     }
     #endregion ========================= Throw Bounce Bomb =========================
