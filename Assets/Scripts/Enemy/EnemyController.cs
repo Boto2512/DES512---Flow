@@ -57,6 +57,7 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
     [SerializeField] private Transform groundCheckPosition;
     [SerializeField, Min(0f)] private float groundCheckRange = 0.25f;
     private bool isGrounded = true;
+    private bool groundCheckEnabled = true;
 
     [Header("Momentum")]
     [SerializeField] private Transform momentumPosition;
@@ -67,11 +68,12 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
             new(EnemyAIState.Idle, EnemyAIState.Pursue, IdleToPursueCheck, IdleToPursueCallback),
             new(EnemyAIState.Pursue, EnemyAIState.Idle, PursueToIdleCheck, PursueToIdleCallback),
             new(EnemyAIState.Pursue, EnemyAIState.Attack, PursueToAttackCheck, PursueToAttackCallback),
+            new(EnemyAIState.Pursue, EnemyAIState.Reposition, PursueToRepositionCheck, PursueToRepositionCallback),
             new(EnemyAIState.Attack, EnemyAIState.Idle, AttackToIdleCheck, AttackToIdleCallback),
-            new(EnemyAIState.Attack, EnemyAIState.Pursue, AttackToPursueCheck, AttackToPursueCallback)/*,
+            new(EnemyAIState.Attack, EnemyAIState.Pursue, AttackToPursueCheck, AttackToPursueCallback),
             new(EnemyAIState.Attack, EnemyAIState.Reposition, AttackToRepositionCheck, AttackToRepositionCallback),
             new(EnemyAIState.Reposition, EnemyAIState.Attack, RepositionToAttackCheck, RepositionToAttackCallback),
-            new(EnemyAIState.Reposition, EnemyAIState.Pursue, RepositionToPursueCheck, RepositionToPursueCallback)*/
+            new(EnemyAIState.Reposition, EnemyAIState.Pursue, RepositionToPursueCheck, RepositionToPursueCallback)
         };
     }
 
@@ -102,6 +104,16 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
         }
 
         attackRangeSquared = attackRange * attackRange;
+    }
+
+    private void OnCollisionEnter(Collision collision) {
+        GameObject go = collision.gameObject;
+        if (go == null)
+            return;
+
+        if (!groundCheckEnabled && Utility.DoesMaskContainLayer(Globals.GROUND_MASK, go.layer)) {
+            groundCheckEnabled = true;
+        }
     }
 
     #region Damage Interface
@@ -187,12 +199,13 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
 
         isAttacking = true;
         Instantiate(projectile, attackTransform.position, attackTransform.rotation);
-        this.Invoke(() => isAttacking = false, attackCooldown);
+        this.InvokeExclusive("attackCooldown", () => isAttacking = false, attackCooldown);
     }
 
     private void Reposition() {
-        Vector3 toComfortableRange = (rb.position - targetPosition).normalized * (minComfortableRange + maxComfortableRange) / 2f;
-        if (NavMesh.SamplePosition(targetPosition + toComfortableRange, out NavMeshHit hit, maxComfortableRange - minComfortableRange, NavMesh.AllAreas)) {
+        float halfComfortableRange = (maxComfortableRange + minComfortableRange) / 2f;
+        Vector3 toComfortableRange = (rb.position - targetPosition).normalized * halfComfortableRange;
+        if (NavMesh.SamplePosition(targetPosition + toComfortableRange, out NavMeshHit hit, halfComfortableRange, NavMesh.AllAreas)) {
             agent.SetDestination(hit.position);
         }
     }
@@ -261,6 +274,10 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
         return isTargetInView && (isInComfortableRange || (!isTargetReachable && isTargetInAttackRange));
     }
 
+    private bool PursueToRepositionCheck() {
+        return isTargetTooClose;
+    }
+
     private bool AttackToPursueCheck() {
         return !isTargetInAttackRange || !isTargetInView || bombBounced;
     }
@@ -309,6 +326,11 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
         Debug.Log("Pursue -> Attack");
     }
 
+    private void PursueToRepositionCallback() {
+        agent.ResetPath();
+        Debug.Log("Pursue -> Reposition");
+    }
+
     private void AttackToPursueCallback() {
         Debug.Log("Attack -> Pursue");
     }
@@ -318,10 +340,12 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
     }
 
     private void RepositionToAttackCallback() {
+        agent.ResetPath();
         Debug.Log("Reposition -> Attack");
     }
 
     private void RepositionToPursueCallback() {
+        agent.ResetPath();
         Debug.Log("Reposition -> Pursue");
     }
 
@@ -343,13 +367,20 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
         agent.enabled = false;
         rb.isKinematic = false;
 
+        isGrounded = false;
+        groundCheckEnabled = false;
+
         rb.AddForce(value, ForceMode.VelocityChange);
-        this.Invoke(() => bombBounced = true, 0.1f);
+        bombBounced = true;
+        //this.InvokeOverwrite("bombBounced", () => bombBounced = true, 0.1f);
     }
 
     #endregion Momentum Modifiable Interface
 
     private bool GroundCheck() {
+        if (!groundCheckEnabled)
+            return isGrounded;
+
         return Physics.Raycast(groundCheckPosition.position, Vector3.down, groundCheckRange, Globals.OBSTACLE_MASK);
     }
 }

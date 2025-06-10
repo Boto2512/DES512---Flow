@@ -123,7 +123,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
     [SerializeField] private GameObject bounceBomb;
     [SerializeField, Min(0f)] private float bombThrowPower = 1f;
     [SerializeField] private Transform bounceBombSpawnTransform;
-    [SerializeField, Min(0f)] private float fuseTime = 0.2f;
+    [SerializeField, Min(0f)] private float fuseTime = 0.15f;
     private Vector3 bounceBombSpawnPosition => bounceBombSpawnTransform.position;
     private GameObject bounceBombInstance;
     private bool isDetonating = false;
@@ -545,7 +545,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
         animator.SetTrigger("HasDetonate");
 
         isDetonating = true;
-        this.Invoke(() => {
+        this.InvokeExclusive("detonate", () => {
             bounceBombInstance.GetComponent<BounceBomb>().Activate();
             Destroy(bounceBombInstance);
 
