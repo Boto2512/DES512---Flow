@@ -501,7 +501,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
     #region     ========================= Ground Check =========================
     private void GroundCheck() {
         isGrounded = Physics.Raycast(groundCheckPosition.position, Vector3.down, groundCheckRange, groundMask);
-        groundedText.text = $"Is Grounded: {isGrounded}";
+        //groundedText.text = $"Is Grounded: {isGrounded}";
     }
     /// <summary>
     /// Casts a ray to find the angle the ground is at to detect if its a slope
@@ -657,7 +657,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
         return playerRigidBody.linearVelocity;
     }
     public Vector3 GetPosition() {
-        return playerRigidBody.position;
+        return target.position;
     }
     public void SetMomentum(Vector3 value) {
         playerRigidBody.AddForce(value, ForceMode.VelocityChange);
