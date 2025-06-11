@@ -128,12 +128,10 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
     private GameObject bounceBombInstance;
     private bool isDetonating = false;
 
-#if DEBUG
     [Space(10)]
     [Header("Events")]
     [SerializeField] private UnityEvent EventPrimaryClick = new();
     [SerializeField] private UnityEvent EventSecondaryClick = new();
-#endif 
 
     [Space(10)]
     [Header("Animation Controller")]
