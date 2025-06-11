@@ -9429,9 +9429,17 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 9023250878574844657, guid: 73b1e8505c8fc674fa76ba99768f8962, type: 3}
-      propertyPath: m_Name
-      value: Sett_Player&Camera 2
+    - target: {fileID: 393203116125150260, guid: 73b1e8505c8fc674fa76ba99768f8962, type: 3}
+      propertyPath: m_TagString
+      value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 3019619738289374879, guid: 73b1e8505c8fc674fa76ba99768f8962, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3019619738289374879, guid: 73b1e8505c8fc674fa76ba99768f8962, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3195423867196515152, guid: 73b1e8505c8fc674fa76ba99768f8962, type: 3}
       propertyPath: m_LocalPosition.x
@@ -9472,6 +9480,10 @@ PrefabInstance:
     - target: {fileID: 3195423867196515152, guid: 73b1e8505c8fc674fa76ba99768f8962, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9023250878574844657, guid: 73b1e8505c8fc674fa76ba99768f8962, type: 3}
+      propertyPath: m_Name
+      value: Sett_Player&Camera 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
