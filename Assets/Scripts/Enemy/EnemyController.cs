@@ -38,6 +38,7 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
     [SerializeField] private Transform attackTransform;
     [SerializeField, Min(0f)] private float attackCooldown = 1f;
     private bool isAttacking = false;
+    private Vector3 firingPosition => attackTransform.position;
 
     private List<StateMachine.Transition<EnemyAIState>> transitions;
 
@@ -225,10 +226,10 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
     }
 
     private bool TargetInView() {
-        Vector3 enemyToTarget = targetPosition - rb.position;
+        Vector3 enemyToTarget = targetPosition - firingPosition;
 
         // 0.5f (half player width) for example
-        return !Physics.SphereCast(rb.position, 0.5f, enemyToTarget.normalized, out RaycastHit hitInfo, enemyToTarget.magnitude, Globals.OBSTACLE_MASK);
+        return !Physics.SphereCast(firingPosition, 0.1f, enemyToTarget.normalized, out _, enemyToTarget.magnitude, Globals.OBSTACLE_MASK);
     }
 
     private (bool inComfortableRange, bool tooClose) TargetRangeCheck() {

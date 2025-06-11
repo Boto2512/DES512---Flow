@@ -109,7 +109,7 @@ public class BounceBomb : MonoBehaviour
                 allColliders.Add((imm, Vector3.Distance(momentumPosition, imm.GetPosition()) <= strongBlastRadius));
                 continue;
             }
-
+            
             Vector3 blastDirection = (momentumPosition - blastOrigin).normalized;
             if (Physics.Raycast(blastOrigin, blastDirection, out RaycastHit outHit, weakBlastRadius)) {
                 allColliders.Add((imm, outHit.distance <= strongBlastRadius));
