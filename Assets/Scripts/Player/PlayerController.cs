@@ -123,7 +123,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
     [SerializeField] private GameObject bounceBomb;
     [SerializeField, Min(0f)] private float bombThrowPower = 1f;
     [SerializeField] private Transform bounceBombSpawnTransform;
-    [SerializeField, Min(0f)] private float fuseTime = 0.2f;
+    [SerializeField, Min(0f)] private float fuseTime = 0.15f;
     private Vector3 bounceBombSpawnPosition => bounceBombSpawnTransform.position;
     private GameObject bounceBombInstance;
     private bool isDetonating = false;
@@ -178,7 +178,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
     }
     void Update() {
         if (DeathCheck()) { return; }
-
+        Debug.Log($"Jump Released: {jumpReleased}");
         GroundCheck();
 
         MovementInput();
@@ -197,7 +197,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
         }
         speedText.text = playerRigidBody.linearVelocity.magnitude.ToString();
 
-        if (Input.GetKey(KeyCode.LeftShift)) { playerRigidBody.AddForce(orientation.forward * 3, ForceMode.Impulse); }
+        //if (Input.GetKey(KeyCode.LeftShift)) { playerRigidBody.AddForce(orientation.forward * 3, ForceMode.Impulse); }
     }
     void FixedUpdate() {
         MovePlayer();
@@ -216,17 +216,18 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
         {
             if (canJump && coyoteTimeCounter > 0) {
                 Jump();
-
+                Debug.Log("Jump");
                 canJump = false;
                 jumpReleased = false;
                 exitSlope = true;
 
-                this.Invoke(ResetJump, jumpCooldown);
+                this.InvokeExclusive("Reset Jump",ResetJump, jumpCooldown);
             }
-            else if (Input.GetButtonUp("Jump") && !isGrounded) {
+            
+        }
+        if (Input.GetButtonUp("Jump")) {
                 jumpReleased = true;
             }
-        }
 
         if (Input.GetButtonDown("Jump") && !isGrounded) {
             Vector3 wallHit;
@@ -337,57 +338,40 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
         Vector3 maxVelocity = velocity.normalized * maxMovementSpeed;
         Vector3 combinedVelocity = new Vector3(maxVelocity.x, playerRigidBody.linearVelocity.y, maxVelocity.z);
 
-        if (SlopeCheck() && !exitSlope && velocity.magnitude > maxMovementSpeed) {
-            playerRigidBody.linearVelocity = playerRigidBody.linearVelocity.normalized * movementSpeed;
+        if (SlopeCheck() && !exitSlope){
+            ClampVelocity(velocity);
             Debug.Log("SlopeCheck");
         }
         else {
-           if (velocity.magnitude > maxMovementSpeed * 3) {
-                playerRigidBody.linearVelocity = new Vector3(maxVelocity.x * 3, playerRigidBody.linearVelocity.y, maxVelocity.z * 3);
-            }
-             /* if (velocity.magnitude > maxMovementSpeed && isGrounded) {
+            ClampVelocity(velocity);
+            MaxFallSpeed();
+        }
+    }
+    private void ClampVelocity(Vector3 velocity) {        
+        if (velocity.magnitude > maxMovementSpeed) { 
+            Vector3 velocityNormalized = velocity.normalized * maxMovementSpeed;
+            playerRigidBody.linearVelocity = new Vector3(velocityNormalized.x, playerRigidBody.linearVelocity.y, velocityNormalized.z);
+            Debug.Log("Clamping velocity");
+        }
 
-                if (!velocityTween.IsPlaying()) { velocityTween.Play(); }
-
-                Vector3 lerpedVelocity = Vector3.Lerp(playerRigidBody.linearVelocity, maxVelocity, speedLerpProgress);
-                playerRigidBody.linearVelocity = new Vector3(lerpedVelocity.x, playerRigidBody.linearVelocity.y, lerpedVelocity.z);
-                
-                if (playerRigidBody.linearVelocity.magnitude  <= maxMovementSpeed +.5f && velocityTween != null)
-                {
-                    Debug.Log("ResetTween & PRogress");
-                    speedLerpProgress = 0;
-
-                    velocityTween.Restart();
-                    velocityTween.Pause();
-                }
-            }*/
-
-            //Vector3.Movetowards to reduce mvoement speed;
-            /*if (velocity.magnitude > maxMovementSpeed && isGrounded) {
-                Debug.Log("Reducing speed to MaxSpeed");
-                Vector3 horizontalVelocity = Vector3.MoveTowards(velocity, maxVelocity, velocityDecayRate * Time.deltaTime);
-                playerRigidBody.linearVelocity = new Vector3(horizontalVelocity.x, playerRigidBody.linearVelocity.y, horizontalVelocity.z);
-            } */
-
-            /* Mathf.movetowards */
-            if (maxMovementSpeed > maxSpeedStorage && isGrounded) {
-                Debug.Log("reducing max speed ");
-                maxMovementSpeed = Mathf.MoveTowards(maxMovementSpeed, maxSpeedStorage, velocityDecayRate * Time.deltaTime);
-                acceleration = Mathf.MoveTowards(acceleration, accelerationStorage, velocityDecayRate * Time.deltaTime);
-            } else if(horizontalInput == 0 && verticalInput == 0 && velocity == Vector3.zero) {
-                maxMovementSpeed = maxSpeedStorage;
-                acceleration = accelerationStorage;
-            }
-
-                float yVelocity = Mathf.Abs(playerRigidBody.linearVelocity.y);
-            if (yVelocity <= maxFallSpeed) {
-                playerRigidBody.linearVelocity = new Vector3(playerRigidBody.linearVelocity.x, maxFallSpeed, playerRigidBody.linearVelocity.z);
-            } 
+        if (maxMovementSpeed > maxSpeedStorage ) {
+            maxMovementSpeed = Mathf.MoveTowards(maxMovementSpeed, maxSpeedStorage, velocityDecayRate * Time.deltaTime);
+            acceleration = Mathf.MoveTowards(acceleration, accelerationStorage, velocityDecayRate * Time.deltaTime);
+        } 
+        else if (horizontalInput == 0 && verticalInput == 0 && velocity == Vector3.zero) {
+            maxMovementSpeed = maxSpeedStorage;
+            acceleration = accelerationStorage;
+        }
+    }
+    private void MaxFallSpeed() {
+        float yVelocity = playerRigidBody.linearVelocity.y;
+        if (yVelocity <= maxFallSpeed ) {
+            playerRigidBody.linearVelocity = new Vector3(playerRigidBody.linearVelocity.x, maxFallSpeed, playerRigidBody.linearVelocity.z);
+            Debug.Log("MaxFalling");
         }
     }
 
-    private IEnumerator ReducingMovementSpeed()
-    {
+    private IEnumerator ReducingMovementSpeed() {
         yield return null;
     }
 
@@ -450,11 +434,14 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
     /// </summary>
     private void VariableJump()
     {
+        //Debug.Log($"Variable Jump: jumpReleased: ${jumpReleased},Y Velocity: ${playerRigidBody.linearVelocity.y} ");
         if (jumpReleased && !isGrounded && playerRigidBody.linearVelocity.y > 0) {
             playerRigidBody.AddForce(Vector3.down * maxJumpMultiplier, ForceMode.Force);
+            Debug.Log("Variable Jump - rise");
         }
         else if (jumpReleased && !isGrounded && playerRigidBody.linearVelocity.y < 0) {
             playerRigidBody.AddForce(Vector3.down * fallMultiplier, ForceMode.Force);
+            Debug.Log("Variable Jump - fall");
         }
     }
 
@@ -548,7 +535,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
         animatorCam.SetTrigger("hasDetonate");
 
         isDetonating = true;
-        this.Invoke(() => {
+        this.InvokeExclusive("detonate", () => {
             bounceBombInstance.GetComponent<BounceBomb>().Activate();
             Destroy(bounceBombInstance);
 
