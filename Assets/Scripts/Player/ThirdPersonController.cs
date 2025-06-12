@@ -260,8 +260,7 @@ public class ThirdPersonController : MonoBehaviour, IMomentumModifiable, IDamage
     /// Checks if grounded and adds drag if so
     /// </summary>
     private void MovePlayer() {
-        moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
-
+        moveDirection = GetDirection();
         if (SlopeCheck() && !exitSlope) {
             playerRigidBody.AddForce(GetSlopeMovementDiretion() * movementSpeed * 20f, ForceMode.Force);
 
@@ -290,7 +289,7 @@ public class ThirdPersonController : MonoBehaviour, IMomentumModifiable, IDamage
 
         Vector3 moveDir = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
 
-        return Vector3.zero;
+        return moveDir;
     }
 
     private void PlayerDrag() {
