@@ -38,14 +38,16 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _LiquidAmount: 0.03
+    - _LiquidAmount: 0.12
     - _QueueControl: 0
     - _QueueOffset: 0
-    - _WobbleAxis: 0
+    - _WobbleAxis: 0.09
+    - _WobbleAxisX: 0
+    - _WobbleAxisZ: 0
     m_Colors:
     - _LiquidColour: {r: 0, g: 2.522118, b: 4.924578, a: 1}
-    - _SlideColour: {r: 0, g: 2.522118, b: 4.924578, a: 1}
-    - _TopColour: {r: 0.06502055, g: 0.32358122, b: 4.594794, a: 1}
+    - _SlideColour: {r: 0, g: 0.7686274, b: 1.4980392, a: 1}
+    - _TopColour: {r: 0.02352937, g: 1.3839295, b: 1.4980392, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
 --- !u!114 &3767682046417748216
