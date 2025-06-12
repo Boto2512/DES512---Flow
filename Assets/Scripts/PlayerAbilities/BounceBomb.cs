@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.VFX;
 using UnityEngine.Events;
+using NUnit.Framework;
 
 [RequireComponent(typeof(Rigidbody))]
 public class BounceBomb : MonoBehaviour
@@ -12,7 +14,7 @@ public class BounceBomb : MonoBehaviour
     private Vector3 blastOrigin => blastCentre.position;
 
     /// CONSIDERATION: blast power could be what multiplier is used if under the speed minimum
-    
+
     [Header("Weak Blast")]
     [SerializeField, Min(0f)] private float weakBlastRadius;
     [SerializeField, Min(0f)] private float weakBlastPower;
@@ -29,18 +31,23 @@ public class BounceBomb : MonoBehaviour
 
     private Rigidbody rb;
 
+    [Header("VFX")]
+    [SerializeField] private VisualEffect VFX;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         rb.includeLayers = Globals.STICKY_MASK;
         rb.excludeLayers = ~Globals.STICKY_MASK;
+
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
     private void OnValidate() {
@@ -65,12 +72,15 @@ public class BounceBomb : MonoBehaviour
         if (!isDetonable)
             return;
 
+        ExplosionVFX();
+
         var affectableEntities = FindBlastAffectableEntities();
 
         // sets the momentum of each blast affectable entity to at least the speed minimum of the blast radius it's in, in the direction from itself to the blast origin
         foreach ((IMomentumModifiable entity, bool inStrongBlast) in affectableEntities) {
             Vector3 projectedPosition = CalculateProjectedEntityPosition(entity);
             Vector3 direction = Vector3.Normalize(projectedPosition - blastOrigin);
+
 
             Vector3 momentum = entity.GetMomentum();
             float speedMinimumToUse = inStrongBlast ? strongSpeedMinimum : weakSpeedMinimum;
@@ -100,11 +110,37 @@ public class BounceBomb : MonoBehaviour
             }
 
             IMomentumModifiable imm = rb.gameObject.GetComponent<IMomentumModifiable>();
-            if (imm != null && Physics.Raycast(blastOrigin, collider.ClosestPoint(blastOrigin) - blastOrigin, out RaycastHit outHit, weakBlastRadius)) {
+            if (imm == null) {
+                continue;
+            }
+
+            Vector3 momentumPosition = collider.ClosestPoint(blastOrigin);
+            if (momentumPosition == blastOrigin) {
+                allColliders.Add((imm, Vector3.Distance(momentumPosition, imm.GetPosition()) <= strongBlastRadius));
+                continue;
+            }
+            
+            Vector3 blastDirection = (momentumPosition - blastOrigin).normalized;
+            if (Physics.Raycast(blastOrigin, blastDirection, out RaycastHit outHit, weakBlastRadius)) {
                 allColliders.Add((imm, outHit.distance <= strongBlastRadius));
+                continue;
             }
         }
 
         return allColliders;
+    }
+
+    private void ExplosionVFX() {
+        VFX.transform.SetParent(null);
+        VFX.SendEvent("explosionTrigger");
+
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, weakBlastRadius);
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, strongBlastRadius);
     }
 }
