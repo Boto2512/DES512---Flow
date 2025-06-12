@@ -2,6 +2,11 @@ using UnityEngine;
 
 public class WeaponSway : MonoBehaviour
 {
+    /// use "pc.LeftSpeed()" for the speed of the player going leftwards
+    /// it's the same for Right, Up, and Down, just replace Left in pc.LeftSpeed()
+    /// 
+    [Header("Tilt")]
+    [SerializeField] private PlayerController playerController;
 
     [Header("Sway Settings")]
     [SerializeField] private float smooth;

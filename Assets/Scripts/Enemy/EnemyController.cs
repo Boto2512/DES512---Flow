@@ -191,7 +191,7 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
     }
     
     private void Pursue() {
-        agent.SetDestination(GetPursueDestination());
+        SetAgentDestination(GetPursueDestination());
     }
 
     private void Attack() {
@@ -206,8 +206,9 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
     private void Reposition() {
         float halfComfortableRange = (maxComfortableRange + minComfortableRange) / 2f;
         Vector3 toComfortableRange = (rb.position - targetPosition).normalized * halfComfortableRange;
+
         if (NavMesh.SamplePosition(targetPosition + toComfortableRange, out NavMeshHit hit, halfComfortableRange, NavMesh.AllAreas)) {
-            agent.SetDestination(hit.position);
+            SetAgentDestination(hit.position);
         }
     }
 
@@ -318,17 +319,17 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
     }
 
     private void PursueToIdleCallback() {
-        agent.ResetPath();
+        ResetAgentPath();
         Debug.Log("Pursue -> Idle");
     }
 
     private void PursueToAttackCallback() {
-        agent.ResetPath();
+        ResetAgentPath();
         Debug.Log("Pursue -> Attack");
     }
 
     private void PursueToRepositionCallback() {
-        agent.ResetPath();
+        ResetAgentPath();
         Debug.Log("Pursue -> Reposition");
     }
 
@@ -341,12 +342,12 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
     }
 
     private void RepositionToAttackCallback() {
-        agent.ResetPath();
+        ResetAgentPath();
         Debug.Log("Reposition -> Attack");
     }
 
     private void RepositionToPursueCallback() {
-        agent.ResetPath();
+        ResetAgentPath();
         Debug.Log("Reposition -> Pursue");
     }
 
@@ -365,6 +366,7 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
     }
 
     public void SetMomentum(Vector3 value) {
+        ResetAgentPath();
         agent.enabled = false;
         rb.isKinematic = false;
 
@@ -383,5 +385,15 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
             return isGrounded;
 
         return Physics.Raycast(groundCheckPosition.position, Vector3.down, groundCheckRange, Globals.OBSTACLE_MASK);
+    }
+
+    private bool SetAgentDestination(Vector3 destination) {
+        return isGrounded && agent.enabled && agent.SetDestination(destination);
+    }
+
+    private void ResetAgentPath() {
+        if (isGrounded && agent.enabled) {
+            agent.ResetPath();
+        }
     }
 }

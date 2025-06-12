@@ -128,12 +128,10 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
     private GameObject bounceBombInstance;
     private bool isDetonating = false;
 
-#if DEBUG
     [Space(10)]
     [Header("Events")]
     [SerializeField] private UnityEvent EventPrimaryClick = new();
     [SerializeField] private UnityEvent EventSecondaryClick = new();
-#endif 
 
     [Space(10)]
     [Header("Animation Controller")]
@@ -195,7 +193,8 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
             coyoteTimeCounter -= Time.deltaTime;
             GetLastAirVelocity();
         }
-        speedText.text = playerRigidBody.linearVelocity.magnitude.ToString();
+        //speedText.text = playerRigidBody.linearVelocity.magnitude.ToString();
+        speedText.text = $"Left: {LeftSpeed()}\nRight: {RightSpeed()}\nUp: {UpSpeed()}\nDown: {DownSpeed()}\nOverall: {playerRigidBody.linearVelocity.magnitude}";
 
         //if (Input.GetKey(KeyCode.LeftShift)) { playerRigidBody.AddForce(orientation.forward * 3, ForceMode.Impulse); }
     }
@@ -694,4 +693,29 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
     }
 
     #endregion ========================= Gizmos =========================
+
+    #region ========================= Animation Interface =========================
+
+    public float LeftSpeed() {
+        Vector3 leftDirection = -orientation.right;
+        float leftwardsSpeed = Vector3.Dot(playerRigidBody.linearVelocity, leftDirection);
+
+        return Mathf.Max(leftwardsSpeed, 0f);
+    }
+
+    public float RightSpeed() {
+        float rightwardsSpeed = Vector3.Dot(playerRigidBody.linearVelocity, orientation.right);
+
+        return Mathf .Max(rightwardsSpeed, 0f);
+    }
+
+    public float UpSpeed() {
+        return Mathf.Max(playerRigidBody.linearVelocity.y, 0f);
+    }
+
+    public float DownSpeed() {
+        return -Mathf.Min(playerRigidBody.linearVelocity.y, 0f);
+    }
+
+    #endregion ========================= Animation Interface =========================
 }
