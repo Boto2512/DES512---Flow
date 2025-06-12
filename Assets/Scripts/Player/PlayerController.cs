@@ -176,7 +176,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
     }
     void Update() {
         if (DeathCheck()) { return; }
-        //Debug.Log($"Jump Released: {jumpReleased}");
+        Debug.Log($"Slope Check: {SlopeCheck()}");
         GroundCheck();
 
         MovementInput();
@@ -266,7 +266,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
                 playerRigidBody.AddForce(Vector3.down * downwardsForce, ForceMode.Force);
             }
         }
-        if (isGrounded) {
+        else if (isGrounded) {
             playerRigidBody.AddForce(moveDirection.normalized * movementSpeed * 10, ForceMode.Force);
             playerRigidBody.linearDamping = groundDrag;
         }
@@ -333,11 +333,12 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
         AirSpeedIncrease();
         SlopeSpeedIncrease();
         Vector3 velocity = new Vector3(playerRigidBody.linearVelocity.x, 0, playerRigidBody.linearVelocity.z);
-        Vector3 maxVelocity = velocity.normalized * maxMovementSpeed;
-        Vector3 combinedVelocity = new Vector3(maxVelocity.x, playerRigidBody.linearVelocity.y, maxVelocity.z);
 
         if (SlopeCheck() && !exitSlope){
-            ClampVelocity(velocity);
+            if (playerRigidBody.linearVelocity.magnitude > maxMovementSpeed)
+            {
+                playerRigidBody.linearVelocity = playerRigidBody.linearVelocity.normalized * maxMovementSpeed;
+            }
             Debug.Log("SlopeCheck");
         }
         else {
