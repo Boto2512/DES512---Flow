@@ -32,7 +32,8 @@ public class BounceBomb : MonoBehaviour
     private Rigidbody rb;
 
     [Header("VFX")]
-    [SerializeField] private VisualEffect VFX;
+    [SerializeField] private GameObject vfxObject;
+    [SerializeField] private VisualEffect vfx;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -131,8 +132,10 @@ public class BounceBomb : MonoBehaviour
     }
 
     private void ExplosionVFX() {
-        VFX.transform.SetParent(null);
-        VFX.SendEvent("explosionTrigger");
+        vfxObject.GetComponent<VFXCleanUp>().StartTimer();
+
+        vfx.transform.SetParent(null);        
+        vfx.SendEvent("explosionTrigger");
 
     }
 
