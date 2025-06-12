@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class WeaponSway : MonoBehaviour
 {
@@ -11,6 +12,14 @@ public class WeaponSway : MonoBehaviour
     [Header("Sway Settings")]
     [SerializeField] private float smooth;
     [SerializeField] private float multiplier;
+
+    [Header("Strafe Tilt Settings")]
+    [SerializeField] private float tiltStrafeSmooth;
+    [SerializeField] private float tiltStrafeMultiplier;
+
+    [Header("Vertical Tilt Settings")]
+    [SerializeField] private float tiltVerticalSmooth;
+    [SerializeField] private float tiltVerticalMultiplier;
 
     private void Update()
     {
@@ -26,5 +35,25 @@ public class WeaponSway : MonoBehaviour
 
         // rotate 
         transform.localRotation = Quaternion.Slerp(transform.localRotation, targetRotation, smooth * Time.deltaTime);
+
+        // tilt
+        // get movement values
+        float movementLeft = Mathf.Clamp(playerController.LeftSpeed(), 0, 1) * -tiltStrafeMultiplier;
+        float movementRight = Mathf.Clamp(playerController.RightSpeed(), 0, 1) * tiltStrafeMultiplier;
+        float movementUp = Mathf.Clamp(playerController.UpSpeed(), 0, 1) * -tiltVerticalMultiplier;
+        float movementDown = Mathf.Clamp(playerController.DownSpeed(), 0 ,1) * tiltVerticalMultiplier;
+
+        // calculate target rotation
+        Quaternion movementRotationLeft = Quaternion.AngleAxis(movementLeft, Vector3.back);
+        Quaternion movementRotationRight = Quaternion.AngleAxis(movementRight, Vector3.back);
+        Quaternion movementRotationUp = Quaternion.AngleAxis(movementUp, Vector3.left);
+        Quaternion movementRotationDown = Quaternion.AngleAxis(movementDown, Vector3.left);
+
+        Quaternion targetStrafeRotation = movementRotationLeft * movementRotationRight;
+        Quaternion targetVerticalRotation = movementRotationUp * movementRotationDown;
+
+        // rotate
+        transform.localRotation = Quaternion.Slerp(transform.localRotation, targetStrafeRotation, tiltStrafeSmooth * Time.deltaTime);
+        transform.localRotation = Quaternion.Slerp(transform.localRotation, targetVerticalRotation, tiltVerticalSmooth * Time.deltaTime);
     }
 }
