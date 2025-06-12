@@ -111,8 +111,20 @@ public class BounceBomb : MonoBehaviour
             }
 
             IMomentumModifiable imm = rb.gameObject.GetComponent<IMomentumModifiable>();
-            if (imm != null && Physics.Raycast(blastOrigin, collider.ClosestPoint(blastOrigin) - blastOrigin, out RaycastHit outHit, weakBlastRadius)) {
+            if (imm == null) {
+                continue;
+            }
+
+            Vector3 momentumPosition = collider.ClosestPoint(blastOrigin);
+            if (momentumPosition == blastOrigin) {
+                allColliders.Add((imm, Vector3.Distance(momentumPosition, imm.GetPosition()) <= strongBlastRadius));
+                continue;
+            }
+            
+            Vector3 blastDirection = (momentumPosition - blastOrigin).normalized;
+            if (Physics.Raycast(blastOrigin, blastDirection, out RaycastHit outHit, weakBlastRadius)) {
                 allColliders.Add((imm, outHit.distance <= strongBlastRadius));
+                continue;
             }
         }
 
