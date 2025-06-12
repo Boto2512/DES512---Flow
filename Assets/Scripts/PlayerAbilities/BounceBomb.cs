@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.VFX;
 using UnityEngine.Events;
 using NUnit.Framework;
+using static UnityEngine.EventSystems.EventTrigger;
 
 [RequireComponent(typeof(Rigidbody))]
 public class BounceBomb : MonoBehaviour
@@ -13,16 +14,14 @@ public class BounceBomb : MonoBehaviour
     [SerializeField] private Transform blastCentre;
     private Vector3 blastOrigin => blastCentre.position;
 
-    /// CONSIDERATION: blast power could be what multiplier is used if under the speed minimum
-
     [Header("Weak Blast")]
     [SerializeField, Min(0f)] private float weakBlastRadius;
-    [SerializeField, Min(0f)] private float weakBlastPower;
+    [SerializeField, Min(0f)] private float weakBlastPower = 1f;
     [SerializeField, Min(0f)] private float weakSpeedMinimum;
 
     [Header("Strong Blast")]
     [SerializeField, Min(0f)] private float strongBlastRadius;
-    [SerializeField, Min(0f)] private float strongBlastPower;
+    [SerializeField, Min(0f)] private float strongBlastPower = 1f;
     [SerializeField, Min(0f)] private float strongSpeedMinimum;
 
     [Header("Other")]
@@ -35,18 +34,14 @@ public class BounceBomb : MonoBehaviour
     [SerializeField] private VisualEffect VFX;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
+    void Start() {
         rb = GetComponent<Rigidbody>();
         rb.includeLayers = Globals.STICKY_MASK;
         rb.excludeLayers = ~Globals.STICKY_MASK;
-
-
     }
 
     // Update is called once per frame
-    void Update()
-    {
+    void Update() {
 
     }
 
@@ -59,6 +54,8 @@ public class BounceBomb : MonoBehaviour
     private void OnCollisionEnter(Collision collision) {
         rb.isKinematic = true;
         rb.detectCollisions = false;
+
+        blastCentre.position = collision.contacts[0].point;
     }
 
     public void Throw() {
@@ -74,20 +71,7 @@ public class BounceBomb : MonoBehaviour
 
         ExplosionVFX();
 
-        var affectableEntities = FindBlastAffectableEntities();
-
-        // sets the momentum of each blast affectable entity to at least the speed minimum of the blast radius it's in, in the direction from itself to the blast origin
-        foreach ((IMomentumModifiable entity, bool inStrongBlast) in affectableEntities) {
-            Vector3 projectedPosition = CalculateProjectedEntityPosition(entity);
-            Vector3 direction = Vector3.Normalize(projectedPosition - blastOrigin);
-
-
-            Vector3 momentum = entity.GetMomentum();
-            float speedMinimumToUse = inStrongBlast ? strongSpeedMinimum : weakSpeedMinimum;
-            Vector3 newMomentum = direction * MathF.Max(momentum.magnitude, speedMinimumToUse);
-
-            entity.SetMomentum(newMomentum);
-        }
+        FindBlastAffectableEntities().ForEach((x) => ModifyEnitityMomentum(x.Entity, x.InStrongBlast));
     }
 
     private Vector3 CalculateProjectedEntityPosition(IMomentumModifiable imm) {
@@ -100,7 +84,7 @@ public class BounceBomb : MonoBehaviour
     /// Finds all the entities that implement IMomentumModifiable within the weakBlastRadius range, and within line of sight from the blast origin.
     /// </summary>
     /// <returns>A collection of each IMomentumModifiable entity and whether it is in the strong blast range</returns>
-    private IEnumerable<(IMomentumModifiable Entity, bool InStrongBlast)> FindBlastAffectableEntities() {
+    private List<(IMomentumModifiable Entity, bool InStrongBlast)> FindBlastAffectableEntities() {
         var allColliders = new List<(IMomentumModifiable, bool)>();
 
         foreach (var collider in Physics.OverlapSphere(blastOrigin, weakBlastRadius)) {
@@ -127,13 +111,25 @@ public class BounceBomb : MonoBehaviour
             }
         }
 
-        return allColliders;
+        return allColliders.ToList();
+    }
+
+    private void ModifyEnitityMomentum(IMomentumModifiable entity, bool inStrongBlast) {
+        // sets the momentum of each blast affectable entity to at least the speed minimum of the blast radius it's in, in the direction from itself to the blast origin
+        Vector3 projectedPosition = CalculateProjectedEntityPosition(entity);
+        Vector3 blastToPosition = projectedPosition - blastOrigin;
+
+        float tempSpeed = entity.GetMomentum().magnitude * (inStrongBlast ? strongBlastPower : weakBlastPower);
+        float speedMinimumToUse = inStrongBlast ? strongSpeedMinimum : weakSpeedMinimum;
+        float newSpeed = Mathf.Max(tempSpeed, speedMinimumToUse);
+
+        entity.SetMomentum(blastToPosition.normalized * newSpeed);
     }
 
     private void ExplosionVFX() {
         VFX.transform.SetParent(null);
+        VFX.transform.position = blastCentre.position;
         VFX.SendEvent("explosionTrigger");
-
     }
 
     private void OnDrawGizmos()
