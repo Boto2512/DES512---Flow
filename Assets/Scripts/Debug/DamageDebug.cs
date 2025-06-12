@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
-using UnityEditor.PackageManager;
 using System.Collections;
 
 public class DamageDebug : MonoBehaviour, IDamageable
