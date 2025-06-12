@@ -136,6 +136,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
     [Space(10)]
     [Header("Animation Controller")]
     [SerializeField] private Animator animator;
+    [SerializeField] private Animator animatorCam;
 
     [Space(10)]
     [Header("Visual Effects")]
@@ -175,7 +176,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
     }
     void Update() {
         if (DeathCheck()) { return; }
-        Debug.Log($"Jump Released: {jumpReleased}");
+        //Debug.Log($"Jump Released: {jumpReleased}");
         GroundCheck();
 
         MovementInput();
@@ -434,11 +435,11 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
         //Debug.Log($"Variable Jump: jumpReleased: ${jumpReleased},Y Velocity: ${playerRigidBody.linearVelocity.y} ");
         if (jumpReleased && !isGrounded && playerRigidBody.linearVelocity.y > 0) {
             playerRigidBody.AddForce(Vector3.down * maxJumpMultiplier, ForceMode.Force);
-            Debug.Log("Variable Jump - rise");
+            //Debug.Log("Variable Jump - rise");
         }
         else if (jumpReleased && !isGrounded && playerRigidBody.linearVelocity.y < 0) {
             playerRigidBody.AddForce(Vector3.down * fallMultiplier, ForceMode.Force);
-            Debug.Log("Variable Jump - fall");
+            //Debug.Log("Variable Jump - fall");
         }
     }
 
@@ -515,7 +516,8 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
     private void SpawnBounceBomb() {
         // spawns BounceBomb and 'throws' it via AddForce()
 
-        animator.SetTrigger("HasBombed");
+        animator.SetTrigger("hasBombed");
+        animatorCam.SetTrigger("hasBombed");
 
         bounceBombInstance = Instantiate(bounceBomb, bounceBombSpawnPosition, playerRigidBody.rotation);
         bounceBombInstance.GetComponent<Rigidbody>().AddForce(GetMomentum() + Camera.main.transform.forward * bombThrowPower, ForceMode.VelocityChange);
@@ -527,7 +529,8 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
         if (isDetonating)
             return;
 
-        animator.SetTrigger("HasDetonate");
+        animator.SetTrigger("hasDetonate");
+        animatorCam.SetTrigger("hasDetonate");
 
         isDetonating = true;
         this.InvokeExclusive("detonate", () => {
@@ -574,6 +577,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
         RaycastHit[] enemies;
 
         animator.SetTrigger("hasAttacked");
+        animatorCam.SetTrigger("hasAttacked");
 
         if (currentStage == 3) {
             // larger aoe && oneshot && vfx
@@ -641,9 +645,11 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
     public Vector3 GetMomentum() {
         return playerRigidBody.linearVelocity;
     }
+
     public Vector3 GetPosition() {
         return target.position;
     }
+
     public void SetMomentum(Vector3 value) {
         playerRigidBody.AddForce(value, ForceMode.VelocityChange);
     }
