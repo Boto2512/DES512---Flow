@@ -1282,6 +1282,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd68a8eeb98dd6349a999a7eafe9c2f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerController: {fileID: 5516972155165457975}
   smooth: 8
   multiplier: -7.5
 --- !u!1 &3403207003994147340
@@ -2770,7 +2771,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 20, y: 0}
+  m_AnchoredPosition: {x: 20, y: 330}
   m_SizeDelta: {x: 420, y: 100}
   m_Pivot: {x: 0, y: 0}
 --- !u!222 &5007994047376807127
@@ -2866,7 +2867,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_margin: {x: 0, y: 0, z: -324.5669, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -4077,6 +4078,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3529688457792160653, guid: d6998a62e3469a342a19f3bcfc1e2fad, type: 3}
   m_PrefabInstance: {fileID: 211751176219736823}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &5516972155165457975 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5647639703575495872, guid: d6998a62e3469a342a19f3bcfc1e2fad, type: 3}
+  m_PrefabInstance: {fileID: 211751176219736823}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a3797d5ba7c73f4b8a84d33354e8dab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &6858331396866129412 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6763837656486118643, guid: d6998a62e3469a342a19f3bcfc1e2fad, type: 3}
