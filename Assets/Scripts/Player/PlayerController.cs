@@ -175,7 +175,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
         }
     }
     void Update() {
-        if (DeathCheck()) { return; }
+        DeathCheck();
         Debug.Log($"Slope Check: {SlopeCheck()}");
         GroundCheck();
 
@@ -193,7 +193,8 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
             coyoteTimeCounter -= Time.deltaTime;
             GetLastAirVelocity();
         }
-        speedText.text = playerRigidBody.linearVelocity.magnitude.ToString();
+        //speedText.text = playerRigidBody.linearVelocity.magnitude.ToString();
+        speedText.text = $"Left: {LeftSpeed()}\nRight: {RightSpeed()}\nUp: {UpSpeed()}\nDown: {DownSpeed()}\nOverall: {playerRigidBody.linearVelocity.magnitude}";
 
         //if (Input.GetKey(KeyCode.LeftShift)) { playerRigidBody.AddForce(orientation.forward * 3, ForceMode.Impulse); }
     }
@@ -557,7 +558,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
         else if (speed > firstBreakpoint) {
             // Checks if player is in Stage 2
             currentStage = 2;
-            RunningLinesIntensity(minSpeedOfLines, maxSpawnRate);
+            RunningLinesIntensity(minSpeedOfLines, minSpawnRate);
             return;
         }
         else { 
@@ -672,13 +673,11 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
     #endregion  ========================= Damage Interface  =========================
 
     #region  ========================= Death  =========================
-    private bool DeathCheck() {
+    private void DeathCheck() {
         if (health <= 0) {
+            gameOver.SetActive(true);
             Time.timeScale = 0;
-            gameObject.SetActive(true);
-            return true;
         }
-        return false;
     }
     #endregion  ========================= Death  =========================
 
@@ -693,4 +692,29 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
     }
 
     #endregion ========================= Gizmos =========================
+
+    #region ========================= Animation Interface =========================
+
+    public float LeftSpeed() {
+        Vector3 leftDirection = -orientation.right;
+        float leftwardsSpeed = Vector3.Dot(playerRigidBody.linearVelocity, leftDirection);
+
+        return Mathf.Max(leftwardsSpeed, 0f);
+    }
+
+    public float RightSpeed() {
+        float rightwardsSpeed = Vector3.Dot(playerRigidBody.linearVelocity, orientation.right);
+
+        return Mathf .Max(rightwardsSpeed, 0f);
+    }
+
+    public float UpSpeed() {
+        return Mathf.Max(playerRigidBody.linearVelocity.y, 0f);
+    }
+
+    public float DownSpeed() {
+        return -Mathf.Min(playerRigidBody.linearVelocity.y, 0f);
+    }
+
+    #endregion ========================= Animation Interface =========================
 }
