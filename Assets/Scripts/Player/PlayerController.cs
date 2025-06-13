@@ -674,7 +674,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
 
     #region  ========================= Death  =========================
     private void DeathCheck() {
-        if (health <= 0) {
+        if (health <= 0 && !gameOver.activeSelf) {
             gameOver.SetActive(true);
             Time.timeScale = 0;
         }
