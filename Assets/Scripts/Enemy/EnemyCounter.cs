@@ -4,6 +4,7 @@ using UnityEngine;
 public class EnemyCounter : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI enemyCounterText;
+    [SerializeField] private GameObject gameOver;
     private float enemyCount;
 
     private void Update()
@@ -12,7 +13,8 @@ public class EnemyCounter : MonoBehaviour
         enemyCounterText.text = enemyCount.ToString();
         if (enemyCount == 0)
         {
-            //end game
+            gameOver.SetActive(true);
+            Time.timeScale = 0f;
         }
     }
 }
