@@ -93,8 +93,7 @@ public class BounceBomb : MonoBehaviour
                 continue;
             }
 
-            IMomentumModifiable imm = rb.gameObject.GetComponent<IMomentumModifiable>();
-            if (imm == null) {
+            if (!rb.gameObject.TryGetComponent<IMomentumModifiable>(out IMomentumModifiable imm)) {
                 continue;
             }
 
