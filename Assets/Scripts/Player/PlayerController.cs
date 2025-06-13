@@ -148,9 +148,11 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
     [Header("Target")]
     [SerializeField] private Transform target;
     #endregion  ========================= Variables =========================
+
     void Awake() {
         Globals.PLAYER = this;
     }
+
     void Start() {
         playerRigidBody = GetComponent<Rigidbody>();
 
@@ -174,6 +176,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
             velocityTween.Pause();
         }
     }
+
     void Update() {
         DeathCheck();
         Debug.Log($"Slope Check: {SlopeCheck()}");
@@ -198,6 +201,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
 
         //if (Input.GetKey(KeyCode.LeftShift)) { playerRigidBody.AddForce(orientation.forward * 3, ForceMode.Impulse); }
     }
+
     void FixedUpdate() {
         MovePlayer();
         VariableJump();
@@ -240,6 +244,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
 
         }
     }
+
     private void ActionInputs() {
         attackTime += Time.deltaTime;
         if (Input.GetMouseButtonDown(0) && attackTime >= attackCooldown) {
@@ -347,6 +352,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
             MaxFallSpeed();
         }
     }
+
     private void ClampVelocity(Vector3 velocity) {        
         if (velocity.magnitude > maxMovementSpeed) { 
             Vector3 velocityNormalized = velocity.normalized * maxMovementSpeed;
@@ -363,6 +369,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
             acceleration = accelerationStorage;
         }
     }
+
     private void MaxFallSpeed() {
         float yVelocity = playerRigidBody.linearVelocity.y;
         if (yVelocity <= maxFallSpeed ) {
@@ -386,6 +393,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
             }
         }
     }
+
     /// <summary>
     /// If the player is on a slope they will be able to move faster
     /// </summary>
@@ -398,6 +406,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
             }
         } 
     }
+
     /// <summary>
     /// Uses the last stored air velocity and replaces the player's velocity with it
     /// </summary>
@@ -409,6 +418,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
             playerRigidBody.linearVelocity = new Vector3(lastAirVelocity.x, playerRigidBody.linearVelocity.y, lastAirVelocity.z);
         }
     }
+
     private void GetLastAirVelocity() {
             lastAirVelocity = playerRigidBody.linearVelocity;
     }
@@ -452,11 +462,11 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
     #endregion  ========================= Jump =========================
 
     #region  ========================= Wall Kick =========================
-  /// <summary>
-  /// checks if there is a wall to kick off of
-  /// </summary>
-  /// <param name="wallNormal"> Returns the wall's normal </param>
-  /// <returns> Returns a boolean value depending on if a wall was hit</returns>
+    /// <summary>
+    /// checks if there is a wall to kick off of
+    /// </summary>
+    /// <param name="wallNormal"> Returns the wall's normal </param>
+    /// <returns> Returns a boolean value depending on if a wall was hit</returns>
     private bool WallCheck(out Vector3 wallNormal) {
         if(Time.time >= timeOfLastKick + wallKickCooldown && !isGrounded) {
 
@@ -473,6 +483,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
             return false; 
         }
     }
+
     /// <summary>
     /// Deflects the players velocity off the wall
     /// </summary>
@@ -491,6 +502,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
         isGrounded = Physics.Raycast(groundCheckPosition.position, Vector3.down, groundCheckRange, groundMask);
         //groundedText.text = $"Is Grounded: {isGrounded}";
     }
+
     /// <summary>
     /// Casts a ray to find the angle the ground is at to detect if its a slope
     /// </summary>
@@ -502,6 +514,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
         }
         return false;
     }
+
     private Vector3 GetSlopeMovementDiretion() {
         return Vector3.ProjectOnPlane(moveDirection,slopeHit.normal).normalized;
     }
@@ -527,6 +540,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
         EventSecondaryClick.RemoveListener(SpawnBounceBomb);
         EventSecondaryClick.AddListener(DetonateBounceBomb);
     }
+
     private void DetonateBounceBomb() {
         if (isDetonating)
             return;
@@ -610,6 +624,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
             }
         }
     }
+
     /// <summary>
     /// Performs a box cast all with the specific conditions 
     /// </summary>
@@ -662,10 +677,12 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
         return health;
         throw new System.NotImplementedException();
     }
+
     public void TakeDamage(float value) {
         health -= value;
         healthBar.value = health;
     }
+
     public void Kill() {
         Debug.LogError("Player should not be oneshotted");
         throw new System.NotImplementedException();

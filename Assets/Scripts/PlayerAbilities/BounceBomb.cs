@@ -1,11 +1,7 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.VFX;
-using UnityEngine.Events;
-using NUnit.Framework;
-using static UnityEngine.EventSystems.EventTrigger;
 
 [RequireComponent(typeof(Rigidbody))]
 public class BounceBomb : MonoBehaviour

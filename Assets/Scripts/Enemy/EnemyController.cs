@@ -179,6 +179,10 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
                 Reposition();
                 break;
 
+            case EnemyAIState.FanOut:
+                FanOut();
+                break;
+
             default:
                 break;
         }
@@ -210,6 +214,10 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
         if (NavMesh.SamplePosition(targetPosition + toComfortableRange, out NavMeshHit hit, halfComfortableRange, NavMesh.AllAreas)) {
             SetAgentDestination(hit.position);
         }
+    }
+
+    private void FanOut() {
+
     }
 
     private Vector3 GetPursueDestination() {
@@ -387,6 +395,8 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
         return Physics.Raycast(groundCheckPosition.position, Vector3.down, groundCheckRange, Globals.OBSTACLE_MASK);
     }
 
+    #region Safe NavMeshAgent Methods
+
     private bool SetAgentDestination(Vector3 destination) {
         return isGrounded && agent.enabled && agent.SetDestination(destination);
     }
@@ -396,4 +406,7 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
             agent.ResetPath();
         }
     }
+
+    #endregion Safe NavMeshAgent Methods
+
 }
