@@ -107,16 +107,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   blastCentre: {fileID: 2840652345248045280}
-  weakBlastRadius: 30
-  weakBlastPower: 0
-  weakSpeedMinimum: 15
-  strongBlastRadius: 10
-  strongBlastPower: 0
-  strongSpeedMinimum: 15
+  weakBlastRadius: 5
+  weakBlastPower: 2
+  weakSpeedMinimum: 5
+  strongBlastRadius: 3
+  strongBlastPower: 3
+  strongSpeedMinimum: 10
   entityProjectionScale: 0
   isDetonable: 1
-  vfxObject: {fileID: 6450417133783301613}
-  vfx: {fileID: 78391888581166235}
+  VFX: {fileID: 78391888581166235}
 --- !u!1 &6450417133783301613
 GameObject:
   m_ObjectHideFlags: 0
@@ -128,7 +127,6 @@ GameObject:
   - component: {fileID: 91376554428936081}
   - component: {fileID: 78391888581166235}
   - component: {fileID: 4959595312891256580}
-  - component: {fileID: 4878056997639540081}
   m_Layer: 0
   m_Name: ExplosionBombBounceVFX
   m_TagString: Untagged
@@ -335,20 +333,6 @@ VFXRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!114 &4878056997639540081
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6450417133783301613}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f94592684445c9a448abef1e44b1f6f5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  vfx: {fileID: 78391888581166235}
-  timerTotal: 1
 --- !u!1 &9175383276386618775
 GameObject:
   m_ObjectHideFlags: 0
