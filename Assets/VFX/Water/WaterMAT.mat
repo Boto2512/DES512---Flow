@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: LiquidMAT
-  m_Shader: {fileID: -6465566751694194690, guid: 8c49aefd5a4089246ac606b3857221dc, type: 3}
+  m_Name: WaterMAT
+  m_Shader: {fileID: -6465566751694194690, guid: 28b695329bcc0044884e0b4c54ac170d, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -38,19 +38,12 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _LiquidAmount: -0
     - _QueueControl: 0
     - _QueueOffset: 0
-    - _WobbleAxis: 0.09
-    - _WobbleAxisX: 0
-    - _WobbleAxisZ: 0
-    m_Colors:
-    - _LiquidColour: {r: 0, g: 2.522118, b: 4.924578, a: 1}
-    - _SlideColour: {r: 0, g: 0.7686274, b: 1.4980392, a: 1}
-    - _TopColour: {r: 0.02352937, g: 1.3839295, b: 1.4980392, a: 1}
+    m_Colors: []
   m_BuildTextureStacks: []
   m_AllowLocking: 1
---- !u!114 &3767682046417748216
+--- !u!114 &8499817694468378008
 MonoBehaviour:
   m_ObjectHideFlags: 11
   m_CorrespondingSourceObject: {fileID: 0}
