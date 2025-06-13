@@ -175,7 +175,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
         }
     }
     void Update() {
-        if (DeathCheck()) { return; }
+        DeathCheck();
         Debug.Log($"Slope Check: {SlopeCheck()}");
         GroundCheck();
 
@@ -673,13 +673,11 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
     #endregion  ========================= Damage Interface  =========================
 
     #region  ========================= Death  =========================
-    private bool DeathCheck() {
+    private void DeathCheck() {
         if (health <= 0) {
-            gameObject.SetActive(true);
+            gameOver.SetActive(true);
             Time.timeScale = 0;
-            return true;
         }
-        return false;
     }
     #endregion  ========================= Death  =========================
 
