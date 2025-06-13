@@ -193,7 +193,9 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
             coyoteTimeCounter -= Time.deltaTime;
             GetLastAirVelocity();
         }
-        speedText.text = playerRigidBody.linearVelocity.magnitude.ToString();
+
+        Vector3 horizontalvelocity = new Vector3(playerRigidBody.linearVelocity.x, 0, playerRigidBody.linearVelocity.z);
+        speedText.text = horizontalvelocity.magnitude.ToString();
 
         //if (Input.GetKey(KeyCode.LeftShift)) { playerRigidBody.AddForce(orientation.forward * 3, ForceMode.Impulse); }
     }
@@ -557,7 +559,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
         else if (speed > firstBreakpoint) {
             // Checks if player is in Stage 2
             currentStage = 2;
-            RunningLinesIntensity(minSpeedOfLines, maxSpawnRate);
+            RunningLinesIntensity(minSpeedOfLines, minSpawnRate);
             return;
         }
         else { 
@@ -674,8 +676,8 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
     #region  ========================= Death  =========================
     private bool DeathCheck() {
         if (health <= 0) {
-            Time.timeScale = 0;
             gameObject.SetActive(true);
+            Time.timeScale = 0;
             return true;
         }
         return false;
