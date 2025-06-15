@@ -6,7 +6,7 @@ public class UsedBounceBombStep : ITutorialStep
 
     public UsedBounceBombStep()
     {
-        TutorialEvents.OnReachedBounceBomb += () => hasUsed = true;
+        TutorialEvents.OnUsedBomb += () => hasUsed = true;
     }
 
     public bool Validate() => hasUsed;

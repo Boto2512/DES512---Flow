@@ -82,6 +82,8 @@ public class BounceBomb : MonoBehaviour
 
         DestroyExplosiveSteam();
 
+        TutorialEvents.OnUsedBomb?.Invoke();
+
         FindBlastAffectableEntities().ForEach((x) => ModifyEnitityMomentum(x.Entity, x.InStrongBlast));
     }
 
