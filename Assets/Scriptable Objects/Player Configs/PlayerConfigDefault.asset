@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 40a94c9420f4fe145a7d0494be94da47, type: 3}
-  m_Name: PlayerConfig-1
+  m_Name: PlayerConfigDefault
   m_EditorClassIdentifier: 
-  health: 20
+  defaultHealth: 100
   defaultMaxMovementSpeed: 10
   groundDrag: 1
   maxVeloctiyDuration: 3
@@ -46,5 +46,5 @@ MonoBehaviour:
   firstBreakpoint: 10
   secondBreakpoint: 12
   bounceBomb: {fileID: 569634559799669078, guid: 905d297ab0a893c4ca79c31d5bac738d, type: 3}
-  bombThrowPower: 1
+  bombThrowPower: 10
   fuseTime: 0.15

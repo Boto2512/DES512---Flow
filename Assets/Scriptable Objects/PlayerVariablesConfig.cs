@@ -16,6 +16,7 @@ public class PlayerVariablesConfig : ScriptableObject
 
     public float defaultMaxMovementSpeed;
     public float groundDrag;
+    public float airDrag;
     [Tooltip("Controls how long the player stays at max velocity before decay starts")]
     public float maxVeloctiyDuration;
     [Tooltip("Controls the rate max speed & acceleration is reduced after being increased")]
