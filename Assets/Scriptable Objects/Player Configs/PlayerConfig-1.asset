@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 40a94c9420f4fe145a7d0494be94da47, type: 3}
+  m_Name: PlayerConfig-1
+  m_EditorClassIdentifier: 
+  health: 20
+  defaultMaxMovementSpeed: 10
+  groundDrag: 1
+  maxVeloctiyDuration: 3
+  velocityDecayRate: 0.5
+  veloctiyStorageFrequency: 0
+  airSpeedIncrease: 5
+  maxFallSpeed: -50
+  airControlMultiplier: 0.3
+  maxSlopeAngle: 45
+  minSlopeAngle: 5
+  slopeSpeedImpact: 5
+  downwardsForce: 180
+  jumpForce: 7
+  maxJumpMultiplier: 15
+  fallMultiplier: 15
+  jumpCooldown: 1
+  coyoteTime: 0.2
+  groundCheckRange: 0.25
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 64
+  wallKickRange: 2
+  wallKickCooldown: 1
+  attackScale: {x: 1, y: 2, z: 1}
+  attackMask:
+    serializedVersion: 2
+    m_Bits: 64
+  attackRange: 0.5
+  attackDamage: 10
+  attackCooldown: 1
+  firstBreakpoint: 10
+  secondBreakpoint: 12
+  bounceBomb: {fileID: 569634559799669078, guid: 905d297ab0a893c4ca79c31d5bac738d, type: 3}
+  bombThrowPower: 1
+  fuseTime: 0.15
