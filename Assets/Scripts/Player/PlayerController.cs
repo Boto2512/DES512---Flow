@@ -612,7 +612,10 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
             foreach (RaycastHit enemy in enemies) {
                 IDamageable damage = enemy.transform.GetComponent<IDamageable>();
                 if (damage != null) {
-                    if (currentStage >= 2) { damage.Kill(); 
+                    if (currentStage >= 2) 
+                    { 
+                        damage.Kill();
+                        TutorialEvents.OnEnemyKilled?.Invoke();
                     } 
                     else {
                         damage.TakeDamage(attackDamage); 

@@ -1,12 +1,27 @@
+using UnityEngine;
+
 public class EnemyKilledStep : ITutorialStep
 {
     private bool enemyKilled = false;
 
     public EnemyKilledStep()
     {
-        TutorialEvents.OnEnemyKilled += () => enemyKilled = true;
+        TutorialEvents.OnEnemyKilled += HandleEnemyKilled;
     }
 
-    public bool Validate() => enemyKilled;
-    public string GetMessage() => "Hit the enemy with left click!";
+    public string GetMessage()
+    {
+        return "Hit the enemy with left click!";
+    }
+
+    public bool Validate()
+    {
+        return enemyKilled;
+    }
+
+    private void HandleEnemyKilled()
+    {
+        enemyKilled = true;
+        TutorialEvents.OnEnemyKilled -= HandleEnemyKilled;
+    }
 }
