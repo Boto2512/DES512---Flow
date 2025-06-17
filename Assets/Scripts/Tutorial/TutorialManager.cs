@@ -55,6 +55,7 @@ private System.Collections.IEnumerator WaitBeforeNextValidation()
             new ReachedBounceBombStep(),
             new UsedBounceBombStep(),
             new EnemyKilledStep(),
+            new EnemyFastKill(),
             new BarrelExplodedStep()
         };
     }

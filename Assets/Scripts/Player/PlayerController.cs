@@ -615,10 +615,12 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
                     if (currentStage >= 2) 
                     { 
                         damage.Kill();
-                        TutorialEvents.OnEnemyKilled?.Invoke();
+                        
+                        TutorialEvents.enemyKilledVeryFast?.Invoke();
                     } 
                     else {
-                        damage.TakeDamage(attackDamage); 
+                        damage.TakeDamage(attackDamage);
+                        TutorialEvents.OnEnemyKilled?.Invoke();
                     }
                 }
             }
