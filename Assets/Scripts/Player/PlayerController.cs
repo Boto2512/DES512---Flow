@@ -239,21 +239,16 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
 
     }
 
-
     private void MaxFallSpeed()
     {
         float yVelocity = playerRigidBody.linearVelocity.y;
-        if (yVelocity <= config.maxFallSpeed)
-        {
+        if (yVelocity <= config.maxFallSpeed) {
             playerRigidBody.linearVelocity = new Vector3(playerRigidBody.linearVelocity.x, config.maxFallSpeed, playerRigidBody.linearVelocity.z);
-            Debug.Log("MaxFalling");
         }
     }
 
-
     private void SpeedControl() {
 
-        Debug.Log($"Player Input {verticalInput} {horizontalInput} & currentSpeed {currentMaxMovementSpeed}");
         if (!isGrounded) {
             if (playerRigidBody.linearVelocity.y != 0) {
                 currentMaxMovementSpeed = config.defaultMaxMovementSpeed + config.airSpeedIncrease;
@@ -265,13 +260,11 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
             }
         }
         else { 
-            if(horizontalInput != 0 || verticalInput != 0 && currentMaxMovementSpeed != config.defaultMaxMovementSpeed) {
-                Debug.Log("Reducing Max Speed");
+            if (horizontalInput != 0 || verticalInput != 0 && currentMaxMovementSpeed != config.defaultMaxMovementSpeed) {
                 ReduceMaxSpeed();
             }
             else {
                 currentMaxMovementSpeed = config.defaultMaxMovementSpeed;
-                Debug.Log("Reached Max SPeed");
                 timeAtMaxVelocity = 0;
             }
         }
