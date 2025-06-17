@@ -7,6 +7,9 @@ using UnityEngine.UI;
 using TMPro;
 public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable, ITargetable
 {
+
+    private bool hasReportedMovement = false;
+
     #region     ========================= Variables =========================
 
     [SerializeField] private TextMeshProUGUI speedText;
@@ -58,6 +61,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
     private float accelerationStorage;
 
     private float dragTimer;
+
 
     [Space(10)]
     [Header("Slope Movement")]
@@ -175,7 +179,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
         }
     }
     void Update() {
-        if (DeathCheck()) { return; }
+        DeathCheck();
         Debug.Log($"Slope Check: {SlopeCheck()}");
         GroundCheck();
 
@@ -193,7 +197,8 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
             coyoteTimeCounter -= Time.deltaTime;
             GetLastAirVelocity();
         }
-        speedText.text = playerRigidBody.linearVelocity.magnitude.ToString();
+        //speedText.text = playerRigidBody.linearVelocity.magnitude.ToString();
+        speedText.text = $"Left: {LeftSpeed()}\nRight: {RightSpeed()}\nUp: {UpSpeed()}\nDown: {DownSpeed()}\nOverall: {playerRigidBody.linearVelocity.magnitude}";
 
         //if (Input.GetKey(KeyCode.LeftShift)) { playerRigidBody.AddForce(orientation.forward * 3, ForceMode.Impulse); }
     }
@@ -257,6 +262,13 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
     /// Checks if grounded and adds drag if so
     /// </summary>
     private void MovePlayer() {
+        if (!hasReportedMovement && (horizontalInput != 0 || verticalInput != 0))
+{
+    hasReportedMovement = true;
+    TutorialEvents.OnPlayerMoved?.Invoke();
+
+}
+
         moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
 
         if (SlopeCheck() && !exitSlope) {
@@ -557,7 +569,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
         else if (speed > firstBreakpoint) {
             // Checks if player is in Stage 2
             currentStage = 2;
-            RunningLinesIntensity(minSpeedOfLines, maxSpawnRate);
+            RunningLinesIntensity(minSpeedOfLines, minSpawnRate);
             return;
         }
         else { 
@@ -600,7 +612,10 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
             foreach (RaycastHit enemy in enemies) {
                 IDamageable damage = enemy.transform.GetComponent<IDamageable>();
                 if (damage != null) {
-                    if (currentStage >= 2) { damage.Kill(); 
+                    if (currentStage >= 2) 
+                    { 
+                        damage.Kill();
+                        TutorialEvents.OnEnemyKilled?.Invoke();
                     } 
                     else {
                         damage.TakeDamage(attackDamage); 
@@ -672,13 +687,11 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
     #endregion  ========================= Damage Interface  =========================
 
     #region  ========================= Death  =========================
-    private bool DeathCheck() {
+    private void DeathCheck() {
         if (health <= 0) {
+            gameOver.SetActive(true);
             Time.timeScale = 0;
-            gameObject.SetActive(true);
-            return true;
         }
-        return false;
     }
     #endregion  ========================= Death  =========================
 
@@ -693,4 +706,29 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
     }
 
     #endregion ========================= Gizmos =========================
+
+    #region ========================= Animation Interface =========================
+
+    public float LeftSpeed() {
+        Vector3 leftDirection = -orientation.right;
+        float leftwardsSpeed = Vector3.Dot(playerRigidBody.linearVelocity, leftDirection);
+
+        return Mathf.Max(leftwardsSpeed, 0f);
+    }
+
+    public float RightSpeed() {
+        float rightwardsSpeed = Vector3.Dot(playerRigidBody.linearVelocity, orientation.right);
+
+        return Mathf .Max(rightwardsSpeed, 0f);
+    }
+
+    public float UpSpeed() {
+        return Mathf.Max(playerRigidBody.linearVelocity.y, 0f);
+    }
+
+    public float DownSpeed() {
+        return -Mathf.Min(playerRigidBody.linearVelocity.y, 0f);
+    }
+
+    #endregion ========================= Animation Interface =========================
 }
