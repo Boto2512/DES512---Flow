@@ -6,7 +6,7 @@ public class EnemyFastKill : ITutorialStep
 
     public EnemyFastKill()
     {
-        TutorialEvents.enemyKilledVeryFast += HandleEnemyKilled;
+        TutorialEvents.enemyKilledVeryFast += HandleEnemyKilledFast;
     }
 
     public string GetMessage()
@@ -19,9 +19,9 @@ public class EnemyFastKill : ITutorialStep
         return enemyKilledVeryFast;
     }
 
-    private void HandleEnemyKilled()
+    private void HandleEnemyKilledFast()
     {
         enemyKilledVeryFast = true;
-        TutorialEvents.enemyKilledVeryFast -= HandleEnemyKilled;
+        TutorialEvents.enemyKilledVeryFast -= HandleEnemyKilledFast;
     }
 }
