@@ -7,6 +7,9 @@ using UnityEngine.UI;
 using TMPro;
 public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable, ITargetable
 {
+
+    private bool hasReportedMovement = false;
+
     #region     ========================= Variables =========================
 
     [SerializeField] private TextMeshProUGUI speedText;
@@ -58,6 +61,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
     private float accelerationStorage;
 
     private float dragTimer;
+
 
     [Space(10)]
     [Header("Slope Movement")]
@@ -258,6 +262,13 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
     /// Checks if grounded and adds drag if so
     /// </summary>
     private void MovePlayer() {
+        if (!hasReportedMovement && (horizontalInput != 0 || verticalInput != 0))
+{
+    hasReportedMovement = true;
+    TutorialEvents.OnPlayerMoved?.Invoke();
+
+}
+
         moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
 
         if (SlopeCheck() && !exitSlope) {
@@ -601,7 +612,10 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
             foreach (RaycastHit enemy in enemies) {
                 IDamageable damage = enemy.transform.GetComponent<IDamageable>();
                 if (damage != null) {
-                    if (currentStage >= 2) { damage.Kill(); 
+                    if (currentStage >= 2) 
+                    { 
+                        damage.Kill();
+                        TutorialEvents.OnEnemyKilled?.Invoke();
                     } 
                     else {
                         damage.TakeDamage(attackDamage); 

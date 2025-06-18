@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 5668062759680778672}
   m_Layer: 9
   m_Name: Bounce Bomb
-  m_TagString: Untagged
+  m_TagString: Bomb
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -77,10 +77,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   blastCentre: {fileID: 1572823228597174351}
   weakBlastRadius: 5
-  weakBlastPower: 1.5
+  weakBlastPower: 1.1
   weakSpeedMinimum: 5
   strongBlastRadius: 3
-  strongBlastPower: 2.5
+  strongBlastPower: 1.5
   strongSpeedMinimum: 10
   entityProjectionScale: 0
   isDetonable: 1
