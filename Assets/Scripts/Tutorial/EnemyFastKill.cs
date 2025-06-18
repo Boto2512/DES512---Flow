@@ -4,14 +4,19 @@ public class EnemyFastKill : ITutorialStep
 {
     private bool enemyKilledVeryFast = false;
 
-    public EnemyFastKill()
+    public void OnStepStart()
     {
         TutorialEvents.enemyKilledVeryFast += HandleEnemyKilledFast;
     }
 
-    public string GetMessage()
+    public void OnStepComplete()
     {
-        return "Speed is damage, increase your speed and hit the enemy to kill!";
+        TutorialEvents.enemyKilledVeryFast -= HandleEnemyKilledFast;
+    }
+
+    private void HandleEnemyKilledFast()
+    {
+        enemyKilledVeryFast = true;
     }
 
     public bool Validate()
@@ -19,9 +24,8 @@ public class EnemyFastKill : ITutorialStep
         return enemyKilledVeryFast;
     }
 
-    private void HandleEnemyKilledFast()
+    public string GetMessage()
     {
-        enemyKilledVeryFast = true;
-        TutorialEvents.enemyKilledVeryFast -= HandleEnemyKilledFast;
+        return "Speed is damage — increase your speed and hit the enemy to kill!";
     }
 }

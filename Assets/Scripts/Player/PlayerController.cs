@@ -180,7 +180,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
     }
     void Update() {
         DeathCheck();
-        Debug.Log($"Slope Check: {SlopeCheck()}");
+        // Debug.Log($"Slope Check: {SlopeCheck()}");
         GroundCheck();
 
         MovementInput();

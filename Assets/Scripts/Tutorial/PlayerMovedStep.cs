@@ -4,12 +4,22 @@ public class PlayerMovedStep : ITutorialStep
 {
     private bool hasMoved = false;
 
-    public PlayerMovedStep()
+    public void OnStepStart()
     {
-        // Listen for the event
-        TutorialEvents.OnPlayerMoved += () => hasMoved = true;
+        TutorialEvents.OnPlayerMoved += HandleMoved;
+    }
+
+    public void OnStepComplete()
+    {
+        TutorialEvents.OnPlayerMoved -= HandleMoved;
+    }
+
+    private void HandleMoved()
+    {
+        hasMoved = true;
     }
 
     public bool Validate() => hasMoved;
-    public string GetMessage() => "Press WASD to move and Space for jump!";
+
+    public string GetMessage() => "Press WASD to move!";
 }

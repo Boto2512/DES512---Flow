@@ -10,6 +10,8 @@ public class TutorialManager : MonoBehaviour
 
     private bool isTutorialRunning = false;
 
+    private bool stepCompleted = false;
+
     private void Awake()
     {
         if (Instance == null) Instance = this;
@@ -26,17 +28,25 @@ public class TutorialManager : MonoBehaviour
 
     private bool waitingForNextFrame = false;
 
-private void Update()
-{
-    if (!isTutorialRunning || waitingForNextFrame) return;
-
-    ITutorialStep currentStep = tutorialSteps[currentStepIndex];
-
-    if (currentStep.Validate())
+    private void Update()
     {
-        NextStep();
-        StartCoroutine(WaitBeforeNextValidation()); 
+        if (!isTutorialRunning || stepCompleted) return;
+
+        ITutorialStep currentStep = tutorialSteps[currentStepIndex];
+
+        if (currentStep.Validate())
+        {
+            stepCompleted = true;
+
+        }
     }
+
+public void NotifyStepConfirmed()
+{
+    if (!stepCompleted) return; 
+
+    NextStep();
+    stepCompleted = false;  
 }
 
 private System.Collections.IEnumerator WaitBeforeNextValidation()
@@ -63,8 +73,10 @@ private System.Collections.IEnumerator WaitBeforeNextValidation()
     public void StartTutorial()
 {
     isTutorialRunning = true;
+    tutorialSteps[currentStepIndex].OnStepStart(); 
     StartCoroutine(DelayedShowMessage());
 }
+
 
 private System.Collections.IEnumerator DelayedShowMessage()
 {
@@ -87,10 +99,22 @@ private System.Collections.IEnumerator DelayedShowMessage()
     }
 
     private void NextStep()
+{
+    tutorialSteps[currentStepIndex].OnStepComplete(); // cleanup
+
+    currentStepIndex++;
+
+    if (currentStepIndex < tutorialSteps.Count)
     {
-        currentStepIndex++;
+        tutorialSteps[currentStepIndex].OnStepStart(); // setup new
         ShowCurrentStepMessage();
     }
+    else
+    {
+        EndTutorial();
+    }
+}
+
 
     private void EndTutorial()
     {
