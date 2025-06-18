@@ -25,6 +25,9 @@ public class PlayerVariablesConfig : ScriptableObject
     public float veloctiyStorageFrequency;
 
     [Space(10)]
+    [Tooltip("Applies a force when there is no player input to slow the player")]
+    public float counterForce;
+    [Space(10)]
     [Tooltip("the amount the player's max speed and acceleration increases by when in air")]
     public float airSpeedIncrease;
     public float maxFallSpeed;

@@ -55,17 +55,17 @@ public class CounterMovementPlace : MonoBehaviour
 
     }
 
-    private void CounterMovement(float x, float y, Vector2 mag)
+    private void CounterMovement(float x, float y, Vector2 magnitude)
     {
         //return if jumping------------------------------------------------------
 
-        if (Mathf.Abs(mag.x) > threshold && Mathf.Abs(x) < 0.05f || (mag.x < -threshold && x > 0) || (mag.x > threshold && x < 0))
+        if (Mathf.Abs(magnitude.x) > threshold && Mathf.Abs(x) < 0.05f || (magnitude.x < -threshold && x > 0) || (magnitude.x > threshold && x < 0))
         {
-            rb.AddForce(moveSpeed * orientation.transform.right * Time.deltaTime * -mag.x * counterMovement);
+            rb.AddForce(moveSpeed * orientation.transform.right * Time.deltaTime * -magnitude.x * counterMovement);
         }
-        if (Mathf.Abs(mag.y) > threshold && Mathf.Abs(y) < 0.05f || (mag.y < -threshold && y > 0) || (mag.y > threshold && y < 0))
+        if (Mathf.Abs(magnitude.y) > threshold && Mathf.Abs(y) < 0.05f || (magnitude.y < -threshold && y > 0) || (magnitude.y > threshold && y < 0))
         {
-            rb.AddForce(moveSpeed * orientation.transform.forward * Time.deltaTime * -mag.y * counterMovement);
+            rb.AddForce(moveSpeed * orientation.transform.forward * Time.deltaTime * -magnitude.y * counterMovement);
         }
 
         //Limit diagonal running. This will also cause a full stop if sliding fast and un-crouching, so not optimal.
@@ -81,7 +81,7 @@ public class CounterMovementPlace : MonoBehaviour
     /// Find the velocity relative to where the player is looking
     /// Useful for vectors calculations regarding movement and limiting movement
     /// </summary>
-    /// <returns> Returns a vector 2 of the velocity relative to wjere player is looking</returns>
+    /// <returns> Returns a vector 2 of the velocity relative to where player is looking</returns>
     public Vector2 FindVelRelativeToLook()
     {
         float lookAngle = orientation.transform.eulerAngles.y;
@@ -90,11 +90,11 @@ public class CounterMovementPlace : MonoBehaviour
         float u = Mathf.DeltaAngle(lookAngle, moveAngle);
         float v = 90 - u;
 
-        float magnitue = rb.linearVelocity.magnitude;
-        float yMag = magnitue * Mathf.Cos(u * Mathf.Deg2Rad);
-        float xMag = magnitue * Mathf.Cos(v * Mathf.Deg2Rad);
+        float magnitude = rb.linearVelocity.magnitude;
+        float yMaagnitude = magnitude * Mathf.Cos(u * Mathf.Deg2Rad);
+        float xMagnitude = magnitude * Mathf.Cos(v * Mathf.Deg2Rad);
 
-        return new Vector2(xMag, yMag);
+        return new Vector2(xMagnitude, yMaagnitude);
     }
 }
 

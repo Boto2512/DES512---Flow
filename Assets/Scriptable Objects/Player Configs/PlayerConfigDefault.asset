@@ -14,14 +14,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultHealth: 100
   defaultMaxMovementSpeed: 8
-  groundDrag: 8
+  groundDrag: 0
   airDrag: 4
   maxVeloctiyDuration: 3
   velocityDecayRate: 0.5
   veloctiyStorageFrequency: 0
-  airSpeedIncrease: 5
+  counterForce: 80
+  airSpeedIncrease: 3
   maxFallSpeed: -50
-  airControlMultiplier: 0.3
+  airControlMultiplier: 0.15
   maxSlopeAngle: 45
   minSlopeAngle: 5
   slopeSpeedImpact: 5
