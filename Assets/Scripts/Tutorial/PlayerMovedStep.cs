@@ -21,5 +21,5 @@ public class PlayerMovedStep : ITutorialStep
 
     public bool Validate() => hasMoved;
 
-    public string GetMessage() => "Press WASD to move!";
+    public string GetMessage() => "Press WASD to move and SPACE to Jump!";
 }

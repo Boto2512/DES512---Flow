@@ -3,11 +3,12 @@ using UnityEngine;
 
 public class TutorialTriggerZone : MonoBehaviour
 {
-    private void OnTriggerEnter(Collider other)
+    private void OnCollisionStay(Collision collision)
     {
-        if (other.CompareTag("Player"))
+        if (collision.gameObject.CompareTag("Player"))
         {
             TutorialManager.Instance.NotifyStepConfirmed();
+            
             Debug.Log("dsfsdfbjbjsdkfbsdjk");
         }
     }
