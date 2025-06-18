@@ -8,6 +8,8 @@ public class Restart : MonoBehaviour
         Debug.Log($"TimeScale {Time.timeScale}");
         if (Input.GetKeyDown(KeyCode.R)) {
             Time.timeScale = 1f;
+
+
             Scene currentScene = SceneManager.GetActiveScene();
             SceneManager.LoadScene(currentScene.name);
         }

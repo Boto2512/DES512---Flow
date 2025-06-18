@@ -20,6 +20,12 @@ public static class Globals {
 
     #endregion Layers
 
+    #region Maths Constants
+
+    public static readonly float RootTwo = Mathf.Sqrt(2f);
+
+    #endregion
+
     private static PlayerController player;
     /// <summary>
     /// Invokes EVENT_PLAYER_MODIFIED when PLAYER is set
