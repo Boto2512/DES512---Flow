@@ -234,7 +234,6 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
         }
         else if (isGrounded) {
             playerRigidBody.AddForce(moveDirection.normalized * currentMaxMovementSpeed * 10, ForceMode.Force);
-            playerRigidBody.linearDamping = config.groundDrag;
         }
         else {
             playerRigidBody.AddForce(moveDirection.normalized * currentMaxMovementSpeed * 10 * config.airControlMultiplier, ForceMode.Force);
@@ -703,7 +702,6 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
         }
         else
         {
-            playerRigidBody.linearDamping = config.groundDrag;
             dragTimer = 0;
         }
     }
