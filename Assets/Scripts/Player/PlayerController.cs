@@ -288,7 +288,14 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
 
     private void SpeedControl() {
         Vector3 velocity = new Vector3(playerRigidBody.linearVelocity.x, 0, playerRigidBody.linearVelocity.z);
-        if (velocity.magnitude > currentMaxMovementSpeed)
+
+        if (SlopeCheck() && !exitSlope)
+        {
+            if (playerRigidBody.linearVelocity.magnitude > currentMaxMovementSpeed)
+            {
+                playerRigidBody.linearVelocity = playerRigidBody.linearVelocity.normalized * currentMaxMovementSpeed;
+            };
+        } else if (velocity.magnitude > currentMaxMovementSpeed)
         {
             Vector3 velocityNormalized = velocity.normalized * currentMaxMovementSpeed;
             playerRigidBody.linearVelocity = new Vector3(velocityNormalized.x, playerRigidBody.linearVelocity.y, velocityNormalized.z);
@@ -377,9 +384,13 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
             playerRigidBody.AddForce(Vector3.down * config.maxJumpMultiplier, ForceMode.Force);
             //Debug.Log("Variable Jump - rise");
         }
-        else if (!isGrounded && playerRigidBody.linearVelocity.y < 0) {
+        else if (!isGrounded && playerRigidBody.linearVelocity.y < 0 && !hasBombBounced) {
             playerRigidBody.AddForce(Vector3.down * config.fallMultiplier, ForceMode.Force);
             //Debug.Log("Variable Jump - fall");
+        }
+        else if (!isGrounded && playerRigidBody.linearVelocity.y < 0 && hasBombBounced) {
+
+            playerRigidBody.AddForce(Vector3.down * config.bombFallMultiplier, ForceMode.Force);
         }
     }
 
@@ -487,14 +498,15 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
 
     #region ========================= Speed Stages =========================
     private void GetSpeedStage() {
-        float speed = playerRigidBody.linearVelocity.magnitude;
-        if (speed > config.secondBreakpoint) {
+        Vector2 horizontalVelocity = new Vector2(playerRigidBody.linearVelocity.x, playerRigidBody.linearVelocity.z);
+        float horizontalSpeed = horizontalVelocity.magnitude;
+        if (horizontalSpeed > config.secondBreakpoint) {
             // Checks if player is in Stage 3
             currentStage = 3;
             RunningLinesIntensity(maxSpeedOfLines,maxSpawnRate);
             return;
         }
-        else if (speed > config.firstBreakpoint) {
+        else if (horizontalSpeed > config.firstBreakpoint) {
             // Checks if player is in Stage 2
             currentStage = 2;
             RunningLinesIntensity(minSpeedOfLines, minSpawnRate);

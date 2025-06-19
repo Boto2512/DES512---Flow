@@ -15,8 +15,11 @@ public class PlayerVariablesConfig : ScriptableObject
     //public float startSpeed;
 
     public float defaultMaxMovementSpeed;
-    public float groundDrag;
-    public float airDrag;
+    [Space(10)]
+    [Tooltip("Applies a force when there is no player input to slow the player")]
+    public float counterForce;
+    //public float groundDrag;
+    //public float airDrag;
     [Tooltip("Controls how long the player stays at max velocity before decay starts")]
     public float maxVeloctiyDuration;
     [Tooltip("Controls the rate max speed & acceleration is reduced after being increased")]
@@ -24,9 +27,6 @@ public class PlayerVariablesConfig : ScriptableObject
     [Tooltip("How often velocity is stored in seconds, used for the wall kick")]
     public float veloctiyStorageFrequency;
 
-    [Space(10)]
-    [Tooltip("Applies a force when there is no player input to slow the player")]
-    public float counterForce;
     [Space(10)]
     [Tooltip("the amount the player's max speed and acceleration increases by when in air")]
     public float airSpeedIncrease;
@@ -52,6 +52,7 @@ public class PlayerVariablesConfig : ScriptableObject
     public float maxJumpMultiplier;
     [Tooltip("applies a a force when player falls so they fall quicker  ")]
     public float fallMultiplier;
+    public float bombFallMultiplier;
     public float jumpCooldown;
     [Space(5)]
     [Tooltip("duration of coyote time")]

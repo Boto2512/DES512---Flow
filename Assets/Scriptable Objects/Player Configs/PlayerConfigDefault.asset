@@ -17,8 +17,8 @@ MonoBehaviour:
   groundDrag: 0
   airDrag: 4
   maxVeloctiyDuration: 3
-  velocityDecayRate: 0.5
-  veloctiyStorageFrequency: 0
+  defaultVelocityDecayRate: 1
+  veloctiyStorageFrequency: 0.5
   counterForce: 80
   airSpeedIncrease: 3
   maxFallSpeed: -50
@@ -30,6 +30,7 @@ MonoBehaviour:
   jumpForce: 7
   maxJumpMultiplier: 15
   fallMultiplier: 15
+  bombFallMultiplier: 10
   jumpCooldown: 1
   coyoteTime: 0.2
   groundCheckRange: 0.25
