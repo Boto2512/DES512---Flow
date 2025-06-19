@@ -3,6 +3,9 @@ using UnityEngine;
 
 public interface ITutorialStep
 {
-    bool Validate();           // Returns true when the step is complete
-    string GetMessage();       // Message to display for this step
+    void OnStepStart();       
+    void OnStepComplete();    
+    bool Validate();          
+    string GetMessage();      
 }
+

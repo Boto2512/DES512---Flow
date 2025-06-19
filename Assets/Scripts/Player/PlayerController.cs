@@ -180,7 +180,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
     }
     void Update() {
         DeathCheck();
-        Debug.Log($"Slope Check: {SlopeCheck()}");
+        // Debug.Log($"Slope Check: {SlopeCheck()}");
         GroundCheck();
 
         MovementInput();
@@ -615,10 +615,12 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
                     if (currentStage >= 2) 
                     { 
                         damage.Kill();
-                        TutorialEvents.OnEnemyKilled?.Invoke();
+                        
+                        TutorialEvents.enemyKilledVeryFast?.Invoke();
                     } 
                     else {
-                        damage.TakeDamage(attackDamage); 
+                        damage.TakeDamage(attackDamage);
+                        TutorialEvents.OnEnemyKilled?.Invoke();
                     }
                 }
             }
@@ -688,7 +690,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
 
     #region  ========================= Death  =========================
     private void DeathCheck() {
-        if (health <= 0) {
+        if (health <= 0 && !gameOver.activeSelf) {
             gameOver.SetActive(true);
             Time.timeScale = 0;
         }

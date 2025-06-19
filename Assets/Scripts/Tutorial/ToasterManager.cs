@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ToasterManager : MonoBehaviour
 {
@@ -8,7 +9,8 @@ public class ToasterManager : MonoBehaviour
     [SerializeField]
     private TextMeshProUGUI toasterMessage;
 
-
+    [SerializeField]
+    private Image tutorialGifImage; 
 
     private GameObject toasterObject;
 
@@ -16,14 +18,8 @@ public class ToasterManager : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
+        if (Instance == null) Instance = this;
+        else Destroy(gameObject);
     }
 
     private void Start()
@@ -32,7 +28,7 @@ public class ToasterManager : MonoBehaviour
         HideToaster();
     }
 
-    public void ShowToaster(string message)
+    public void ShowToaster(string message, Sprite gifSprite = null)
     {
         if (toasterMessage == null || toasterObject == null)
         {
@@ -42,7 +38,19 @@ public class ToasterManager : MonoBehaviour
 
         toasterMessage.text = message;
         toasterObject.SetActive(true);
-        
+
+        if (tutorialGifImage != null)
+        {
+            if (gifSprite != null)
+            {
+                tutorialGifImage.sprite = gifSprite;
+                tutorialGifImage.gameObject.SetActive(true);
+            }
+            else
+            {
+                tutorialGifImage.gameObject.SetActive(false);
+            }
+        }
 
         CancelInvoke(nameof(HideToaster));
         Invoke(nameof(HideToaster), TOAST_DURATION_SECONDS);
@@ -51,6 +59,7 @@ public class ToasterManager : MonoBehaviour
     private void HideToaster()
     {
         toasterObject?.SetActive(false);
-        
+        if (tutorialGifImage != null)
+            tutorialGifImage.gameObject.SetActive(false);
     }
 }
