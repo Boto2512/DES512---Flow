@@ -544,6 +544,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
 
         animator.SetTrigger("hasDetonate");
         animatorCam.SetTrigger("hasDetonate");
+        TutorialEvents.enemyKilledVeryFast?.Invoke();
 
         isDetonating = true;
         this.InvokeExclusive("detonate", () => {
