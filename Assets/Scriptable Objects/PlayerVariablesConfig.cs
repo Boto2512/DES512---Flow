@@ -20,7 +20,7 @@ public class PlayerVariablesConfig : ScriptableObject
     [Tooltip("Controls how long the player stays at max velocity before decay starts")]
     public float maxVeloctiyDuration;
     [Tooltip("Controls the rate max speed & acceleration is reduced after being increased")]
-    public float velocityDecayRate;
+    public float defaultVelocityDecayRate;
     [Tooltip("How often velocity is stored in seconds, used for the wall kick")]
     public float veloctiyStorageFrequency;
 

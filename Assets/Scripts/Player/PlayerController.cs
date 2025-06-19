@@ -23,7 +23,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
     [SerializeField] private float currentMaxMovementSpeed;
 
     [SerializeField] private float timeAtMaxVelocity;
-
+    private float velocityDecayRate;
     private float veloctiyStorageTime;
     private bool doesVeloctiyTweenExist = false;
     private Tween velocityTween;
@@ -32,6 +32,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
     [SerializeField] private Transform orientation;
 
     private float accelerationProgress = 0;
+    private float reduceMaxSpeedProgress = 0;
 
     private Rigidbody playerRigidBody;
 
@@ -124,13 +125,15 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
         healthBar.maxValue = config.defaultHealth;
         healthBar.value = config.defaultHealth;
 
+        velocityDecayRate = config.defaultVelocityDecayRate;
+
         ValidateBounceBomb();
         EventSecondaryClick.AddListener(SpawnBounceBomb);
         EventPrimaryClick.AddListener(Attack);
 
         DOTween.Init();
         if (!doesVeloctiyTweenExist) {
-            velocityTween = DOTween.To(() => speedLerpProgress, x => speedLerpProgress = x, 1, config.velocityDecayRate);
+            velocityTween = DOTween.To(() => speedLerpProgress, x => speedLerpProgress = x, 1, config.defaultVelocityDecayRate);
             velocityTween.Pause();
         }
     }
@@ -311,15 +314,20 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
             currentMaxMovementSpeed = config.defaultMaxMovementSpeed;
             timeAtMaxVelocity = 0;
         }
+
+        if (Mathf.Approximately(currentMaxMovementSpeed, config.defaultMaxMovementSpeed)) { timeAtMaxVelocity = 0; }
     }
 
     private void ReduceMaxSpeed() {
         timeAtMaxVelocity += Time.deltaTime;
-        if (timeAtMaxVelocity > config.maxVeloctiyDuration) {
+        /*if (timeAtMaxVelocity > config.maxVeloctiyDuration) {
             currentMaxMovementSpeed = Mathf.MoveTowards(currentMaxMovementSpeed, config.defaultMaxMovementSpeed, config.velocityDecayRate * Time.deltaTime);
+        }*/
+
+        if (timeAtMaxVelocity > config.maxVeloctiyDuration) {
+            currentMaxMovementSpeed = Mathf.SmoothDamp(currentMaxMovementSpeed, config.defaultMaxMovementSpeed, ref velocityDecayRate, config.maxVeloctiyDuration);
         }
     }
-
 
     /// <summary>
     /// Uses the last stored air velocity and replaces the player's velocity with it
@@ -419,6 +427,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
     private void GroundCheck() {
         isGrounded = Physics.Raycast(groundCheckPosition.position, Vector3.down, config.groundCheckRange, config.groundMask);
         hasJumped = false;
+        hasBombBounced = false;
         //groundedText.text = $"Is Grounded: {isGrounded}";
     }
     /// <summary>
@@ -753,7 +762,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
 
         if (currentMaxMovementSpeed > maxSpeedStorage)
         {
-            currentMaxMovementSpeed = Mathf.MoveTowards(currentMaxMovementSpeed, maxSpeedStorage, config.velocityDecayRate * Time.deltaTime);
+            currentMaxMovementSpeed = Mathf.MoveTowards(currentMaxMovementSpeed, maxSpeedStorage, config.defaultVelocityDecayRate * Time.deltaTime);
             //config.acceleration = Mathf.MoveTowards(config.acceleration, accelerationStorage, config.velocityDecayRate * Time.deltaTime);
         }
         else if (horizontalInput == 0 && verticalInput == 0 && velocity == Vector3.zero)
