@@ -1,10 +1,13 @@
+using System.Linq;
+using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(Rigidbody))]
 public class ThirdPersonTestController : MonoBehaviour {
 
-    [SerializeField, Range(1, 120)] private int sensivity = 60;
+    [SerializeField, Range(1, 120)] private int sensitivity = 60;
+    private CinemachineInputAxisController inputAxisController;
 
     private Vector2 movementInput;
     private Vector2 lookInput;
@@ -14,22 +17,28 @@ public class ThirdPersonTestController : MonoBehaviour {
 
     private Rigidbody rb;
 
-    private Transform cameraStand;
+    private void Awake() {
+        Cursor.lockState = CursorLockMode.Locked;
+        rb = this.GetComponent<Rigidbody>();
+
+        this.GetComponentInChildren<CinemachineDecollider>().Decollision.ObstacleLayers = Globals.OBSTACLE_MASK;
+        inputAxisController = this.GetComponentInChildren<CinemachineInputAxisController>();
+    }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start() {
-        Cursor.lockState = CursorLockMode.Locked;
-
-        rb = this.GetComponent<Rigidbody>();
-        cameraStand = this.transform.Find("CameraStand");
-        if (cameraStand == null) {
-            throw new System.Exception("ThirdPersonTestController requires a CameraStand child GameObject");
-        }
+        UpdateSensitivity();
     }
 
     // Update is called once per frame
     void Update() {
         
+    }
+
+    private void OnValidate() {
+        if (Application.isPlaying) {
+            UpdateSensitivity();
+        }
     }
 
     #region Input
@@ -39,10 +48,6 @@ public class ThirdPersonTestController : MonoBehaviour {
     }
 
     public void Look(InputAction.CallbackContext context) {
-        lookInput = context.ReadValue<Vector2>();
-
-        cameraStand.Rotate(Vector3.up, lookInput.y * 0.02f * sensivity);
-        cameraStand.Rotate(Vector3.right, lookInput.x * 0.02f * sensivity);
 
         //cameraStand.Rotate(lookInput.y * 0.02f * sensivity, lookInput.x * 0.02f * sensivity, 0f);
     }
@@ -75,4 +80,16 @@ public class ThirdPersonTestController : MonoBehaviour {
     }
 
     #endregion Input
+
+    #region Sensitivity
+
+    private void UpdateSensitivity() {
+        if (inputAxisController?.Controllers?.Count < 2)
+            return;
+
+        inputAxisController.Controllers[0].Input.Gain = (1f / 75f) * sensitivity;
+        inputAxisController.Controllers[1].Input.Gain = -(1f / 75f) * sensitivity;
+    }
+
+    #endregion Sensitivity
 }
