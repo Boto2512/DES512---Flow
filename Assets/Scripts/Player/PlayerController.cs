@@ -180,7 +180,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
     }
     void Update() {
         DeathCheck();
-        Debug.Log($"Slope Check: {SlopeCheck()}");
+        // Debug.Log($"Slope Check: {SlopeCheck()}");
         GroundCheck();
 
         MovementInput();
@@ -544,6 +544,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
 
         animator.SetTrigger("hasDetonate");
         animatorCam.SetTrigger("hasDetonate");
+        TutorialEvents.enemyKilledVeryFast?.Invoke();
 
         isDetonating = true;
         this.InvokeExclusive("detonate", () => {
@@ -615,10 +616,12 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
                     if (currentStage >= 2) 
                     { 
                         damage.Kill();
-                        TutorialEvents.OnEnemyKilled?.Invoke();
+                        
+                        TutorialEvents.enemyKilledVeryFast?.Invoke();
                     } 
                     else {
-                        damage.TakeDamage(attackDamage); 
+                        damage.TakeDamage(attackDamage);
+                        TutorialEvents.OnEnemyKilled?.Invoke();
                     }
                 }
             }
