@@ -7,8 +7,11 @@ public class PlayerVariablesConfig : ScriptableObject
     public float defaultHealth;
 
     [Header("========== Movement ==========")]
-   
-    public float acceleration;
+
+    [Tooltip("Starting value for the acceleration")]
+    public float defaultAccelertionSpeed;
+    [Tooltip("Time takes for acceleration to reach maxMovementSpeed")]
+    public float accelerationTime;
     //[Tooltip("Currently not in use")]
     public float deceleration;
     
