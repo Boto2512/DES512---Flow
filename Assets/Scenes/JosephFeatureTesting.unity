@@ -300,8 +300,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0faf3c4cb8abc8f4e93e1293bbf3f94b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  acceleration: 5
-  deceleration: 1
+  acceleration: 6
+  deceleration: 2
+  groundDrag: 3
+  jumpForce: 7.5
+  coyoteTime: 0.2
+  groundCheckRange: 0.25
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 64
+  minSlopeAngle: 5
+  maxSlopeAngle: 45
+  slopeSpeedMultiplier: 3
+  cameraDistance: 4
   sensitivity: 48
 --- !u!54 &80844773
 Rigidbody:
@@ -328,7 +339,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 80
+  m_Constraints: 112
   m_CollisionDetection: 0
 --- !u!4 &80844774
 Transform:
@@ -545,6 +556,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 53.578, z: 0}
+--- !u!1 &397613673
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 397613674}
+  m_Layer: 7
+  m_Name: GroundCheck
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &397613674
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 397613673}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -0.961, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 803572989}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &468408143
 GameObject:
   m_ObjectHideFlags: 0
@@ -781,6 +823,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 719787446}
+  - {fileID: 397613674}
   m_Father: {fileID: 80844774}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &803572990
@@ -1226,7 +1269,7 @@ Transform:
   m_GameObject: {fileID: 1349238066}
   serializedVersion: 2
   m_LocalRotation: {x: 0.15212338, y: -0.000000006010037, z: 9.25033e-10, w: 0.98836154}
-  m_LocalPosition: {x: 0.5, y: 2.003529, z: -4.768585}
+  m_LocalPosition: {x: 0.5, y: 1.7028232, z: -3.814867}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1254,7 +1297,7 @@ MonoBehaviour:
       Enabled: 1
       Input:
         InputAction: {fileID: -6547441687521043312, guid: bb81ff71908a41342adf5f5fe49eb6aa, type: 3}
-        Gain: 1
+        Gain: 0.64
         LegacyInput: 
         LegacyGain: 1
         CancelDeltaTime: 1
@@ -1267,7 +1310,7 @@ MonoBehaviour:
       Enabled: 1
       Input:
         InputAction: {fileID: -6547441687521043312, guid: bb81ff71908a41342adf5f5fe49eb6aa, type: 3}
-        Gain: -1
+        Gain: -0.64
         LegacyInput: 
         LegacyGain: 1
         CancelDeltaTime: 1
@@ -1334,12 +1377,12 @@ MonoBehaviour:
   TargetOffset: {x: 0, y: 0, z: 0}
   TrackerSettings:
     BindingMode: 4
-    PositionDamping: {x: 1, y: 1, z: 1}
+    PositionDamping: {x: 0, y: 0, z: 0}
     AngularDampingMode: 0
     RotationDamping: {x: 1, y: 1, z: 1}
     QuaternionDamping: 1
   OrbitStyle: 0
-  Radius: 5
+  Radius: 4
   Orbits:
     Top:
       Radius: 2
@@ -1447,7 +1490,7 @@ MonoBehaviour:
   MinimumDistanceFromTarget: 0.3
   AvoidObstacles:
     Enabled: 1
-    DistanceLimit: 0
+    DistanceLimit: 4
     MinimumOcclusionTime: 0
     CameraRadius: 0.4
     UseFollowTarget:
@@ -2030,7 +2073,7 @@ Transform:
   m_GameObject: {fileID: 2023481772}
   serializedVersion: 2
   m_LocalRotation: {x: 0.15212338, y: -0.000000006010037, z: 9.2503316e-10, w: 0.98836154}
-  m_LocalPosition: {x: 0.5, y: 2.003529, z: -4.768585}
+  m_LocalPosition: {x: 0.5, y: 1.7028232, z: -3.814867}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
