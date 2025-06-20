@@ -1,4 +1,3 @@
-using System.Linq;
 using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -6,20 +5,65 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(Rigidbody))]
 public class ThirdPersonTestController : MonoBehaviour {
 
-    #region Cinemachine Variables
+    #region Movement Variables
 
+    [Header("Movement")]
+    [SerializeField, Min(0f)] private float acceleration;
+    [SerializeField, Min(0f)] private float deceleration;
+    [SerializeField, Min(0f)] private float groundDrag;
+
+    private Vector3 movementForward;
+    private Vector3 movementBackward => -movementForward;
+    private Vector3 movementRight;
+    private Vector3 movementLeft => -movementRight;
+
+    #endregion Movement Variables
+
+    #region Jump Variables
+
+    [Header("Jump")]
+    [SerializeField, Min(0f)] private float jumpForce;
+    [SerializeField, Min(0f)] private float coyoteTime;
+
+    #endregion Jump Variables
+
+    #region Ground & Slope Check
+
+    [Header("Ground & Slope Check")]
+    [SerializeField, Min(0f)] private float groundCheckRange = 0.25f;
+    [SerializeField] private LayerMask groundMask = Globals.GROUND_MASK;
+    private Transform groundCheckTransform;
+    private Vector3 groundCheckPosition => groundCheckTransform.position;
+
+    [SerializeField, Min(0f)] private float minSlopeAngle;
+    [SerializeField, Min(0f)] private float maxSlopeAngle;
+    [SerializeField, Min(0f)] private float slopeSpeedMultiplier;
+
+    private PlayerGroundedState groundedState = PlayerGroundedState.None;
+    private bool enableGroundedStateCheck = true;
+
+    #endregion Ground & Slope Check
+
+    #region Camera Variables
+
+    [Header("Camera Settings")]
+    [SerializeField, Range(0f, 15f)] private float cameraDistance = 3f;
     [SerializeField, Range(1, 120)] private int sensitivity = 60;
     private CinemachineInputAxisController inputAxisController;
     private CinemachineOrbitalFollow orbitalFollow;
     private CinemachineDeoccluder deoccluder;
+    private GameObject cameraObject;
 
-    #endregion Cinemachine Variables
+    #endregion Camera Variables
+
+    #region Input Variables
 
     private Vector2 movementInput;
-    private Vector2 lookInput;
     private bool attackPressed;
     private bool throwPressed;
     private bool jumpInput;
+
+    #endregion Input Variables
 
     private Rigidbody rb;
 
@@ -27,12 +71,12 @@ public class ThirdPersonTestController : MonoBehaviour {
         Cursor.lockState = CursorLockMode.Locked;
 
         rb = this.GetComponent<Rigidbody>();
+        groundCheckTransform = this.transform.Find("GroundCheck").transform;
+        cameraObject = this.GetComponentInChildren<Camera>().gameObject;
 
         orbitalFollow = this.GetComponentInChildren<CinemachineOrbitalFollow>();
-        if (orbitalFollow == null) Debug.Log("orbital follow is null");
 
         deoccluder = this.GetComponentInChildren<CinemachineDeoccluder>();
-        if (deoccluder == null) Debug.Log("deoccluder follow is null");
         deoccluder.CollideAgainst = Globals.OBSTACLE_MASK;
         deoccluder.TransparentLayers = ~Globals.OBSTACLE_MASK;
 
@@ -42,32 +86,128 @@ public class ThirdPersonTestController : MonoBehaviour {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start() {
         UpdateSensitivity();
-        deoccluder.AvoidObstacles.DistanceLimit = orbitalFollow.Radius;
+        orbitalFollow.Radius = cameraDistance;
+        deoccluder.AvoidObstacles.DistanceLimit = cameraDistance;
+
+        rb.linearDamping = groundDrag;
     }
 
     // Update is called once per frame
     void Update() {
-        
+
+    }
+
+    private void FixedUpdate() {
+        Rotation();
+        Movement();
     }
 
     private void OnValidate() {
         if (Application.isPlaying) {
             UpdateSensitivity();
+            rb.linearDamping = groundDrag;
+        }
+        else {
+            this.GetComponentInChildren<CinemachineOrbitalFollow>().Radius = cameraDistance;
+            this.GetComponentInChildren<CinemachineDeoccluder>().AvoidObstacles.DistanceLimit = cameraDistance;
+
+            var tempInputAxisController = this.GetComponentInChildren<CinemachineInputAxisController>();
+            tempInputAxisController.Controllers[0].Input.Gain = (1f / 75f) * sensitivity;
+            tempInputAxisController.Controllers[1].Input.Gain = -(1f / 75f) * sensitivity;
         }
     }
 
+    #region Movement
+
+    private void Movement() {
+        // need to normalise movement since MoveInput() accumulates inputs
+        movementInput = movementInput.normalized;
+
+        HorizontalMovement();
+        VerticalMovement();
+    }
+
+    private void HorizontalMovement() {
+        if (movementInput.x != 0) {
+            rb.AddForce(movementInput.x * Time.fixedDeltaTime * acceleration * movementRight, ForceMode.Force);
+        }
+        else {
+            //rb.AddForce(100 * Time.fixedDeltaTime * deceleration * movementLeft);
+        }
+
+        if (movementInput.y != 0) {
+            rb.AddForce(movementInput.y * Time.fixedDeltaTime * acceleration * movementForward, ForceMode.Force);
+        }
+        else {
+            //rb.AddForce(100 * Time.fixedDeltaTime * deceleration * movementBackward);
+        }
+    }
+
+    private void VerticalMovement() {
+
+    }
+
+    private void Accelerate() {
+
+    }
+
+    private void Decelerate() {
+
+    }
+
+    #endregion Movement
+
+    #region Rotation
+
+    private void Rotation() {
+        movementForward = cameraObject.transform.forward.Horizontal().normalized;
+        movementRight = Vector3.Cross(Vector3.up, movementForward).normalized;
+    }
+
+    #endregion Rotation
+
+    #region Ground & Slopes
+
+    private void GroundedStateCheck() {
+        if (!enableGroundedStateCheck)
+            return;
+
+        if (Physics.Raycast(groundCheckPosition, Vector3.down, out RaycastHit hitInfo, groundCheckRange, groundMask, QueryTriggerInteraction.Collide)) {
+            float angle = Vector3.Angle(Vector3.up, hitInfo.normal);
+            groundedState = (angle < maxSlopeAngle && angle > minSlopeAngle) ? PlayerGroundedState.OnSlope : PlayerGroundedState.OnGround;
+        }
+        else {
+            groundedState = PlayerGroundedState.InAir;
+        }
+    }
+
+    #endregion Ground & Slopes
+
     #region Input
 
-    public void Move(InputAction.CallbackContext context) {
-        movementInput = context.ReadValue<Vector2>();
+    public void MoveInput(InputAction.CallbackContext context) {
+        Vector2 tempInput = context.ReadValue<Vector2>();
+
+        if (tempInput.x == 0) {
+            movementInput.x = 0;
+        }
+        else {
+            movementInput.x += tempInput.x;
+        }
+
+        if (tempInput.y == 0) {
+            movementInput.y = 0;
+        }
+        else {
+            movementInput.y += tempInput.y;
+        }
     }
 
-    public void Look(InputAction.CallbackContext context) {
-
-        //cameraStand.Rotate(lookInput.y * 0.02f * sensivity, lookInput.x * 0.02f * sensivity, 0f);
+    public void LookInput(InputAction.CallbackContext context) {
+        // do nothing
     }
 
-    public void Attack(InputAction.CallbackContext context) {
+    public void AttackInput(InputAction.CallbackContext context) {
         if (context.started) {
             attackPressed = true;
         }
@@ -76,7 +216,7 @@ public class ThirdPersonTestController : MonoBehaviour {
         }
     }
 
-    public void Throw(InputAction.CallbackContext context) {
+    public void ThrowInput(InputAction.CallbackContext context) {
         if (context.started) {
             throwPressed = true;
         }
@@ -85,7 +225,7 @@ public class ThirdPersonTestController : MonoBehaviour {
         }
     }
 
-    public void Jump(InputAction.CallbackContext context) {
+    public void JumpInput(InputAction.CallbackContext context) {
         if (context.started) {
             jumpInput = true;
         }
