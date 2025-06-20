@@ -31,7 +31,7 @@ public class ThirdPersonTestController : MonoBehaviour {
 
     [Header("Ground & Slope Check")]
     [SerializeField, Min(0f)] private float groundCheckRange = 0.25f;
-    [SerializeField] private LayerMask groundMask = Globals.GROUND_MASK;
+    [SerializeField] private LayerMask groundMask;
     private Transform groundCheckTransform;
     private Vector3 groundCheckPosition => groundCheckTransform.position;
 
@@ -69,9 +69,11 @@ public class ThirdPersonTestController : MonoBehaviour {
 
     private void Awake() {
         Cursor.lockState = CursorLockMode.Locked;
+        if (groundMask == 0) {
+            groundMask = Globals.GROUND_MASK;
+        }
 
-        rb = this.GetComponent<Rigidbody>();
-        groundCheckTransform = this.transform.Find("GroundCheck").transform;
+        groundCheckTransform = this.transform.Find("Model").Find("GroundCheck");        // TODO: make this more general
         cameraObject = this.GetComponentInChildren<Camera>().gameObject;
 
         orbitalFollow = this.GetComponentInChildren<CinemachineOrbitalFollow>();
@@ -85,6 +87,7 @@ public class ThirdPersonTestController : MonoBehaviour {
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start() {
+        rb = this.GetComponent<Rigidbody>();
         UpdateSensitivity();
         orbitalFollow.Radius = cameraDistance;
         deoccluder.AvoidObstacles.DistanceLimit = cameraDistance;
@@ -94,7 +97,7 @@ public class ThirdPersonTestController : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
-
+        GroundedStateCheck();
     }
 
     private void FixedUpdate() {
@@ -103,18 +106,14 @@ public class ThirdPersonTestController : MonoBehaviour {
     }
 
     private void OnValidate() {
-        if (Application.isPlaying) {
-            UpdateSensitivity();
-            rb.linearDamping = groundDrag;
-        }
-        else {
-            this.GetComponentInChildren<CinemachineOrbitalFollow>().Radius = cameraDistance;
-            this.GetComponentInChildren<CinemachineDeoccluder>().AvoidObstacles.DistanceLimit = cameraDistance;
+        this.GetComponentInChildren<CinemachineOrbitalFollow>().Radius = cameraDistance;
+        this.GetComponentInChildren<CinemachineDeoccluder>().AvoidObstacles.DistanceLimit = cameraDistance;
 
-            var tempInputAxisController = this.GetComponentInChildren<CinemachineInputAxisController>();
-            tempInputAxisController.Controllers[0].Input.Gain = (1f / 75f) * sensitivity;
-            tempInputAxisController.Controllers[1].Input.Gain = -(1f / 75f) * sensitivity;
-        }
+        var tempInputAxisController = this.GetComponentInChildren<CinemachineInputAxisController>();
+        tempInputAxisController.Controllers[0].Input.Gain = (1f / 75f) * sensitivity;
+        tempInputAxisController.Controllers[1].Input.Gain = -(1f / 75f) * sensitivity;
+
+        this.GetComponent<Rigidbody>().linearDamping = groundDrag;
     }
 
     #region Movement
@@ -129,14 +128,14 @@ public class ThirdPersonTestController : MonoBehaviour {
 
     private void HorizontalMovement() {
         if (movementInput.x != 0) {
-            rb.AddForce(movementInput.x * Time.fixedDeltaTime * acceleration * movementRight, ForceMode.Force);
+            rb.AddForce(300 * movementInput.x * Time.fixedDeltaTime * acceleration * movementRight, ForceMode.Force);
         }
         else {
             //rb.AddForce(100 * Time.fixedDeltaTime * deceleration * movementLeft);
         }
 
         if (movementInput.y != 0) {
-            rb.AddForce(movementInput.y * Time.fixedDeltaTime * acceleration * movementForward, ForceMode.Force);
+            rb.AddForce(300 * movementInput.y * Time.fixedDeltaTime * acceleration * movementForward, ForceMode.Force);
         }
         else {
             //rb.AddForce(100 * Time.fixedDeltaTime * deceleration * movementBackward);
