@@ -8528,11 +8528,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 910811351615385114, guid: 43385952d0c3b7f44a1cac9d3120428e, type: 3}
       propertyPath: bombThrowPower
-      value: 20
+      value: 16
       objectReference: {fileID: 0}
     - target: {fileID: 910811351615385114, guid: 43385952d0c3b7f44a1cac9d3120428e, type: 3}
       propertyPath: fallMultiplier
-      value: 40
+      value: 14
       objectReference: {fileID: 0}
     - target: {fileID: 910811351615385114, guid: 43385952d0c3b7f44a1cac9d3120428e, type: 3}
       propertyPath: firstBreakpoint
@@ -8544,7 +8544,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 910811351615385114, guid: 43385952d0c3b7f44a1cac9d3120428e, type: 3}
       propertyPath: maxMovementSpeed
-      value: 15
+      value: 14
       objectReference: {fileID: 0}
     - target: {fileID: 910811351615385114, guid: 43385952d0c3b7f44a1cac9d3120428e, type: 3}
       propertyPath: secondBreakpoint
@@ -8555,8 +8555,12 @@ PrefabInstance:
       value: 2147483712
       objectReference: {fileID: 0}
     - target: {fileID: 910811351615385114, guid: 43385952d0c3b7f44a1cac9d3120428e, type: 3}
+      propertyPath: maxJumpMultiplier
+      value: 18
+      objectReference: {fileID: 0}
+    - target: {fileID: 910811351615385114, guid: 43385952d0c3b7f44a1cac9d3120428e, type: 3}
       propertyPath: velocityDecayRate
-      value: 1
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 910811351615385114, guid: 43385952d0c3b7f44a1cac9d3120428e, type: 3}
       propertyPath: airControlMultiplier
