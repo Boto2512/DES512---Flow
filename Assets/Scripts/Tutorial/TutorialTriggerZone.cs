@@ -1,15 +1,23 @@
 using UnityEngine;
 
-
 public class TutorialTriggerZone : MonoBehaviour
 {
-    private void OnCollisionStay(Collision collision)
+    [SerializeField]
+    private int stepIndex = 0; 
+
+    private bool hasTriggered = false;
+
+    private void OnCollisionEnter(Collision collision)
+{
+    if (hasTriggered) return;
+    if (!TutorialManager.Instance.IsCurrentStep(stepIndex)) return;
+
+    if (collision.gameObject.CompareTag("Player"))
     {
-        if (collision.gameObject.CompareTag("Player"))
-        {
-            TutorialManager.Instance.NotifyStepConfirmed();
-            
-            Debug.Log("dsfsdfbjbjsdkfbsdjk");
-        }
+        hasTriggered = true;
+        TutorialManager.Instance.NotifyStepConfirmed();
+        Debug.Log($"Tutorial Step {stepIndex} confirmed.");
     }
+}
+
 }
