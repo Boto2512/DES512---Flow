@@ -10,5 +10,7 @@ public interface ITutorialStep
     Sprite GetGifSprite();
     void SetGifSprite(Sprite sprite);
 
+    bool ShouldAutoAdvance() => false;
+
 }
 

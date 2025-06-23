@@ -41,11 +41,17 @@ public class TutorialManager : MonoBehaviour
 
         ITutorialStep currentStep = tutorialSteps[currentStepIndex];
 
-        if (currentStep.Validate())
-        {
-            stepCompleted = true;
+        if (currentStep.Validate() && !stepCompleted)
+{
+    stepCompleted = true;
 
-        }
+    if (currentStep.ShouldAutoAdvance())
+    {
+        NextStep();
+        stepCompleted = false;
+    }
+}
+
     }
 
 public void NotifyStepConfirmed()
