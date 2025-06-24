@@ -1,8 +1,7 @@
 using static Globals;
 using UnityEngine;
 
-public static class Utility
-{
+public static class Utility {
     #region LayerMask Logic
     public static bool DoesMaskContainLayer(LayerMask mask, int layer) => (mask & LayerToLayerMask(layer)) != 0;
     public static bool IsSticky(int layer) => DoesMaskContainLayer(STICKY_MASK, layer);
