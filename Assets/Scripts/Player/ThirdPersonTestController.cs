@@ -68,6 +68,7 @@ public class ThirdPersonTestController : MonoBehaviour {
     #endregion Input Variables
 
     private Rigidbody rb;
+    private GameObject model;
 
     private void Awake() {
         Cursor.lockState = CursorLockMode.Locked;
@@ -90,6 +91,8 @@ public class ThirdPersonTestController : MonoBehaviour {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start() {
         rb = this.GetComponent<Rigidbody>();
+        model = this.transform.Find("Model").gameObject;
+
         UpdateSensitivity();
         orbitalFollow.Radius = cameraDistance;
         deoccluder.AvoidObstacles.DistanceLimit = cameraDistance;
@@ -102,6 +105,8 @@ public class ThirdPersonTestController : MonoBehaviour {
     void Update() {
         GroundedStateCheck();
         GroundedStateUpdates();
+
+        model.transform.rotation = Quaternion.Euler(0f, cameraObject.transform.rotation.eulerAngles.y, 0f);
     }
 
     private void FixedUpdate() {
