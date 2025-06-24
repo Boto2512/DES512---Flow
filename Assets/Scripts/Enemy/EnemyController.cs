@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.AI;
 using UnityEngine.Events;
+using static UnityEngine.Rendering.DebugUI;
 
 public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
     #region Damage Variables
@@ -139,6 +140,17 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
         Destroy(this.gameObject);
     }
 
+    public void Heal(float value) {
+        if (health + value <= healthBar.maxValue)
+        {
+            health += value;
+        }
+        else
+        {
+            health = healthBar.maxValue;
+        }
+    }
+
     #endregion Damage Interface
 
     #region AI Agent Methods
@@ -179,6 +191,10 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
                 Reposition();
                 break;
 
+            case EnemyAIState.FanOut:
+                FanOut();
+                break;
+
             default:
                 break;
         }
@@ -210,6 +226,10 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
         if (NavMesh.SamplePosition(targetPosition + toComfortableRange, out NavMeshHit hit, halfComfortableRange, NavMesh.AllAreas)) {
             SetAgentDestination(hit.position);
         }
+    }
+
+    private void FanOut() {
+
     }
 
     private Vector3 GetPursueDestination() {
@@ -387,6 +407,8 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
         return Physics.Raycast(groundCheckPosition.position, Vector3.down, groundCheckRange, Globals.OBSTACLE_MASK);
     }
 
+    #region Safe NavMeshAgent Methods
+
     private bool SetAgentDestination(Vector3 destination) {
         return isGrounded && agent.enabled && agent.SetDestination(destination);
     }
@@ -396,4 +418,7 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
             agent.ResetPath();
         }
     }
+
+    #endregion Safe NavMeshAgent Methods
+
 }

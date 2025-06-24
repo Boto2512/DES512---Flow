@@ -1,31 +1,19 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.VFX;
-using UnityEngine.Events;
-using NUnit.Framework;
-using static UnityEngine.EventSystems.EventTrigger;
+using static Utility;
 
 [RequireComponent(typeof(Rigidbody))]
 public class BounceBomb : MonoBehaviour
 {
+    [SerializeField] private BounceBombConfig Config;
+
     [Header("Positioning")]
     [SerializeField] private Transform blastCentre;
     private Vector3 blastOrigin => blastCentre.position;
 
-    [Header("Weak Blast")]
-    [SerializeField, Min(0f)] private float weakBlastRadius;
-    [SerializeField, Min(0f)] private float weakBlastPower = 1f;
-    [SerializeField, Min(0f)] private float weakSpeedMinimum;
-
-    [Header("Strong Blast")]
-    [SerializeField, Min(0f)] private float strongBlastRadius;
-    [SerializeField, Min(0f)] private float strongBlastPower = 1f;
-    [SerializeField, Min(0f)] private float strongSpeedMinimum;
-
     [Header("Other")]
-    [SerializeField, Min(0f), Tooltip("How far ahead the momentum projects the entity position")] private float entityProjectionScale = 0f;
     [SerializeField] private bool isDetonable = true;
 
     private Rigidbody rb;
@@ -33,6 +21,7 @@ public class BounceBomb : MonoBehaviour
     [Header("VFX")]
     [SerializeField] private GameObject vfxObject;
     [SerializeField] private VisualEffect vfx;
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start() {
@@ -46,15 +35,10 @@ public class BounceBomb : MonoBehaviour
 
     }
 
-    private void OnValidate() {
-        if (strongBlastRadius > weakBlastRadius) {
-            weakBlastRadius = strongBlastRadius;
-        }
-    }
-
     private void OnCollisionEnter(Collision collision) {
         rb.isKinematic = true;
         rb.detectCollisions = false;
+        CheckIfInsideBounceBombTriggerZone();
 
         blastCentre.position = collision.contacts[0].point;
     }
@@ -71,24 +55,26 @@ public class BounceBomb : MonoBehaviour
             return;
 
         ExplosionVFX();
+        DestroyExplosiveSteam();
+        TutorialEvents.OnUsedBomb?.Invoke();
 
         FindBlastAffectableEntities().ForEach((x) => ModifyEnitityMomentum(x.Entity, x.InStrongBlast));
     }
 
     private Vector3 CalculateProjectedEntityPosition(IMomentumModifiable imm) {
-        Vector3 projectedPosition = imm.GetPosition() + imm.GetMomentum() * entityProjectionScale;
+        Vector3 projectedPosition = imm.GetPosition() + imm.GetMomentum() * Config.EntityProjectionScale;
 
         return projectedPosition;
     }
 
     /// <summary>
-    /// Finds all the entities that implement IMomentumModifiable within the weakBlastRadius range, and within line of sight from the blast origin.
+    /// Finds all the entities that implement IMomentumModifiable within the Config.WeakBlastRadius range, and within line of sight from the blast origin.
     /// </summary>
     /// <returns>A collection of each IMomentumModifiable entity and whether it is in the strong blast range</returns>
     private List<(IMomentumModifiable Entity, bool InStrongBlast)> FindBlastAffectableEntities() {
         var allColliders = new List<(IMomentumModifiable, bool)>();
 
-        foreach (var collider in Physics.OverlapSphere(blastOrigin, weakBlastRadius)) {
+        foreach (var collider in Physics.OverlapSphere(blastOrigin, Config.WeakBlastRadius)) {
             Rigidbody rb = collider.attachedRigidbody;
             if (rb == null) {
                 continue;
@@ -100,13 +86,13 @@ public class BounceBomb : MonoBehaviour
 
             Vector3 momentumPosition = collider.ClosestPoint(blastOrigin);
             if (momentumPosition == blastOrigin) {
-                allColliders.Add((imm, Vector3.Distance(momentumPosition, imm.GetPosition()) <= strongBlastRadius));
+                allColliders.Add((imm, Vector3.Distance(momentumPosition, imm.GetPosition()) <= Config.StrongBlastRadius));
                 continue;
             }
             
             Vector3 blastDirection = (momentumPosition - blastOrigin).normalized;
-            if (Physics.Raycast(blastOrigin, blastDirection, out RaycastHit outHit, weakBlastRadius)) {
-                allColliders.Add((imm, outHit.distance <= strongBlastRadius));
+            if (Physics.Raycast(blastOrigin, blastDirection, out RaycastHit outHit, Config.WeakBlastRadius)) {
+                allColliders.Add((imm, outHit.distance <= Config.StrongBlastRadius));
                 continue;
             }
         }
@@ -117,13 +103,22 @@ public class BounceBomb : MonoBehaviour
     private void ModifyEnitityMomentum(IMomentumModifiable entity, bool inStrongBlast) {
         // sets the momentum of each blast affectable entity to at least the speed minimum of the blast radius it's in, in the direction from itself to the blast origin
         Vector3 projectedPosition = CalculateProjectedEntityPosition(entity);
-        Vector3 blastToPosition = projectedPosition - blastOrigin;
+        Vector3 directionFromBlast = (projectedPosition - blastOrigin).normalized;
 
-        float tempSpeed = entity.GetMomentum().magnitude * (inStrongBlast ? strongBlastPower : weakBlastPower);
-        float speedMinimumToUse = inStrongBlast ? strongSpeedMinimum : weakSpeedMinimum;
+        Vector3 momentum = entity.GetMomentum();
+
+        float tempSpeed = (Config.UseFixedVerticalSpeed ? momentum.Horizontal().magnitude : momentum.magnitude) * (inStrongBlast ? Config.StrongBlastPower : Config.WeakBlastPower);
+        float speedMinimumToUse = inStrongBlast ? Config.StrongSpeedMinimum : Config.WeakSpeedMinimum;
         float newSpeed = Mathf.Max(tempSpeed, speedMinimumToUse);
 
-        entity.SetMomentum(blastToPosition.normalized * newSpeed);
+        Vector3 tempMomentum = directionFromBlast * newSpeed;
+        float newVerticalSpeed = Config.UseFixedVerticalSpeed ? momentum.y + Config.FixedVerticalSpeed : Config.VerticalGainRatio * tempMomentum.y;
+        // newX = Sqrt(hypotenuse^2 - newY^2)
+        float newHorizontalSpeed = Config.UseFixedVerticalSpeed ? newSpeed : Mathf.Sqrt(newSpeed * newSpeed - newVerticalSpeed * newVerticalSpeed);
+
+        Vector3 newMomentum = new(directionFromBlast.x * newHorizontalSpeed, directionFromBlast.y * newVerticalSpeed, directionFromBlast.z * newHorizontalSpeed);
+        Debug.Log($"Old: {entity.GetMomentum()}; New: {newMomentum}");
+        entity.SetMomentum(newMomentum);
     }
 
     private void ExplosionVFX() {
@@ -134,11 +129,40 @@ public class BounceBomb : MonoBehaviour
 
     }
 
-    private void OnDrawGizmos()
-    {
+    private void OnDrawGizmos() {
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, weakBlastRadius);
+        Gizmos.DrawWireSphere(transform.position, Config.WeakBlastRadius);
         Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, strongBlastRadius);
+        Gizmos.DrawWireSphere(transform.position, Config.StrongBlastRadius);
+    }
+
+    private void DestroyExplosiveSteam()
+    {
+        Collider[] colliders = Physics.OverlapSphere(blastOrigin, Config.WeakBlastRadius);
+
+        foreach (Collider col in colliders)
+        {
+            ExplosiveSteam steam = col.GetComponent<ExplosiveSteam>();
+            if (steam != null)
+            {
+                Destroy(steam.gameObject);
+            }
+        }
+    }
+
+    private void CheckIfInsideBounceBombTriggerZone()
+    {
+        float checkRadius = 0.5f;
+        Collider[] nearbyColliders = Physics.OverlapSphere(blastCentre.position, checkRadius);
+
+        foreach (var col in nearbyColliders)
+        {
+            if (col.CompareTag("BombBounceZone"))
+            {
+                Debug.Log("Bounce Bomb landed inside bounce zone");
+                TutorialEvents.OnReachedBounceBomb?.Invoke();
+                break;
+            }
+        }
     }
 }
