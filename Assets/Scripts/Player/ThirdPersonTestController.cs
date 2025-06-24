@@ -9,7 +9,7 @@ public class ThirdPersonTestController : MonoBehaviour {
 
     [Header("Movement")]
     [SerializeField, Min(0f)] private float acceleration;
-    [SerializeField, Min(0f)] private float deceleration;
+    [SerializeField, Min(0f)] private float airAccelerationMultiplier;
     [SerializeField, Min(0f)] private float groundDrag;
     private float constGroundDrag;
 
@@ -27,7 +27,8 @@ public class ThirdPersonTestController : MonoBehaviour {
     [SerializeField, Min(0f)] private float coyoteTime;
     private float coyoteTimer = 0f;
 
-    private bool canJump => groundedState != PlayerGroundedState.InAir || coyoteTimer <= coyoteTime;
+    private bool canJump => !hasJumped && (!inAir || coyoteTimer <= coyoteTime);
+    private bool hasJumped = false;
 
     #endregion Jump Variables
 
@@ -42,11 +43,11 @@ public class ThirdPersonTestController : MonoBehaviour {
     [SerializeField, Min(0f)] private float minSlopeAngle;
     [SerializeField, Min(0f)] private float maxSlopeAngle;
     [SerializeField, Min(0f)] private float slopeSpeedMultiplier;
-    private float currentSlopeMultiplier = 1f;
 
     private PlayerGroundedState groundedState = PlayerGroundedState.None;
     private PlayerGroundedState prevGroundedState = PlayerGroundedState.None;
     private bool enableGroundedStateCheck = true;
+    private bool inAir => groundedState == PlayerGroundedState.InAir;
 
     #endregion Ground & Slope Check
 
@@ -58,6 +59,7 @@ public class ThirdPersonTestController : MonoBehaviour {
     private CinemachineInputAxisController inputAxisController;
     private CinemachineOrbitalFollow orbitalFollow;
     private CinemachineDeoccluder deoccluder;
+    private CinemachineCamera ccamera;
     private GameObject cameraObject;
 
     #endregion Camera Variables
@@ -82,6 +84,7 @@ public class ThirdPersonTestController : MonoBehaviour {
 
         groundCheckTransform = this.transform.Find("Model").Find("GroundCheck");        // TODO: make this more general
         cameraObject = this.GetComponentInChildren<Camera>().gameObject;
+        ccamera = this.GetComponentInChildren<CinemachineCamera>();
 
         orbitalFollow = this.GetComponentInChildren<CinemachineOrbitalFollow>();
 
@@ -113,12 +116,26 @@ public class ThirdPersonTestController : MonoBehaviour {
         CoyoteUpdate();
 
         model.transform.rotation = Quaternion.Euler(0f, cameraObject.transform.rotation.eulerAngles.y, 0f);
+        ccamera.Target.TrackingTarget.rotation = ccamera.transform.rotation;
         prevGroundedState = groundedState;
     }
 
     private void FixedUpdate() {
         Rotation();
         Movement();
+    }
+
+    private void OnCollisionEnter(Collision collision) {
+        if (collision == null)
+            return;
+
+        GameObject gameObject = collision.gameObject;
+        if (gameObject == null)
+            return;
+
+        if (!enableGroundedStateCheck && Utility.DoesMaskContainLayer(groundMask, gameObject.layer)) {
+            enableGroundedStateCheck = true;
+        }
     }
 
     private void OnValidate() {
@@ -132,42 +149,65 @@ public class ThirdPersonTestController : MonoBehaviour {
         this.GetComponent<Rigidbody>().linearDamping = groundDrag;
     }
 
+    private void OnDrawGizmos() {
+        //Gizmos.color = Color.red;
+        //Gizmos.DrawLine(model.transform.position, model.transform.position + model.transform.forward);
+        //Gizmos.DrawLine(model.transform.position, model.transform.position + ccamera.transform.forward);
+    }
+
     #region Movement
 
     private void Movement() {
         // need to normalise movement since MoveInput() accumulates inputs
         movementInput = movementInput.normalized;
 
-        HorizontalMovement();
         VerticalMovement();
+        HorizontalMovement();
+    }
+
+    private void VerticalMovement() {
+        if (jumpActivated && canJump) {
+            Jump();
+            hasJumped = true;
+        }
     }
 
     private void HorizontalMovement() {
         if (movementInput.x != 0) {
-            rb.AddForce(300 * currentSlopeMultiplier * movementInput.x * Time.fixedDeltaTime * acceleration * movementRight, ForceMode.Force);
-        }
-        else {
+            float forwardMovement = 100 * movementInput.x * acceleration * Time.fixedDeltaTime;
+
+            switch (groundedState) {
+                case PlayerGroundedState.InAir:
+                    forwardMovement *= airAccelerationMultiplier;
+                    break;
+
+                case PlayerGroundedState.OnSlope:
+                    forwardMovement *= slopeSpeedMultiplier;
+                    break;
+            }
+
+            rb.AddForce(forwardMovement * movementRight, ForceMode.Force);
 
         }
 
         if (movementInput.y != 0) {
-            rb.AddForce(300 * currentSlopeMultiplier * movementInput.y * Time.fixedDeltaTime * acceleration * movementForward, ForceMode.Force);
+            float rightMovement = 100 * movementInput.y * acceleration * Time.fixedDeltaTime;
+
+            switch (groundedState) {
+                case PlayerGroundedState.InAir:
+                    rightMovement *= airAccelerationMultiplier;
+                    break;
+
+                case PlayerGroundedState.OnSlope:
+                    rightMovement *= slopeSpeedMultiplier;
+                    break;
+            }
+
+            rb.AddForce(rightMovement * movementForward, ForceMode.Force);
         }
         else {
 
         }
-    }
-
-    private void VerticalMovement() {
-
-    }
-
-    private void Accelerate() {
-
-    }
-
-    private void Decelerate() {
-
     }
 
     #endregion Movement
@@ -183,11 +223,15 @@ public class ThirdPersonTestController : MonoBehaviour {
 
     #region Jump
 
+    private void Jump() {
+        rb.AddForce(Vector3.up * jumpForce, ForceMode.VelocityChange);
+    }
+
     private void CoyoteUpdate() {
         if (groundedState != PlayerGroundedState.InAir)
             return;
 
-        if (coyoteTime < coyoteTimer) {
+        if (coyoteTimer < coyoteTime) {
             coyoteTimer += Time.deltaTime;
         }
     }
@@ -215,23 +259,25 @@ public class ThirdPersonTestController : MonoBehaviour {
 
         switch (groundedState) {
             case PlayerGroundedState.None:
-                groundDrag = constGroundDrag;
-                currentSlopeMultiplier = 1f;
+                rb.linearDamping = groundDrag;
+                hasJumped = false;
                 break;
 
             case PlayerGroundedState.OnGround:
-                groundDrag = constGroundDrag;
-                currentSlopeMultiplier = 1f;
+                rb.linearDamping = groundDrag;
+                hasJumped = false;
                 break;
 
             case PlayerGroundedState.OnSlope:
-                groundDrag = constGroundDrag;
-                currentSlopeMultiplier = slopeSpeedMultiplier;
+                rb.linearDamping = groundDrag;
+                hasJumped = false;
                 break;
 
             case PlayerGroundedState.InAir:
-                groundDrag = 0f;
-                currentSlopeMultiplier = 1f;
+                rb.linearDamping = 0f;
+                coyoteTimer = 0f;
+
+                enableGroundedStateCheck = false;
                 break;
 
             default:
