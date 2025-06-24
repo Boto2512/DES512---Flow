@@ -12,6 +12,13 @@ public class TutorialManager : MonoBehaviour
 
     private bool stepCompleted = false;
 
+    [SerializeField] private Sprite moveStepGif;
+    [SerializeField] private Sprite ReachedBounceBombStepGif;
+    [SerializeField] private Sprite UsedBounceBombStepGif;
+    [SerializeField] private Sprite EnemyKilledStepGif;
+    [SerializeField] private Sprite EnemyFastKillStepGif;
+    [SerializeField] private Sprite BarrelExplodedStepGif;
+
     private void Awake()
     {
         if (Instance == null) Instance = this;
@@ -34,11 +41,17 @@ public class TutorialManager : MonoBehaviour
 
         ITutorialStep currentStep = tutorialSteps[currentStepIndex];
 
-        if (currentStep.Validate())
-        {
-            stepCompleted = true;
+        if (currentStep.Validate() && !stepCompleted)
+{
+    stepCompleted = true;
 
-        }
+    if (currentStep.ShouldAutoAdvance())
+    {
+        NextStep();
+        stepCompleted = false;
+    }
+}
+
     }
 
 public void NotifyStepConfirmed()
@@ -68,6 +81,13 @@ private System.Collections.IEnumerator WaitBeforeNextValidation()
             new EnemyFastKill(),
             new BarrelExplodedStep()
         };
+
+        tutorialSteps[0].SetGifSprite(moveStepGif);
+        tutorialSteps[1].SetGifSprite(ReachedBounceBombStepGif);
+        tutorialSteps[2].SetGifSprite(UsedBounceBombStepGif);
+        tutorialSteps[3].SetGifSprite(EnemyKilledStepGif);
+        tutorialSteps[4].SetGifSprite(EnemyFastKillStepGif);
+        tutorialSteps[5].SetGifSprite(BarrelExplodedStepGif);
     }
 
     public void StartTutorial()
@@ -86,11 +106,31 @@ private System.Collections.IEnumerator DelayedShowMessage()
 
 
     private void ShowCurrentStepMessage()
+{
+    if (currentStepIndex < tutorialSteps.Count)
     {
+        ITutorialStep step = tutorialSteps[currentStepIndex];
+        string message = step.GetMessage();
+        Sprite gif = step.GetGifSprite();
+        ToasterManager.Instance.ShowToaster(message, gif);
+    }
+    else
+    {
+        EndTutorial();
+    }
+}
+
+
+    private void NextStep()
+    {
+        tutorialSteps[currentStepIndex].OnStepComplete(); // cleanup
+
+        currentStepIndex++;
+
         if (currentStepIndex < tutorialSteps.Count)
         {
-            string message = tutorialSteps[currentStepIndex].GetMessage();
-            ToasterManager.Instance.ShowToaster(message);
+            tutorialSteps[currentStepIndex].OnStepStart(); // setup new
+            ShowCurrentStepMessage();
         }
         else
         {
@@ -98,22 +138,11 @@ private System.Collections.IEnumerator DelayedShowMessage()
         }
     }
 
-    private void NextStep()
+public bool IsCurrentStep(int stepIndex)
 {
-    tutorialSteps[currentStepIndex].OnStepComplete(); // cleanup
-
-    currentStepIndex++;
-
-    if (currentStepIndex < tutorialSteps.Count)
-    {
-        tutorialSteps[currentStepIndex].OnStepStart(); // setup new
-        ShowCurrentStepMessage();
-    }
-    else
-    {
-        EndTutorial();
-    }
+    return currentStepIndex == stepIndex;
 }
+
 
 
     private void EndTutorial()

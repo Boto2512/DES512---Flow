@@ -1,13 +1,15 @@
-using UnityEngine;
-using DG.Tweening;
-using UnityEngine.Events;
 using System.Collections;
-using UnityEngine.VFX;
-using UnityEngine.UI;
+using DG.Tweening;
 using TMPro;
-using Unity.VisualScripting;
-public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable, ITargetable
-{
+using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.UI;
+using UnityEngine.VFX
+    ;
+public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable, ITargetable {
+
+    private bool hasReportedMovement = false;
+
     #region     ========================= Variables =========================
 
     [SerializeField] private PlayerVariablesConfig config;
@@ -57,7 +59,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
     private bool exitSlope;
 
 
-   
+
     private float coyoteTimeCounter;
     private bool canJump = true;
     private bool jumpReleased;
@@ -112,12 +114,14 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
     [Header("Target")]
     [SerializeField] private Transform target;
     #endregion  ========================= Variables =========================
+
     void Awake() {
         Globals.PLAYER = this;
     }
+
     void Start() {
         playerRigidBody = GetComponent<Rigidbody>();
-                
+
         currentMaxMovementSpeed = config.defaultMaxMovementSpeed;
         maxSpeedStorage = currentMaxMovementSpeed;
 
@@ -142,6 +146,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
         }
         groundCheckEnabled = true;
     }
+
     void Update() {
         DeathCheck();
         GroundCheck();
@@ -150,7 +155,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
         ActionInputs();
 
         SpeedControl();
-        
+
         if (storeVelocity) { StartCoroutine(GetVelocity()); }
         GetSpeedStage();
 
@@ -167,6 +172,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
 
         //if (Input.GetKey(KeyCode.LeftShift)) { playerRigidBody.AddForce(orientation.forward * 3, ForceMode.Impulse); }
     }
+
     void FixedUpdate() {
         MovePlayer();
         VariableJump();
@@ -175,8 +181,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
     }
 
     #region ========================= Inputs =========================
-    private void MovementInput()
-    {
+    private void MovementInput() {
         horizontalInput = Input.GetAxisRaw("Horizontal");
         verticalInput = Input.GetAxisRaw("Vertical");
 
@@ -188,15 +193,15 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
                 exitSlope = true;
                 hasJumped = true;
 
-                this.InvokeExclusive("Reset Jump",ResetJump, config.jumpCooldown);
+                this.InvokeExclusive("Reset Jump", ResetJump, config.jumpCooldown);
 
                 groundCheckEnabled = false;
                 this.InvokeExclusive("EnableGroundCheck", EnableGroundCheck, .25f);
             }
-            
+
         }
         if (Input.GetButtonUp("Jump")) {
-                jumpReleased = true;
+            jumpReleased = true;
         }
 
         if (Input.GetButtonDown("Jump") && !isGrounded) {
@@ -210,6 +215,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
             kickOnce = false;
         }
     }
+
     private void ActionInputs() {
         attackTime += Time.deltaTime;
         if (Input.GetMouseButtonDown(0) && attackTime >= config.attackCooldown) {
@@ -228,6 +234,12 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
     /// Checks if grounded and adds drag if so
     /// </summary>
     private void MovePlayer() {
+        if (!hasReportedMovement && (horizontalInput != 0 || verticalInput != 0)) {
+            hasReportedMovement = true;
+            TutorialEvents.OnPlayerMoved?.Invoke();
+
+        }
+
         moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
         CounterForce();
 
@@ -235,7 +247,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
         if (SlopeCheck() && !exitSlope) {
             playerRigidBody.AddForce(GetSlopeMovementDiretion() * movementSpeed * 10f, ForceMode.Force);
 
-            if (horizontalInput != 0 || verticalInput != 0 && playerRigidBody.linearVelocity.y <0) {
+            if (horizontalInput != 0 || verticalInput != 0 && playerRigidBody.linearVelocity.y < 0) {
                 playerRigidBody.AddForce(Vector3.down * config.downwardsForce, ForceMode.Force);
             }
         }
@@ -256,17 +268,14 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
     /// 
     /// Controls the amount of force applied to the player
     /// </summary>
-    private void Acceleration()
-    {
-        if (horizontalInput != 0 || verticalInput != 0)
-        {
+    private void Acceleration() {
+        if (horizontalInput != 0 || verticalInput != 0) {
             //movementSpeed = Mathf.SmoothDamp(movementSpeed, currentMaxMovementSpeed, ref accelerationSpeed, config.accelerationTime);
             movementSpeed = Mathf.Lerp(0, currentMaxMovementSpeed, accelerationProgress);
             accelerationProgress += Time.deltaTime * (config.defaultAccelertionSpeed * 0.1f);
             accelerationProgress = Mathf.Clamp(accelerationProgress, 0, 1);
         }
-        else
-        {
+        else {
             float inverseProgress = 1 - accelerationProgress;
             movementSpeed = Mathf.Lerp(config.defaultMaxMovementSpeed, 0, inverseProgress);
 
@@ -276,17 +285,13 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
 
     }
 
-    private void CounterForce()
-    {
+    private void CounterForce() {
         Vector2 magnitude = FindVelRelativeToLook();
-        if (isGrounded)
-        {
-            if (Mathf.Abs(magnitude.x) > 0.01f && Mathf.Abs(horizontalInput) < 0.05f || (magnitude.x < -0.01f && horizontalInput > 0) || (magnitude.x > 0.01f && horizontalInput < 0))
-            {
+        if (isGrounded) {
+            if (Mathf.Abs(magnitude.x) > 0.01f && Mathf.Abs(horizontalInput) < 0.05f || (magnitude.x < -0.01f && horizontalInput > 0) || (magnitude.x > 0.01f && horizontalInput < 0)) {
                 playerRigidBody.AddForce(currentMaxMovementSpeed * orientation.right * Time.deltaTime * -magnitude.x * config.counterForce);
             }
-            if (Mathf.Abs(magnitude.y) > 0.01f && Mathf.Abs(verticalInput) < 0.05f || (magnitude.y < -0.01f && verticalInput > 0) || (magnitude.y > 0.01f && verticalInput < 0))
-            {
+            if (Mathf.Abs(magnitude.y) > 0.01f && Mathf.Abs(verticalInput) < 0.05f || (magnitude.y < -0.01f && verticalInput > 0) || (magnitude.y > 0.01f && verticalInput < 0)) {
                 playerRigidBody.AddForce(currentMaxMovementSpeed * orientation.forward * Time.deltaTime * -magnitude.y * config.counterForce);
             }
         }
@@ -297,8 +302,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
     /// Useful for vectors calculations regarding movement and limiting movement
     /// </summary>
     /// <returns> Returns a vector 2 of the velocity relative to where player is looking</returns>
-    public Vector2 FindVelRelativeToLook()
-    {
+    public Vector2 FindVelRelativeToLook() {
         float lookAngle = orientation.eulerAngles.y;
         float moveAngle = Mathf.Atan2(playerRigidBody.linearVelocity.x, playerRigidBody.linearVelocity.z) * Mathf.Rad2Deg;
 
@@ -322,14 +326,12 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
     private void SpeedControl() {
         Vector3 velocity = new Vector3(playerRigidBody.linearVelocity.x, 0, playerRigidBody.linearVelocity.z);
 
-        if (SlopeCheck() && !exitSlope)
-        {
-            if (playerRigidBody.linearVelocity.magnitude > currentMaxMovementSpeed)
-            {
+        if (SlopeCheck() && !exitSlope) {
+            if (playerRigidBody.linearVelocity.magnitude > currentMaxMovementSpeed) {
                 playerRigidBody.linearVelocity = playerRigidBody.linearVelocity.normalized * currentMaxMovementSpeed;
             };
-        } else if (velocity.magnitude > currentMaxMovementSpeed)
-        {
+        }
+        else if (velocity.magnitude > currentMaxMovementSpeed) {
             Vector3 velocityNormalized = velocity.normalized * currentMaxMovementSpeed;
             playerRigidBody.linearVelocity = new Vector3(velocityNormalized.x, playerRigidBody.linearVelocity.y, velocityNormalized.z);
         }
@@ -370,10 +372,8 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
         }
     }
 
-    private bool CheckIfSpeedIncreases(float increaseValue)
-    {
-        if(config.defaultMaxMovementSpeed + increaseValue > currentMaxMovementSpeed)
-        {
+    private bool CheckIfSpeedIncreases(float increaseValue) {
+        if (config.defaultMaxMovementSpeed + increaseValue > currentMaxMovementSpeed) {
             return true;
         }
         else { return false; }
@@ -383,23 +383,19 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
     /// <summary>
     /// Uses the last stored air velocity and replaces the player's velocity with it
     /// </summary>
-    private void PerserveMomentumOnLand()
-    {
+    private void PerserveMomentumOnLand() {
         bool previousGround = isGrounded;
         GroundCheck();
 
-        if (previousGround == false && isGrounded == true)
-        {
+        if (previousGround == false && isGrounded == true) {
             playerRigidBody.linearVelocity = new Vector3(lastAirVelocity.x, playerRigidBody.linearVelocity.y, lastAirVelocity.z);
         }
     }
-    private void GetLastAirVelocity()
-    {
+    private void GetLastAirVelocity() {
         lastAirVelocity = playerRigidBody.linearVelocity;
     }
 
-    private IEnumerator GetVelocity()
-    {
+    private IEnumerator GetVelocity() {
         storeVelocity = false;
         yield return new WaitForSeconds(veloctiyStorageTime);
         veloctiyStorage = playerRigidBody.linearVelocity;
@@ -413,7 +409,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
     #region     ========================= Jump =========================
     private void Jump() {
         exitSlope = true;
-        playerRigidBody.linearVelocity = new Vector3(playerRigidBody.linearVelocity.x, 0, playerRigidBody.linearVelocity.z) ;
+        playerRigidBody.linearVelocity = new Vector3(playerRigidBody.linearVelocity.x, 0, playerRigidBody.linearVelocity.z);
         playerRigidBody.AddForce(transform.up * config.jumpForce, ForceMode.Impulse);
     }
 
@@ -421,8 +417,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
     /// Applies a force to the player after the player has released the jump button to make it reach the apex of the jump earlier
     /// Applies a force when the player is falling to make them fall faster
     /// </summary>
-    private void VariableJump()
-    {
+    private void VariableJump() {
         /*//Debug.Log($"Variable Jump: jumpReleased: ${jumpReleased},Y Velocity: ${playerRigidBody.linearVelocity.y} ");
         if (jumpReleased && !isGrounded && playerRigidBody.linearVelocity.y > 0) {
             playerRigidBody.AddForce(Vector3.down * config.maxJumpMultiplier, ForceMode.Force);
@@ -446,14 +441,14 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
     #endregion  ========================= Jump =========================
 
     #region  ========================= Wall Kick =========================
-  /// <summary>
-  /// checks if there is a wall to kick off of
-  /// </summary>
-  /// <param name="wallNormal"> Returns the wall's normal </param>
-  /// <returns> Returns a boolean value depending on if a wall was hit</returns>
+    /// <summary>
+    /// checks if there is a wall to kick off of
+    /// </summary>
+    /// <param name="wallNormal"> Returns the wall's normal </param>
+    /// <returns> Returns a boolean value depending on if a wall was hit</returns>
     private bool WallCheck(out Vector3 wallNormal) {
-        if(Time.time >= timeOfLastKick + config.wallKickCooldown && !isGrounded) {
-            timeOfLastKick = Time.time; 
+        if (Time.time >= timeOfLastKick + config.wallKickCooldown && !isGrounded) {
+            timeOfLastKick = Time.time;
             RaycastHit wallHit;
             bool isWall = Physics.Raycast(groundCheckPosition.position, orientation.forward, out wallHit, config.wallKickRange, config.groundMask);
             Debug.DrawRay(groundCheckPosition.position, orientation.forward * config.wallKickRange, Color.blueViolet, 10);
@@ -461,11 +456,12 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
             wallNormal = wallHit.normal;
             return isWall;
         }
-        else { 
+        else {
             wallNormal = Vector3.zero;
-            return false; 
+            return false;
         }
     }
+
     /// <summary>
     /// Deflects the players velocity off the wall
     /// </summary>
@@ -482,9 +478,8 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
     #region     ========================= Ground Check =========================
     private void GroundCheck() {
         if (groundCheckEnabled) {
-            isGrounded = Physics.Raycast(groundCheckPosition.position, Vector3.down, config.groundCheckRange, config.groundMask); 
-            if (isGrounded)
-            {
+            isGrounded = Physics.Raycast(groundCheckPosition.position, Vector3.down, config.groundCheckRange, config.groundMask);
+            if (isGrounded) {
                 hasJumped = false;
                 hasBombBounced = false;
             }
@@ -492,8 +487,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
         //groundedText.text = $"Is Grounded: {isGrounded}";
     }
 
-    private void EnableGroundCheck()
-    {
+    private void EnableGroundCheck() {
         groundCheckEnabled = true;
     }
 
@@ -502,15 +496,16 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
     /// Casts a ray to find the angle the ground is at to detect if its a slope
     /// </summary>
     /// <returns> Returns a boolean value based on the angle the ground is at </returns>
-    private bool SlopeCheck(){
+    private bool SlopeCheck() {
         if (Physics.Raycast(groundCheckPosition.position, Vector3.down, out slopeHit, config.groundCheckRange)) {
             float angle = Vector3.Angle(Vector3.up, slopeHit.normal);
             return angle < config.maxSlopeAngle && angle > config.minSlopeAngle;
         }
         return false;
     }
+
     private Vector3 GetSlopeMovementDiretion() {
-        return Vector3.ProjectOnPlane(moveDirection,slopeHit.normal).normalized;
+        return Vector3.ProjectOnPlane(moveDirection, slopeHit.normal).normalized;
     }
     #endregion  ========================= Ground Check =========================
 
@@ -534,12 +529,14 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
         EventSecondaryClick.RemoveListener(SpawnBounceBomb);
         EventSecondaryClick.AddListener(DetonateBounceBomb);
     }
+
     private void DetonateBounceBomb() {
         if (isDetonating)
             return;
 
         animator.SetTrigger("hasDetonate");
         animatorCam.SetTrigger("hasDetonate");
+        TutorialEvents.enemyKilledVeryFast?.Invoke();
 
         isDetonating = true;
         this.InvokeExclusive("detonate", () => {
@@ -560,7 +557,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
         if (horizontalSpeed > config.secondBreakpoint) {
             // Checks if player is in Stage 3
             currentStage = 3;
-            RunningLinesIntensity(maxSpeedOfLines,maxSpawnRate);
+            RunningLinesIntensity(maxSpeedOfLines, maxSpawnRate);
             return;
         }
         else if (horizontalSpeed > config.firstBreakpoint) {
@@ -569,7 +566,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
             RunningLinesIntensity(minSpeedOfLines, minSpawnRate);
             return;
         }
-        else { 
+        else {
             // Checks if player is in stage 1
             currentStage = 1;
             runningLines.enabled = false;
@@ -593,9 +590,9 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
             // larger aoe && oneshot && vfx
             //VFX GOES HERE
             Vector3 largerScale = config.attackScale * 2;
-            enemies = AttackCheck(largerScale, config.attackRange +2, Color.red);
+            enemies = AttackCheck(largerScale, config.attackRange + 2, Color.red);
         }
-        else if (currentStage == 2)  {
+        else if (currentStage == 2) {
             //one shot & VFX
             //VFX GOES HERE
             enemies = AttackCheck(config.attackScale, config.attackRange, Color.yellow);
@@ -609,15 +606,20 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
             foreach (RaycastHit enemy in enemies) {
                 IDamageable damage = enemy.transform.GetComponent<IDamageable>();
                 if (damage != null) {
-                    if (currentStage >= 2) { damage.Kill(); 
-                    } 
+                    if (currentStage >= 2) {
+                        damage.Kill();
+
+                        TutorialEvents.enemyKilledVeryFast?.Invoke();
+                    }
                     else {
-                        damage.TakeDamage(config.attackDamage); 
+                        damage.TakeDamage(config.attackDamage);
+                        TutorialEvents.OnEnemyKilled?.Invoke();
                     }
                 }
             }
         }
     }
+
     /// <summary>
     /// Performs a box cast all with the specific conditions 
     /// </summary>
@@ -642,8 +644,8 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
     /// <param name="spawnRate"> how fast speed lines will spawn </param>
     private void RunningLinesIntensity(Vector2 speedOfLines, float spawnRate) {
         runningLines.enabled = true;
-        if (runningLines.HasVector2("SpeedOfLines")) { 
-            runningLines.SetVector2("SpeedOfLines",speedOfLines);
+        if (runningLines.HasVector2("SpeedOfLines")) {
+            runningLines.SetVector2("SpeedOfLines", speedOfLines);
         }
         if (runningLines.HasFloat("SpawnRate")) {
             runningLines.SetFloat("SpawnRate", spawnRate);
@@ -675,22 +677,22 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
         return health;
         throw new System.NotImplementedException();
     }
+
     public void TakeDamage(float value) {
         health -= value;
         healthBar.value = health;
     }
+
     public void Kill() {
         Debug.LogError("Player should not be oneshotted");
         throw new System.NotImplementedException();
     }
 
     public void Heal(float value) {
-        if (health + value <= healthBar.maxValue)
-        {
+        if (health + value <= healthBar.maxValue) {
             health += value;
         }
-        else
-        {
+        else {
             health = healthBar.maxValue;
         }
     }
@@ -729,7 +731,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
     public float RightSpeed() {
         float rightwardsSpeed = Vector3.Dot(playerRigidBody.linearVelocity, orientation.right);
 
-        return Mathf .Max(rightwardsSpeed, 0f);
+        return Mathf.Max(rightwardsSpeed, 0f);
     }
 
     public float UpSpeed() {
@@ -750,14 +752,12 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
     /// not used currently
     /// adjusts player drag depending on their input & state
     /// </summary>
-    private void PlayerDrag()
-    {
+    private void PlayerDrag() {
         //if in air 0
         //if moving
         // if above max speed increase drag
         // if below decrease drag
-        if (!isGrounded)
-        {
+        if (!isGrounded) {
             playerRigidBody.linearDamping = 0;
             dragTimer = 0;
         }/*
@@ -767,62 +767,51 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
             playerRigidBody.linearDamping = Mathf.MoveTowards(dragValue, groundDrag, .5f * dragTimer);
             playerRigidBody.linearDamping = dragValue;
         }*/
-        else if (horizontalInput != 0 || verticalInput != 0 && playerRigidBody.linearVelocity.magnitude < currentMaxMovementSpeed)
-        {
+        else if (horizontalInput != 0 || verticalInput != 0 && playerRigidBody.linearVelocity.magnitude < currentMaxMovementSpeed) {
             playerRigidBody.linearDamping = 0;
         }
-        else
-        {
+        else {
             dragTimer = 0;
         }
     }
 
-    
+
 
     /// <summary>
     /// Ensures the player does not move faster than the max speed 
     /// Calls functions to increase max speed when on slopes or in air
     /// </summary>
-    private void MaxSpeed()
-    {
+    private void MaxSpeed() {
         AirSpeedIncrease();
         SlopeSpeedIncrease();
         Vector3 velocity = new Vector3(playerRigidBody.linearVelocity.x, 0, playerRigidBody.linearVelocity.z);
 
-        if (SlopeCheck() && !exitSlope)
-        {
-            if (playerRigidBody.linearVelocity.magnitude > currentMaxMovementSpeed)
-            {
+        if (SlopeCheck() && !exitSlope) {
+            if (playerRigidBody.linearVelocity.magnitude > currentMaxMovementSpeed) {
                 playerRigidBody.linearVelocity = playerRigidBody.linearVelocity.normalized * currentMaxMovementSpeed;
             }
         }
-        else
-        {
+        else {
             timeAtMaxVelocity += Time.deltaTime;
 
-            if (timeAtMaxVelocity > config.maxVeloctiyDuration)
-            {
+            if (timeAtMaxVelocity > config.maxVeloctiyDuration) {
                 ClampVelocity(velocity);
             }
             MaxFallSpeed();
         }
     }
 
-    private void ClampVelocity(Vector3 velocity)
-    {
-        if (velocity.magnitude > currentMaxMovementSpeed)
-        {
+    private void ClampVelocity(Vector3 velocity) {
+        if (velocity.magnitude > currentMaxMovementSpeed) {
             Vector3 velocityNormalized = velocity.normalized * currentMaxMovementSpeed;
             playerRigidBody.linearVelocity = new Vector3(velocityNormalized.x, playerRigidBody.linearVelocity.y, velocityNormalized.z);
         }
 
-        if (currentMaxMovementSpeed > maxSpeedStorage)
-        {
+        if (currentMaxMovementSpeed > maxSpeedStorage) {
             currentMaxMovementSpeed = Mathf.MoveTowards(currentMaxMovementSpeed, maxSpeedStorage, config.defaultVelocityDecayRate * Time.deltaTime);
             //config.acceleration = Mathf.MoveTowards(config.acceleration, accelerationStorage, config.velocityDecayRate * Time.deltaTime);
         }
-        else if (horizontalInput == 0 && verticalInput == 0 && velocity == Vector3.zero)
-        {
+        else if (horizontalInput == 0 && verticalInput == 0 && velocity == Vector3.zero) {
             currentMaxMovementSpeed = maxSpeedStorage;
             //config.acceleration = accelerationStorage;
         }
@@ -832,12 +821,9 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
     /// <summary>
     /// If the player is in air they will beable to move faster
     /// </summary>
-    private void AirSpeedIncrease()
-    {
-        if (!isGrounded)
-        {
-            if (playerRigidBody.linearVelocity.y != 0)
-            {
+    private void AirSpeedIncrease() {
+        if (!isGrounded) {
+            if (playerRigidBody.linearVelocity.y != 0) {
                 currentMaxMovementSpeed = maxSpeedStorage + config.airSpeedIncrease;
                 //config.acceleration = accelerationStorage + config.airSpeedIncrease;
             }
@@ -846,12 +832,9 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
     /// <summary>
     /// If the player is on a slope they will be able to move faster
     /// </summary>
-    private void SlopeSpeedIncrease()
-    {
-        if (SlopeCheck())
-        {
-            if (playerRigidBody.linearVelocity.y < 0)
-            {
+    private void SlopeSpeedIncrease() {
+        if (SlopeCheck()) {
+            if (playerRigidBody.linearVelocity.y < 0) {
                 currentMaxMovementSpeed = maxSpeedStorage + config.slopeSpeedImpact;
                 //config.acceleration = accelerationStorage + config.slopeSpeedImpact;
             }

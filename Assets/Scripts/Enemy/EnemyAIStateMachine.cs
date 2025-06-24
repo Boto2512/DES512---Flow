@@ -6,7 +6,8 @@ public enum EnemyAIState {
     Idle,
     Pursue,
     Attack,
-    Reposition
+    Reposition,
+    FanOut
 }
 
 public class EnemyAIStateMachine : StateMachine<EnemyAIState> {

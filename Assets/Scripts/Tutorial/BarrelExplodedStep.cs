@@ -2,6 +2,10 @@ using UnityEngine;
 
 public class BarrelExplodedStep : ITutorialStep
 {
+    private Sprite tutorialGif;
+    public Sprite GetGifSprite() => tutorialGif;
+    public void SetGifSprite(Sprite sprite) => tutorialGif = sprite;
+    
     private bool barrelExploded = false;
 
     public void OnStepStart()

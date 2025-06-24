@@ -2,6 +2,12 @@ using UnityEngine;
 
 public class ReachedBounceBombStep : ITutorialStep
 {
+    public bool ShouldAutoAdvance() => true;
+
+    private Sprite tutorialGif;
+    public Sprite GetGifSprite() => tutorialGif;
+    public void SetGifSprite(Sprite sprite) => tutorialGif = sprite;
+    
     private bool hasReached = false;
 
     public void OnStepStart()
@@ -17,6 +23,7 @@ public class ReachedBounceBombStep : ITutorialStep
     private void HandleReached()
     {
         hasReached = true;
+        
     }
 
     public bool Validate() => hasReached;
