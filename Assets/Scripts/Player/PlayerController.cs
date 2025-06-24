@@ -5,8 +5,12 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
-using UnityEngine.VFX;
-public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable, ITargetable {
+using TMPro;
+public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable, ITargetable
+{
+
+    private bool hasReportedMovement = false;
+
     #region     ========================= Variables =========================
 
     [SerializeField] private PlayerVariablesConfig config;
@@ -231,6 +235,13 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
     /// Checks if grounded and adds drag if so
     /// </summary>
     private void MovePlayer() {
+        if (!hasReportedMovement && (horizontalInput != 0 || verticalInput != 0))
+{
+    hasReportedMovement = true;
+    TutorialEvents.OnPlayerMoved?.Invoke();
+
+}
+
         moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
         CounterForce();
 
@@ -527,6 +538,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
 
         animator.SetTrigger("hasDetonate");
         animatorCam.SetTrigger("hasDetonate");
+        TutorialEvents.enemyKilledVeryFast?.Invoke();
 
         isDetonating = true;
         this.InvokeExclusive("detonate", () => {
@@ -596,11 +608,15 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
             foreach (RaycastHit enemy in enemies) {
                 IDamageable damage = enemy.transform.GetComponent<IDamageable>();
                 if (damage != null) {
-                    if (currentStage >= 2) {
+                    if (currentStage >= 2) 
+                    { 
                         damage.Kill();
-                    }
+                        
+                        TutorialEvents.enemyKilledVeryFast?.Invoke();
+                    } 
                     else {
                         damage.TakeDamage(config.attackDamage);
+                        TutorialEvents.OnEnemyKilled?.Invoke();
                     }
                 }
             }
