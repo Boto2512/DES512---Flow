@@ -11,6 +11,7 @@ public class ThirdPersonTestController : MonoBehaviour {
     [SerializeField, Min(0f)] private float acceleration;
     [SerializeField, Min(0f)] private float deceleration;
     [SerializeField, Min(0f)] private float groundDrag;
+    private float constGroundDrag;
 
     private Vector3 movementForward;
     private Vector3 movementBackward => -movementForward;
@@ -38,6 +39,7 @@ public class ThirdPersonTestController : MonoBehaviour {
     [SerializeField, Min(0f)] private float minSlopeAngle;
     [SerializeField, Min(0f)] private float maxSlopeAngle;
     [SerializeField, Min(0f)] private float slopeSpeedMultiplier;
+    private float currentSlopeMultiplier = 1f;
 
     private PlayerGroundedState groundedState = PlayerGroundedState.None;
     private bool enableGroundedStateCheck = true;
@@ -61,7 +63,7 @@ public class ThirdPersonTestController : MonoBehaviour {
     private Vector2 movementInput;
     private bool attackPressed;
     private bool throwPressed;
-    private bool jumpInput;
+    private bool jumpActivated;
 
     #endregion Input Variables
 
@@ -93,11 +95,13 @@ public class ThirdPersonTestController : MonoBehaviour {
         deoccluder.AvoidObstacles.DistanceLimit = cameraDistance;
 
         rb.linearDamping = groundDrag;
+        constGroundDrag = groundDrag;
     }
 
     // Update is called once per frame
     void Update() {
         GroundedStateCheck();
+        GroundedStateUpdates();
     }
 
     private void FixedUpdate() {
@@ -128,17 +132,17 @@ public class ThirdPersonTestController : MonoBehaviour {
 
     private void HorizontalMovement() {
         if (movementInput.x != 0) {
-            rb.AddForce(300 * movementInput.x * Time.fixedDeltaTime * acceleration * movementRight, ForceMode.Force);
+            rb.AddForce(300 * currentSlopeMultiplier * movementInput.x * Time.fixedDeltaTime * acceleration * movementRight, ForceMode.Force);
         }
         else {
-            //rb.AddForce(100 * Time.fixedDeltaTime * deceleration * movementLeft);
+
         }
 
         if (movementInput.y != 0) {
-            rb.AddForce(300 * movementInput.y * Time.fixedDeltaTime * acceleration * movementForward, ForceMode.Force);
+            rb.AddForce(300 * currentSlopeMultiplier * movementInput.y * Time.fixedDeltaTime * acceleration * movementForward, ForceMode.Force);
         }
         else {
-            //rb.AddForce(100 * Time.fixedDeltaTime * deceleration * movementBackward);
+
         }
     }
 
@@ -177,6 +181,33 @@ public class ThirdPersonTestController : MonoBehaviour {
         }
         else {
             groundedState = PlayerGroundedState.InAir;
+        }
+    }
+
+    private void GroundedStateUpdates() {
+        switch (groundedState) {
+            case PlayerGroundedState.None:
+                groundDrag = constGroundDrag;
+                currentSlopeMultiplier = 1f;
+                break;
+
+            case PlayerGroundedState.OnGround:
+                groundDrag = constGroundDrag;
+                currentSlopeMultiplier = 1f;
+                break;
+
+            case PlayerGroundedState.OnSlope:
+                groundDrag = 0f;
+                currentSlopeMultiplier = slopeSpeedMultiplier;
+                break;
+
+            case PlayerGroundedState.InAir:
+                groundDrag = 0f;
+                currentSlopeMultiplier = 1f;
+                break;
+
+            default:
+                break;
         }
     }
 
@@ -226,10 +257,10 @@ public class ThirdPersonTestController : MonoBehaviour {
 
     public void JumpInput(InputAction.CallbackContext context) {
         if (context.started) {
-            jumpInput = true;
+            jumpActivated = true;
         }
         else if (context.canceled) {
-            jumpInput = false;
+            jumpActivated = false;
         }
     }
 
