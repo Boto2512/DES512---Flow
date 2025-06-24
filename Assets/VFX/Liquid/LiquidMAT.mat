@@ -7,13 +7,12 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: hammeMat
-  m_Shader: {fileID: -6465566751694194690, guid: 204cbc162db2b9246bc6e277002ce2c2, type: 3}
-  m_Parent: {fileID: -876546973899608171, guid: 204cbc162db2b9246bc6e277002ce2c2, type: 3}
+  m_Name: LiquidMAT
+  m_Shader: {fileID: -6465566751694194690, guid: 8c49aefd5a4089246ac606b3857221dc, type: 3}
+  m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
-  m_InvalidKeywords:
-  - _DETAIL_MULX2
+  m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -24,18 +23,34 @@ Material:
   m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
-    m_TexEnvs: []
+    m_TexEnvs:
+    - unity_Lightmaps:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_LightmapsInd:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_ShadowMasks:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _Metallic: 1
-    - _Power: 4
+    - _LiquidAmount: 0.12
     - _QueueControl: 0
-    - _Smoothness: 2
+    - _QueueOffset: 0
+    - _WobbleAxis: 0.09
+    - _WobbleAxisX: 0
+    - _WobbleAxisZ: 0
     m_Colors:
-    - _GradientNoiseSpeed: {r: 0.1, g: -0.2, b: 0, a: 0}
+    - _LiquidColour: {r: 0, g: 2.522118, b: 4.924578, a: 1}
+    - _SlideColour: {r: 0, g: 0.7686274, b: 1.4980392, a: 1}
+    - _TopColour: {r: 0.02352937, g: 1.3839295, b: 1.4980392, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
---- !u!114 &8608622201707171605
+--- !u!114 &3767682046417748216
 MonoBehaviour:
   m_ObjectHideFlags: 11
   m_CorrespondingSourceObject: {fileID: 0}
