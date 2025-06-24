@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.AI;
 using UnityEngine.Events;
+using static UnityEngine.Rendering.DebugUI;
 
 public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
     #region Damage Variables
@@ -137,6 +138,17 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
         Debug.Log("Enemy Oneshotted - due to speed");
         healthBar.value = 0;
         Destroy(this.gameObject);
+    }
+
+    public void Heal(float value) {
+        if (health + value <= healthBar.maxValue)
+        {
+            health += value;
+        }
+        else
+        {
+            health = healthBar.maxValue;
+        }
     }
 
     #endregion Damage Interface
