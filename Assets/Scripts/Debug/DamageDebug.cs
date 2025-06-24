@@ -54,5 +54,7 @@ public class DamageDebug : MonoBehaviour, IDamageable
         Debug.Log("Enemy Oneshotted - due to speed");
         healthBar.value = 0;
     }
+
+    public void Heal(float value) { }
     #endregion  ========================= Damage Interface =========================
 }

@@ -12,6 +12,7 @@ public class Teleport : MonoBehaviour
     {
         if (collision.transform.CompareTag(triggeredTag))
         {
+           
             SetToZero(collision.transform.GetComponent<PlayerController>());
             collision.transform.position = destination.position;
         }

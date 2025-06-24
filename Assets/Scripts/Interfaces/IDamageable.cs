@@ -6,6 +6,7 @@ public interface IDamageable {
     /// </summary>
     /// <returns>health - float </returns>
     public float GetHealth();
+
     /// <summary>
     /// Used to damage the entity attached to the interface
     /// </summary>
@@ -17,4 +18,6 @@ public interface IDamageable {
     /// note: do not use on player
     /// </summary>
     public void Kill();
+
+    public void Heal(float value);
 }
