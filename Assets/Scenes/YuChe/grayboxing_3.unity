@@ -1510,7 +1510,7 @@ MonoBehaviour:
     meshQuery:
       layers: 33554440
       maskAndChannels: 8
-    surfaceParameter: 50726
+    surfaceParameter: 52916
     meshQueryIndex: 1
     subMeshQueryIndex: 0
     geometryHashValue: 7424805728788509375
@@ -8380,6 +8380,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 910811351615385114, guid: 43385952d0c3b7f44a1cac9d3120428e, type: 3}
+      propertyPath: config
+      value: 
+      objectReference: {fileID: 11400000, guid: 19597906fb69111488b0ff4af85c03a0, type: 2}
+    - target: {fileID: 910811351615385114, guid: 43385952d0c3b7f44a1cac9d3120428e, type: 3}
       propertyPath: groundDrag
       value: 5
       objectReference: {fileID: 0}
@@ -14029,7 +14033,7 @@ Transform:
   m_GameObject: {fileID: 323780268}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.90277433, y: 9.6, z: 80.35912}
+  m_LocalPosition: {x: 0.90277433, y: 9.6, z: 79.6}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -21058,6 +21062,51 @@ Mesh:
     offset: 0
     size: 0
     path: 
+--- !u!1 &534018331
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 534018332}
+  - component: {fileID: 534018333}
+  m_Layer: 0
+  m_Name: Debug
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &534018332
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 534018331}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &534018333
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 534018331}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a5eadacb0a238ac4eb93f79626e6b4d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  PlayerVariablesConfig: {fileID: 11400000, guid: 19597906fb69111488b0ff4af85c03a0, type: 2}
 --- !u!1 &549562524
 GameObject:
   m_ObjectHideFlags: 0
@@ -35253,26 +35302,6 @@ MonoBehaviour:
   SpawnData:
   - EnemyObj: {fileID: 3447609577201543841, guid: 49f05c96e5fb8394bb3a3c152445b449, type: 3}
     SpawningPoints:
-    - {fileID: 1593941318}
-    - {fileID: 1481055049}
-    - {fileID: 291588604}
-    - {fileID: 1016557199}
-    - {fileID: 1114134865}
-    - {fileID: 738248251}
-    - {fileID: 1485979553}
-    - {fileID: 1555322542}
-    - {fileID: 1699735040}
-    - {fileID: 1054799004}
-    - {fileID: 2120330951}
-    - {fileID: 2045543961}
-    - {fileID: 371764356}
-    - {fileID: 579689432}
-    - {fileID: 1826750084}
-    - {fileID: 2067226699}
-    - {fileID: 1257282115}
-    - {fileID: 1344464077}
-  - EnemyObj: {fileID: 3447609577201543841, guid: 49f05c96e5fb8394bb3a3c152445b449, type: 3}
-    SpawningPoints:
     - {fileID: 1954260549}
     - {fileID: 76212674}
     - {fileID: 464000978}
@@ -35307,6 +35336,26 @@ MonoBehaviour:
     - {fileID: 437288048}
     - {fileID: 366621413}
     - {fileID: 233704198}
+  - EnemyObj: {fileID: 3447609577201543841, guid: 49f05c96e5fb8394bb3a3c152445b449, type: 3}
+    SpawningPoints:
+    - {fileID: 1593941318}
+    - {fileID: 1481055049}
+    - {fileID: 291588604}
+    - {fileID: 1016557199}
+    - {fileID: 1114134865}
+    - {fileID: 738248251}
+    - {fileID: 1485979553}
+    - {fileID: 1555322542}
+    - {fileID: 1699735040}
+    - {fileID: 1054799004}
+    - {fileID: 2120330951}
+    - {fileID: 2045543961}
+    - {fileID: 371764356}
+    - {fileID: 579689432}
+    - {fileID: 1826750084}
+    - {fileID: 2067226699}
+    - {fileID: 1257282115}
+    - {fileID: 1344464077}
 --- !u!43 &982320195
 Mesh:
   m_ObjectHideFlags: 0
@@ -36367,6 +36416,10 @@ PrefabInstance:
     - target: {fileID: 4076238660554104758, guid: 13266f0c7edc82e429b989985540cc6b, type: 3}
       propertyPath: m_VersionIndex
       value: 1037
+      objectReference: {fileID: 0}
+    - target: {fileID: 4196176219706524869, guid: 13266f0c7edc82e429b989985540cc6b, type: 3}
+      propertyPath: jumpForce
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 6896301331444281725, guid: 13266f0c7edc82e429b989985540cc6b, type: 3}
       propertyPath: m_Mesh
@@ -52731,7 +52784,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4196176219706524869, guid: 13266f0c7edc82e429b989985540cc6b, type: 3}
       propertyPath: jumpForce
-      value: 35
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 6896301331444281725, guid: 13266f0c7edc82e429b989985540cc6b, type: 3}
       propertyPath: m_Mesh
@@ -53548,7 +53601,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4196176219706524869, guid: 13266f0c7edc82e429b989985540cc6b, type: 3}
       propertyPath: jumpForce
-      value: 35
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 6896301331444281725, guid: 13266f0c7edc82e429b989985540cc6b, type: 3}
       propertyPath: m_Mesh
@@ -55478,6 +55531,10 @@ PrefabInstance:
     - target: {fileID: 4076238660554104758, guid: 13266f0c7edc82e429b989985540cc6b, type: 3}
       propertyPath: m_VersionIndex
       value: 1037
+      objectReference: {fileID: 0}
+    - target: {fileID: 4196176219706524869, guid: 13266f0c7edc82e429b989985540cc6b, type: 3}
+      propertyPath: jumpForce
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 6896301331444281725, guid: 13266f0c7edc82e429b989985540cc6b, type: 3}
       propertyPath: m_Mesh
@@ -59782,7 +59839,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4196176219706524869, guid: 13266f0c7edc82e429b989985540cc6b, type: 3}
       propertyPath: jumpForce
-      value: 35
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 6896301331444281725, guid: 13266f0c7edc82e429b989985540cc6b, type: 3}
       propertyPath: m_Mesh
@@ -60619,6 +60676,10 @@ PrefabInstance:
     - target: {fileID: 4076238660554104758, guid: 13266f0c7edc82e429b989985540cc6b, type: 3}
       propertyPath: m_SelectedVertices.Array.size
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4196176219706524869, guid: 13266f0c7edc82e429b989985540cc6b, type: 3}
+      propertyPath: jumpForce
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 6896301331444281725, guid: 13266f0c7edc82e429b989985540cc6b, type: 3}
       propertyPath: m_Mesh
@@ -65686,7 +65747,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4196176219706524869, guid: 13266f0c7edc82e429b989985540cc6b, type: 3}
       propertyPath: jumpForce
-      value: 35
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 6896301331444281725, guid: 13266f0c7edc82e429b989985540cc6b, type: 3}
       propertyPath: m_Mesh
@@ -72254,7 +72315,7 @@ MonoBehaviour:
     meshQuery:
       layers: 16777223
       maskAndChannels: 234881031
-    surfaceParameter: 50054
+    surfaceParameter: 52268
     meshQueryIndex: 0
     subMeshQueryIndex: 0
     geometryHashValue: 7424805728788509375
@@ -73213,6 +73274,10 @@ PrefabInstance:
       propertyPath: m_SelectedVertices.Array.size
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4196176219706524869, guid: 13266f0c7edc82e429b989985540cc6b, type: 3}
+      propertyPath: jumpForce
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 6896301331444281725, guid: 13266f0c7edc82e429b989985540cc6b, type: 3}
       propertyPath: m_Mesh
       value: 
@@ -74077,3 +74142,4 @@ SceneRoots:
   - {fileID: 988089673}
   - {fileID: 650078742}
   - {fileID: 219780898}
+  - {fileID: 534018332}
