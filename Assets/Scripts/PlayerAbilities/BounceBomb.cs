@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.VFX;
+using static Utility;
 
 [RequireComponent(typeof(Rigidbody))]
 public class BounceBomb : MonoBehaviour
@@ -100,15 +101,17 @@ public class BounceBomb : MonoBehaviour
         // sets the momentum of each blast affectable entity to at least the speed minimum of the blast radius it's in, in the direction from itself to the blast origin
         Vector3 projectedPosition = CalculateProjectedEntityPosition(entity);
         Vector3 directionFromBlast = (projectedPosition - blastOrigin).normalized;
-                
-        float tempSpeed = entity.GetMomentum().magnitude * (inStrongBlast ? Config.StrongBlastPower : Config.WeakBlastPower);
+
+        Vector3 momentum = entity.GetMomentum();
+
+        float tempSpeed = (Config.UseFixedVerticalSpeed ? momentum.Horizontal().magnitude : momentum.magnitude) * (inStrongBlast ? Config.StrongBlastPower : Config.WeakBlastPower);
         float speedMinimumToUse = inStrongBlast ? Config.StrongSpeedMinimum : Config.WeakSpeedMinimum;
         float newSpeed = Mathf.Max(tempSpeed, speedMinimumToUse);
 
         Vector3 tempMomentum = directionFromBlast * newSpeed;
-        float newVerticalSpeed = Config.VerticalGainRatio * tempMomentum.y;
+        float newVerticalSpeed = Config.UseFixedVerticalSpeed ? momentum.y + Config.FixedVerticalSpeed : Config.VerticalGainRatio * tempMomentum.y;
         // newX = Sqrt(hypotenuse^2 - newY^2)
-        float newHorizontalSpeed = Mathf.Sqrt(newSpeed * newSpeed - newVerticalSpeed * newVerticalSpeed);
+        float newHorizontalSpeed = Config.UseFixedVerticalSpeed ? newSpeed : Mathf.Sqrt(newSpeed * newSpeed - newVerticalSpeed * newVerticalSpeed);
 
         Vector3 newMomentum = new(directionFromBlast.x * newHorizontalSpeed, directionFromBlast.y * newVerticalSpeed, directionFromBlast.z * newHorizontalSpeed);
         Debug.Log($"Old: {entity.GetMomentum()}; New: {newMomentum}");
