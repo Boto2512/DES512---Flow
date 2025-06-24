@@ -112,9 +112,11 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
     [Header("Target")]
     [SerializeField] private Transform target;
     #endregion  ========================= Variables =========================
+
     void Awake() {
         Globals.PLAYER = this;
     }
+
     void Start() {
         playerRigidBody = GetComponent<Rigidbody>();
                 
@@ -142,6 +144,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
         }
         groundCheckEnabled = true;
     }
+
     void Update() {
         DeathCheck();
         GroundCheck();
@@ -167,6 +170,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
 
         //if (Input.GetKey(KeyCode.LeftShift)) { playerRigidBody.AddForce(orientation.forward * 3, ForceMode.Impulse); }
     }
+
     void FixedUpdate() {
         MovePlayer();
         VariableJump();
@@ -210,6 +214,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
             kickOnce = false;
         }
     }
+
     private void ActionInputs() {
         attackTime += Time.deltaTime;
         if (Input.GetMouseButtonDown(0) && attackTime >= config.attackCooldown) {
@@ -446,11 +451,11 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
     #endregion  ========================= Jump =========================
 
     #region  ========================= Wall Kick =========================
-  /// <summary>
-  /// checks if there is a wall to kick off of
-  /// </summary>
-  /// <param name="wallNormal"> Returns the wall's normal </param>
-  /// <returns> Returns a boolean value depending on if a wall was hit</returns>
+    /// <summary>
+    /// checks if there is a wall to kick off of
+    /// </summary>
+    /// <param name="wallNormal"> Returns the wall's normal </param>
+    /// <returns> Returns a boolean value depending on if a wall was hit</returns>
     private bool WallCheck(out Vector3 wallNormal) {
         if(Time.time >= timeOfLastKick + config.wallKickCooldown && !isGrounded) {
             timeOfLastKick = Time.time; 
@@ -466,6 +471,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
             return false; 
         }
     }
+
     /// <summary>
     /// Deflects the players velocity off the wall
     /// </summary>
@@ -509,6 +515,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
         }
         return false;
     }
+
     private Vector3 GetSlopeMovementDiretion() {
         return Vector3.ProjectOnPlane(moveDirection,slopeHit.normal).normalized;
     }
@@ -534,6 +541,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
         EventSecondaryClick.RemoveListener(SpawnBounceBomb);
         EventSecondaryClick.AddListener(DetonateBounceBomb);
     }
+
     private void DetonateBounceBomb() {
         if (isDetonating)
             return;
@@ -618,6 +626,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
             }
         }
     }
+
     /// <summary>
     /// Performs a box cast all with the specific conditions 
     /// </summary>
@@ -675,10 +684,12 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
         return health;
         throw new System.NotImplementedException();
     }
+
     public void TakeDamage(float value) {
         health -= value;
         healthBar.value = health;
     }
+
     public void Kill() {
         Debug.LogError("Player should not be oneshotted");
         throw new System.NotImplementedException();
