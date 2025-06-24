@@ -25,6 +25,9 @@ public class ThirdPersonTestController : MonoBehaviour {
     [Header("Jump")]
     [SerializeField, Min(0f)] private float jumpForce;
     [SerializeField, Min(0f)] private float coyoteTime;
+    private float coyoteTimer = 0f;
+
+    private bool canJump => groundedState != PlayerGroundedState.InAir || coyoteTimer <= coyoteTime;
 
     #endregion Jump Variables
 
@@ -42,6 +45,7 @@ public class ThirdPersonTestController : MonoBehaviour {
     private float currentSlopeMultiplier = 1f;
 
     private PlayerGroundedState groundedState = PlayerGroundedState.None;
+    private PlayerGroundedState prevGroundedState = PlayerGroundedState.None;
     private bool enableGroundedStateCheck = true;
 
     #endregion Ground & Slope Check
@@ -106,7 +110,10 @@ public class ThirdPersonTestController : MonoBehaviour {
         GroundedStateCheck();
         GroundedStateUpdates();
 
+        CoyoteUpdate();
+
         model.transform.rotation = Quaternion.Euler(0f, cameraObject.transform.rotation.eulerAngles.y, 0f);
+        prevGroundedState = groundedState;
     }
 
     private void FixedUpdate() {
@@ -174,6 +181,19 @@ public class ThirdPersonTestController : MonoBehaviour {
 
     #endregion Rotation
 
+    #region Jump
+
+    private void CoyoteUpdate() {
+        if (groundedState != PlayerGroundedState.InAir)
+            return;
+
+        if (coyoteTime < coyoteTimer) {
+            coyoteTimer += Time.deltaTime;
+        }
+    }
+
+    #endregion Jump
+
     #region Ground & Slopes
 
     private void GroundedStateCheck() {
@@ -190,6 +210,9 @@ public class ThirdPersonTestController : MonoBehaviour {
     }
 
     private void GroundedStateUpdates() {
+        if (groundedState == prevGroundedState)     // no transition necessary
+            return;
+
         switch (groundedState) {
             case PlayerGroundedState.None:
                 groundDrag = constGroundDrag;
@@ -202,7 +225,7 @@ public class ThirdPersonTestController : MonoBehaviour {
                 break;
 
             case PlayerGroundedState.OnSlope:
-                groundDrag = 0f;
+                groundDrag = constGroundDrag;
                 currentSlopeMultiplier = slopeSpeedMultiplier;
                 break;
 
