@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(Rigidbody))]
-public class ThirdPersonTestController : MonoBehaviour {
+public class SemiKinematicPlayerController : MonoBehaviour {
 
     #region Momentum Storage
 
@@ -154,7 +154,7 @@ public class ThirdPersonTestController : MonoBehaviour {
         orbitalFollow.Radius = cameraDistance;
         deoccluder.AvoidObstacles.DistanceLimit = cameraDistance;
 
-        rb.linearDamping = groundDrag;
+        rb.isKinematic = true;
     }
 
     // Update is called once per frame
@@ -176,6 +176,8 @@ public class ThirdPersonTestController : MonoBehaviour {
         Rotation();
         Movement();
         UpdateMomentumStorage();
+
+
     }
 
     private void OnCollisionEnter(Collision collision) {
@@ -297,6 +299,10 @@ public class ThirdPersonTestController : MonoBehaviour {
 
         //    rb.AddForce(counterMovement * rb.linearVelocity.normalized, ForceMode.Force);
         //}
+    }
+
+    private void ApplyDrag() {
+
     }
 
     #endregion Movement
