@@ -12,13 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa258b82ee64a9e4592af5aad6456628, type: 3}
   m_Name: BBConfig_Sumit
   m_EditorClassIdentifier: 
-  WeakBlastRadius: 7
+  WeakBlastRadius: 50
   WeakBlastPower: 2.5
   WeakSpeedMinimum: 10
-  StrongBlastRadius: 4
+  StrongBlastRadius: 10
   StrongBlastPower: 5
   StrongSpeedMinimum: 10
   UseFixedVerticalSpeed: 1
-  FixedVerticalSpeed: 5
+  FixedVerticalSpeed: 10
+  VerticalGainMinimum: 3
   VerticalGainRatio: 0.194
   EntityProjectionScale: 0
