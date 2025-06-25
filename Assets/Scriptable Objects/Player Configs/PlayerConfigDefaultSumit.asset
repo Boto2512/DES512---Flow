@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultHealth: 100
   defaultAccelertionSpeed: 8
-  accelerationTime: 3
+  accelerationTime: 10
   deceleration: 5
   defaultMaxMovementSpeed: 10
-  counterForce: 15
+  counterForce: 25
   maxVeloctiyDuration: 0
   defaultVelocityDecayRate: 2
   veloctiyStorageFrequency: 0.5
@@ -29,10 +29,10 @@ MonoBehaviour:
   slopeSpeedImpact: 5
   downwardsForce: 180
   jumpForce: 5
-  maxJumpMultiplier: 15
+  maxJumpMultiplier: 2
   fallMultiplier: 10
   bombFallMultiplier: 10
-  jumpCooldown: 1
+  jumpCooldown: 0.5
   coyoteTime: 0.2
   groundCheckRange: 0.25
   groundMask:
@@ -40,14 +40,14 @@ MonoBehaviour:
     m_Bits: 64
   wallKickRange: 2
   wallKickCooldown: 1
-  attackScale: {x: 1, y: 2, z: 5}
+  attackScale: {x: 2, y: 2, z: 5}
   attackMask:
     serializedVersion: 2
     m_Bits: 256
-  attackRange: 0.5
+  attackRange: 1
   attackDamage: 50
   attackCooldown: 1
-  firstBreakpoint: 10
+  firstBreakpoint: 9
   secondBreakpoint: 12
   bounceBomb: {fileID: 569634559799669078, guid: 905d297ab0a893c4ca79c31d5bac738d, type: 3}
   bombThrowPower: 10
