@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using TMPro;
 using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -5,13 +9,51 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(Rigidbody))]
 public class ThirdPersonTestController : MonoBehaviour {
 
+    #region Momentum Storage
+
+    [SerializeField, Min(0f)] private float momentumStorageTime;
+    private readonly List<StoredMomentum> storedMomentums = new();
+    private StoredMomentum fastestMomentum = new(Vector3.zero, 0f);
+
+    [SerializeField, Min(0f)] private float slideTime;
+    private float slideTimer = 0f;
+
+    private readonly struct StoredMomentum {
+        public readonly Vector3 Momentum { get; }
+        public readonly float TimeStamp { get; }
+
+        public StoredMomentum(Vector3 Momentum, float TimeStamp) {
+            this.Momentum = Momentum;
+            this.TimeStamp = TimeStamp;
+        }
+
+        public void Deconstruct(out Vector3 momentum, out float timeStamp) {
+            momentum = Momentum;
+            timeStamp = TimeStamp;
+        }
+
+        public static StoredMomentum Compare(StoredMomentum a, StoredMomentum b) {
+            float aSqrMag = a.Momentum.sqrMagnitude;
+            float bSqrMag = b.Momentum.sqrMagnitude;
+            if (aSqrMag == bSqrMag) {
+                return a.TimeStamp > b.TimeStamp ? a : b;
+            }
+            else {
+                return aSqrMag > bSqrMag ? a : b;
+            }
+        }
+    }
+
+    #endregion Momentum Storage
+
     #region Movement Variables
 
     [Header("Movement")]
     [SerializeField, Min(0f)] private float acceleration;
     [SerializeField, Min(0f)] private float airAccelerationMultiplier;
+    [SerializeField, Min(0f)] private float airDrag;
     [SerializeField, Min(0f)] private float groundDrag;
-    private float constGroundDrag;
+    [SerializeField, Min(0f)] private float noMovementDrag;
 
     private Vector3 movementForward;
     private Vector3 movementBackward => -movementForward;
@@ -47,6 +89,7 @@ public class ThirdPersonTestController : MonoBehaviour {
     private PlayerGroundedState groundedState = PlayerGroundedState.None;
     private PlayerGroundedState prevGroundedState = PlayerGroundedState.None;
     private bool enableGroundedStateCheck = true;
+    private float timeSpentGrounded = 0f;
     private bool inAir => groundedState == PlayerGroundedState.InAir;
 
     #endregion Ground & Slope Check
@@ -72,6 +115,13 @@ public class ThirdPersonTestController : MonoBehaviour {
     private bool jumpActivated;
 
     #endregion Input Variables
+
+    #region Debug Variables
+
+    [Header("Debug")]
+    [SerializeField] private TextMeshProUGUI debugSpeedText;
+
+    #endregion Debug Variables
 
     private Rigidbody rb;
     private GameObject model;
@@ -105,7 +155,6 @@ public class ThirdPersonTestController : MonoBehaviour {
         deoccluder.AvoidObstacles.DistanceLimit = cameraDistance;
 
         rb.linearDamping = groundDrag;
-        constGroundDrag = groundDrag;
     }
 
     // Update is called once per frame
@@ -113,16 +162,20 @@ public class ThirdPersonTestController : MonoBehaviour {
         GroundedStateCheck();
         GroundedStateUpdates();
 
-        CoyoteUpdate();
-
         model.transform.rotation = Quaternion.Euler(0f, cameraObject.transform.rotation.eulerAngles.y, 0f);
         ccamera.Target.TrackingTarget.rotation = ccamera.transform.rotation;
         prevGroundedState = groundedState;
+
+        debugSpeedText.text = $"Forward: {Vector3.Dot(rb.linearVelocity, movementForward):0.####}\n" +
+            $"Right: {Vector3.Dot(rb.linearVelocity, movementRight):0.####}\n" +
+            $"Up: {Vector3.Dot(rb.linearVelocity, Vector3.up):0.####}\n" +
+            $"Overall: {rb.linearVelocity.magnitude:0.####}";
     }
 
     private void FixedUpdate() {
         Rotation();
         Movement();
+        UpdateMomentumStorage();
     }
 
     private void OnCollisionEnter(Collision collision) {
@@ -173,44 +226,115 @@ public class ThirdPersonTestController : MonoBehaviour {
     }
 
     private void HorizontalMovement() {
-        if (movementInput.x != 0) {
-            float forwardMovement = 100 * movementInput.x * acceleration * Time.fixedDeltaTime;
+        bool hasInputX = movementInput.x != 0;
+        bool hasInputY = movementInput.y != 0;
 
-            switch (groundedState) {
-                case PlayerGroundedState.InAir:
-                    forwardMovement *= airAccelerationMultiplier;
-                    break;
+        if (!hasInputX && !hasInputY && !inAir) {
+            rb.linearDamping = noMovementDrag;
+        }
+        else if (hasInputX || hasInputY) {
+            rb.linearDamping = inAir ? airDrag : groundDrag;
 
-                case PlayerGroundedState.OnSlope:
-                    forwardMovement *= slopeSpeedMultiplier;
-                    break;
-            }
+            Vector3 relativeMovement = new(movementInput.y, 0f, movementInput.x);
+            relativeMovement.Normalize();
+            relativeMovement *= acceleration;
 
-            rb.AddForce(forwardMovement * movementRight, ForceMode.Force);
+            relativeMovement *= GetGroundedStateMovementModifier();
 
+            Vector3 worldMovement = new(Vector3.Dot(relativeMovement, movementForward), 0f, Vector3.Dot(relativeMovement, movementRight));
+
+            rb.AddForce(worldMovement, ForceMode.Force);
         }
 
-        if (movementInput.y != 0) {
-            float rightMovement = 100 * movementInput.y * acceleration * Time.fixedDeltaTime;
+        //if (hasInputX) {
+        //    float rightMovement = 100 * movementInput.x * acceleration * Time.fixedDeltaTime;
 
-            switch (groundedState) {
-                case PlayerGroundedState.InAir:
-                    rightMovement *= airAccelerationMultiplier;
-                    break;
+        //    switch (groundedState) {
+        //        case PlayerGroundedState.InAir:
+        //            rightMovement *= airAccelerationMultiplier;
+        //            break;
 
-                case PlayerGroundedState.OnSlope:
-                    rightMovement *= slopeSpeedMultiplier;
-                    break;
-            }
+        //        case PlayerGroundedState.OnSlope:
+        //            rightMovement *= slopeSpeedMultiplier;
+        //            break;
+        //    }
 
-            rb.AddForce(rightMovement * movementForward, ForceMode.Force);
-        }
-        else {
+        //    rb.AddForce(rightMovement * movementRight, ForceMode.Force);
+        //}
 
-        }
+        //if (hasInputY) {
+        //    float forwardMovement = 100 * movementInput.y * acceleration * Time.fixedDeltaTime;
+
+        //    switch (groundedState) {
+        //        case PlayerGroundedState.InAir:
+        //            forwardMovement *= airAccelerationMultiplier;
+        //            break;
+
+        //        case PlayerGroundedState.OnSlope:
+        //            forwardMovement *= slopeSpeedMultiplier;
+        //            break;
+        //    }
+
+        //    rb.AddForce(forwardMovement * movementForward, ForceMode.Force);
+        //}
+
+        //if (!hasInputX || !hasInputY) {
+        //    float counterMovement = 100 * rb.linearVelocity.magnitude * Time.fixedDeltaTime;
+
+        //    switch (groundedState) {
+        //        case PlayerGroundedState.InAir:
+        //            counterMovement /= airDrag;
+        //            break;
+
+        //        case PlayerGroundedState.OnSlope:
+        //            counterMovement /= groundDrag;
+        //            break;
+
+        //        case PlayerGroundedState.OnGround:
+        //            counterMovement /= groundDrag;
+        //            break;
+        //    }
+
+        //    rb.AddForce(counterMovement * rb.linearVelocity.normalized, ForceMode.Force);
+        //}
     }
 
     #endregion Movement
+
+    #region Momentum Storage
+
+    private void UpdateMomentumStorage() {
+        StoredMomentum currentMomentumToStore = new(rb.linearVelocity, Time.fixedTime);
+
+        if (fastestMomentum.Momentum.sqrMagnitude < currentMomentumToStore.Momentum.sqrMagnitude) {
+            fastestMomentum = currentMomentumToStore;
+            storedMomentums.Clear();
+
+            storedMomentums.Add(currentMomentumToStore);
+        }
+        else {
+            storedMomentums.Add(currentMomentumToStore);
+
+            float earliestAllowedTimeStamp = currentMomentumToStore.TimeStamp - momentumStorageTime;
+            bool anyRemoved = false;
+
+            while (storedMomentums.Any()) {
+                if (storedMomentums.First().TimeStamp < earliestAllowedTimeStamp) {
+                    storedMomentums.RemoveAt(0);
+                    anyRemoved = true;
+                }
+                else {
+                    break;
+                }
+            }
+
+            if (anyRemoved) {
+                fastestMomentum = storedMomentums.Aggregate((sm1, sm2) => StoredMomentum.Compare(sm1, sm2));
+            }
+        }
+    }
+
+    #endregion Momentum Storage
 
     #region Rotation
 
@@ -224,13 +348,10 @@ public class ThirdPersonTestController : MonoBehaviour {
     #region Jump
 
     private void Jump() {
-        rb.AddForce(Vector3.up * jumpForce, ForceMode.VelocityChange);
+        rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
     }
 
     private void CoyoteUpdate() {
-        if (groundedState != PlayerGroundedState.InAir)
-            return;
-
         if (coyoteTimer < coyoteTime) {
             coyoteTimer += Time.deltaTime;
         }
@@ -254,9 +375,15 @@ public class ThirdPersonTestController : MonoBehaviour {
     }
 
     private void GroundedStateUpdates() {
-        if (groundedState == prevGroundedState)     // no transition necessary
-            return;
+        if (groundedState == prevGroundedState) {
+            GroundedStateConserved();
+        }
+        else {
+            GroundedStateChanged();
+        }
+    }
 
+    private void GroundedStateChanged() {
         switch (groundedState) {
             case PlayerGroundedState.None:
                 rb.linearDamping = groundDrag;
@@ -274,8 +401,9 @@ public class ThirdPersonTestController : MonoBehaviour {
                 break;
 
             case PlayerGroundedState.InAir:
-                rb.linearDamping = 0f;
+                rb.linearDamping = airDrag;
                 coyoteTimer = 0f;
+                timeSpentGrounded = 0f;
 
                 enableGroundedStateCheck = false;
                 break;
@@ -283,6 +411,38 @@ public class ThirdPersonTestController : MonoBehaviour {
             default:
                 break;
         }
+    }
+
+    private void GroundedStateConserved() {
+        switch (groundedState) {
+            case PlayerGroundedState.None:
+                break;
+
+            case PlayerGroundedState.OnGround:
+                timeSpentGrounded += Time.deltaTime;
+                break;
+
+            case PlayerGroundedState.OnSlope:
+                timeSpentGrounded += Time.deltaTime;
+                break;
+
+            case PlayerGroundedState.InAir:
+                CoyoteUpdate();
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    private float GetGroundedStateMovementModifier() {
+        return groundedState switch {
+            PlayerGroundedState.None => 0f,
+            PlayerGroundedState.InAir => airAccelerationMultiplier,
+            PlayerGroundedState.OnSlope => slopeSpeedMultiplier,
+            PlayerGroundedState.OnGround => 1f,
+            _ => 1f
+        };
     }
 
     #endregion Ground & Slopes
