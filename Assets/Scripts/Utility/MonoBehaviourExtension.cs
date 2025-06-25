@@ -2,8 +2,7 @@ using System;
 using System.Collections;
 using UnityEngine;
 
-public static class MonoBehaviourExtension
-{
+public static class MonoBehaviourExtension {
     [Obsolete("Doesn't subscribe to the new key system. Please use InvokeExclusive(string, Action, float) or InvokeOverwrite(string, Action, float) instead.")]
     /// <summary>
     /// Invokes the action in delay seconds
@@ -56,7 +55,7 @@ public static class MonoBehaviourExtension
     /// Cancels any pending invocation attached to this MonoBehaviour object with the same key.
     /// </summary>
     /// <param name="key">Identifier string for the inner coroutine (key not shared amonst different MonoBehaviour instances)</param>
-    public static bool CancelInvoke(this MonoBehaviour self, string key) {
-        return InvokeManager.CancelInvoke(self, key);
+    public static bool InvokeCancel(this MonoBehaviour self, string key) {
+        return InvokeManager.InvokeCancel(self, key);
     }
 }
