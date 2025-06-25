@@ -668,8 +668,8 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
     }
 
     public void SetMomentum(Vector3 value) {
-        playerRigidBody.AddForce(value, ForceMode.VelocityChange);
-
+        //playerRigidBody.AddForce(value, ForceMode.VelocityChange);
+        playerRigidBody.linearVelocity=value;
 
         Debug.Log($"blast magnitude {value.magnitude}| currentMovementSpeed {config.defaultMaxMovementSpeed} || total {config.defaultMaxMovementSpeed + value.magnitude}");
         if (CheckIfSpeedIncreases(value.magnitude)) {

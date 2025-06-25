@@ -12,13 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa258b82ee64a9e4592af5aad6456628, type: 3}
   m_Name: BombConfig_yuche
   m_EditorClassIdentifier: 
-  WeakBlastRadius: 5
-  WeakBlastPower: 1
+  WeakBlastRadius: 50
+  WeakBlastPower: 0
   WeakSpeedMinimum: 5
-  StrongBlastRadius: 3
-  StrongBlastPower: 1
+  StrongBlastRadius: 50
+  StrongBlastPower: 0
   StrongSpeedMinimum: 7
   UseFixedVerticalSpeed: 1
-  FixedVerticalSpeed: 3
+  FixedVerticalSpeed: 0
+  VerticalGainMinimum: 20
   VerticalGainRatio: 0.7
   EntityProjectionScale: 0
