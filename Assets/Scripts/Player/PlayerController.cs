@@ -166,8 +166,8 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
             coyoteTimeCounter -= Time.deltaTime;
             GetLastAirVelocity();
         }
-        Vector2 horizontalVelocity = new Vector2(playerRigidBody.linearVelocity.x, playerRigidBody.linearVelocity.z);
-        speedText.text = horizontalVelocity.magnitude.ToString();
+
+        speedText.text = $"Horizontal: {Utility.Horizontal(playerRigidBody.linearVelocity).magnitude}\n Vertical: {Utility.Vertical(playerRigidBody.linearVelocity)} ";
         //speedText.text = $"Left: {LeftSpeed()}\nRight: {RightSpeed()}\nUp: {UpSpeed()}\nDown: {DownSpeed()}\nOverall: {playerRigidBody.linearVelocity.magnitude}";
 
         //if (Input.GetKey(KeyCode.LeftShift)) { playerRigidBody.AddForce(orientation.forward * 3, ForceMode.Impulse); }
@@ -319,12 +319,17 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
     private void MaxFallSpeed() {
         float yVelocity = playerRigidBody.linearVelocity.y;
         if (yVelocity <= config.maxFallSpeed) {
+            Debug.Log("MaxFallSpeed");
             playerRigidBody.linearVelocity = new Vector3(playerRigidBody.linearVelocity.x, config.maxFallSpeed, playerRigidBody.linearVelocity.z);
         }
     }
 
     private void SpeedControl() {
         Vector3 velocity = new Vector3(playerRigidBody.linearVelocity.x, 0, playerRigidBody.linearVelocity.z);
+
+        if (!isGrounded) { MaxFallSpeed(); }
+
+
 
         if (SlopeCheck() && !exitSlope) {
             if (playerRigidBody.linearVelocity.magnitude > currentMaxMovementSpeed) {
@@ -663,8 +668,14 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
     }
 
     public void SetMomentum(Vector3 value) {
-        playerRigidBody.AddForce(value, ForceMode.VelocityChange);
+        //playerRigidBody.AddForce(value, ForceMode.VelocityChange);
+        playerRigidBody.linearVelocity=value;
+
+        Debug.Log($"blast magnitude {value.magnitude}| currentMovementSpeed {config.defaultMaxMovementSpeed} || total {config.defaultMaxMovementSpeed + value.magnitude}");
+        if (CheckIfSpeedIncreases(value.magnitude)) {
         currentMaxMovementSpeed = config.defaultMaxMovementSpeed + value.magnitude;
+
+        }
         hasBombBounced = true;
         groundCheckEnabled = false;
         this.InvokeExclusive("EnableGroundCheck", EnableGroundCheck, 0.1f);
