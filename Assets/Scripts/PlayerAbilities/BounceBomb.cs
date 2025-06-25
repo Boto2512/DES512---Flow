@@ -111,7 +111,7 @@ public class BounceBomb : MonoBehaviour {
         float newVerticalSpeed, newHorizontalSpeed;
         Vector3 newMomentum;
         if (Config.UseFixedVerticalSpeed) {
-            newVerticalSpeed = momentum.y + Config.FixedVerticalSpeed;
+            newVerticalSpeed = Mathf.Max(momentum.y + Config.FixedVerticalSpeed, Config.VerticalGainMinimum);
             newHorizontalSpeed = Mathf.Max(momentum.Horizontal().magnitude * speedMultiplierToUse, speedMinimumToUse);
             newMomentum = new(directionFromBlast.x * newHorizontalSpeed, newVerticalSpeed, directionFromBlast.z * newHorizontalSpeed);
         }
