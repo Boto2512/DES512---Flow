@@ -2,11 +2,9 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.VFX;
-using static Utility;
 
 [RequireComponent(typeof(Rigidbody))]
-public class BounceBomb : MonoBehaviour
-{
+public class BounceBomb : MonoBehaviour {
     [SerializeField] private BounceBombConfig Config;
 
     [Header("Positioning")]
@@ -89,7 +87,7 @@ public class BounceBomb : MonoBehaviour
                 allColliders.Add((imm, Vector3.Distance(momentumPosition, imm.GetPosition()) <= Config.StrongBlastRadius));
                 continue;
             }
-            
+
             Vector3 blastDirection = (momentumPosition - blastOrigin).normalized;
             if (Physics.Raycast(blastOrigin, blastDirection, out RaycastHit outHit, Config.WeakBlastRadius)) {
                 allColliders.Add((imm, outHit.distance <= Config.StrongBlastRadius));
@@ -107,16 +105,26 @@ public class BounceBomb : MonoBehaviour
 
         Vector3 momentum = entity.GetMomentum();
 
-        float tempSpeed = (Config.UseFixedVerticalSpeed ? momentum.Horizontal().magnitude : momentum.magnitude) * (inStrongBlast ? Config.StrongBlastPower : Config.WeakBlastPower);
         float speedMinimumToUse = inStrongBlast ? Config.StrongSpeedMinimum : Config.WeakSpeedMinimum;
-        float newSpeed = Mathf.Max(tempSpeed, speedMinimumToUse);
+        float speedMultiplierToUse = inStrongBlast ? Config.StrongBlastPower : Config.WeakBlastPower;
 
-        Vector3 tempMomentum = directionFromBlast * newSpeed;
-        float newVerticalSpeed = Config.UseFixedVerticalSpeed ? momentum.y + Config.FixedVerticalSpeed : Config.VerticalGainRatio * tempMomentum.y;
-        // newX = Sqrt(hypotenuse^2 - newY^2)
-        float newHorizontalSpeed = Config.UseFixedVerticalSpeed ? newSpeed : Mathf.Sqrt(newSpeed * newSpeed - newVerticalSpeed * newVerticalSpeed);
+        float newVerticalSpeed, newHorizontalSpeed;
+        Vector3 newMomentum;
+        if (Config.UseFixedVerticalSpeed) {
+            newVerticalSpeed = Mathf.Max(momentum.y + Config.FixedVerticalSpeed, Config.VerticalGainMinimum);
+            newHorizontalSpeed = Mathf.Max(momentum.Horizontal().magnitude * speedMultiplierToUse, speedMinimumToUse);
+            newMomentum = new(directionFromBlast.x * newHorizontalSpeed, newVerticalSpeed, directionFromBlast.z * newHorizontalSpeed);
+        }
+        else {
+            float newSpeed = Mathf.Max(momentum.magnitude * speedMultiplierToUse, speedMinimumToUse);
+            Vector3 proposedMomentum = directionFromBlast * newSpeed;
 
-        Vector3 newMomentum = new(directionFromBlast.x * newHorizontalSpeed, directionFromBlast.y * newVerticalSpeed, directionFromBlast.z * newHorizontalSpeed);
+            newVerticalSpeed = proposedMomentum.y * Config.VerticalGainRatio;
+            newHorizontalSpeed = Mathf.Sqrt(newSpeed * newSpeed - newVerticalSpeed * newVerticalSpeed);
+            newMomentum = new(directionFromBlast.x * newHorizontalSpeed, directionFromBlast.y * newVerticalSpeed, directionFromBlast.z * newHorizontalSpeed);
+        }
+
+        //Vector3 newMomentum = new(directionFromBlast.x * newHorizontalSpeed, newVerticalSpeed, directionFromBlast.z * newHorizontalSpeed);
         Debug.Log($"Old: {entity.GetMomentum()}; New: {newMomentum}");
         entity.SetMomentum(newMomentum);
     }
@@ -124,7 +132,7 @@ public class BounceBomb : MonoBehaviour
     private void ExplosionVFX() {
         vfxObject.GetComponent<VFXCleanUp>().StartTimer();
 
-        vfx.transform.SetParent(null);        
+        vfx.transform.SetParent(null);
         vfx.SendEvent("explosionTrigger");
 
     }
@@ -136,29 +144,23 @@ public class BounceBomb : MonoBehaviour
         Gizmos.DrawWireSphere(transform.position, Config.StrongBlastRadius);
     }
 
-    private void DestroyExplosiveSteam()
-    {
+    private void DestroyExplosiveSteam() {
         Collider[] colliders = Physics.OverlapSphere(blastOrigin, Config.WeakBlastRadius);
 
-        foreach (Collider col in colliders)
-        {
+        foreach (Collider col in colliders) {
             ExplosiveSteam steam = col.GetComponent<ExplosiveSteam>();
-            if (steam != null)
-            {
+            if (steam != null) {
                 Destroy(steam.gameObject);
             }
         }
     }
 
-    private void CheckIfInsideBounceBombTriggerZone()
-    {
+    private void CheckIfInsideBounceBombTriggerZone() {
         float checkRadius = 0.5f;
         Collider[] nearbyColliders = Physics.OverlapSphere(blastCentre.position, checkRadius);
 
-        foreach (var col in nearbyColliders)
-        {
-            if (col.CompareTag("BombBounceZone"))
-            {
+        foreach (var col in nearbyColliders) {
+            if (col.CompareTag("BombBounceZone")) {
                 Debug.Log("Bounce Bomb landed inside bounce zone");
                 TutorialEvents.OnReachedBounceBomb?.Invoke();
                 break;

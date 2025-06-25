@@ -17,6 +17,8 @@ public class BounceBombConfig : ScriptableObject {
     public bool UseFixedVerticalSpeed = false;
     [Tooltip("The fixed amount of vertical speed the player inherits when using the Bounce Bomb")]
     [Min(0f)] public float FixedVerticalSpeed = 3f;
+    [Tooltip("The minimum vertical speed the IMomentumModifiable can be at after FixedVerticalSpeed is applied")]
+    public float VerticalGainMinimum = 3f;
     [Tooltip("The ratio between horizontal momentum gain and vertical momentum gain (1 is equal gain, 0 is no vertical gain). Ignored when UseFixedVerticalSpeed is true")]
     [Range(0f, 1f)] public float VerticalGainRatio = 0.5f;
 
