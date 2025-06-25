@@ -15,18 +15,19 @@ MonoBehaviour:
   defaultHealth: 100
   defaultAccelertionSpeed: 10
   accelerationTime: 3
-  deceleration: 2
+  deceleration: 100
   defaultMaxMovementSpeed: 8
+  airSpeedIncrease: 3
+  slopeSpeedImpact: 5
+  boostedMaxMovementSpeed: 0
   counterForce: 50
   maxVeloctiyDuration: 1
   defaultVelocityDecayRate: 2
   veloctiyStorageFrequency: 0.5
-  airSpeedIncrease: 3
   maxFallSpeed: -50
-  airControlMultiplier: 0.15
+  airControlMultiplier: 0.05
   maxSlopeAngle: 45
   minSlopeAngle: 5
-  slopeSpeedImpact: 5
   downwardsForce: 180
   jumpForce: 7
   maxJumpMultiplier: 15

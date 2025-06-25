@@ -1,46 +1,80 @@
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody))]
 public class ProjectileHomingOnPlayer : MonoBehaviour
 {
-    [SerializeField] float upwardSpeed = 5;
-    [SerializeField] float homingSpeed = 8;
-    [SerializeField] float homingDelay = 0.5f;
-    [SerializeField] float totalDistance = 20;
+    private Rigidbody projectileRigidBody;
 
-    [SerializeField] Vector3 startingPos;
-    [SerializeField] Vector3 endingPos;
-    private bool isMoving = true;
+    [Header("Upwards")]
+    [SerializeField] float upwardSpeed;
+    [SerializeField] float upwardHeight;
+    [SerializeField] float rotateSpeed;
+
+    private Vector3 heightTarget;
+    private bool hasReachedHeight = false;
+
+    [Header("Homing")]
+    [SerializeField] float homingSpeed;
+    [SerializeField] float homingDelay;
+    [SerializeField] float homingDuration;
+    private float homingTime;
+    private Transform player;
+
+
+    [Header("Damage")]
+    [SerializeField] private float damage;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
+    void Start() {
+        projectileRigidBody = GetComponent<Rigidbody>();
 
-        startingPos = transform.position;
-        endingPos = startingPos + Vector3.up * totalDistance;
-
+        heightTarget =new Vector3(transform.position.x, transform.position.y + upwardHeight, transform.position.z);
         //this.Invoke("literally anithing", startHoming, homingDelay);
         //Invoke(nameof(startHoming), homingDelay);
-        
-    }
 
-    void startHoming()
-    {
+        player = Globals.PLAYER.transform;
 
     }
-
     // Update is called once per frame
-    void Update()
-    {
-        if (isMoving)
-        {
-            transform.position = Vector3.MoveTowards(transform.position, endingPos, upwardSpeed * Time.deltaTime);
-
-            if (Vector3.Distance(transform.position, endingPos) < 0.01f)
-            {
-                isMoving = false;
+    void Update() {
+        if (!hasReachedHeight) {
+            MoveUpwards();
+        }
+        else {
+            this.Invoke("Homing", Homing, homingDelay);
+            if (homingTime >= homingDuration) { 
+                Destroy(gameObject);
             }
         }
+    }
 
+    private void MoveUpwards() {
+        Vector3 newPosition = Vector3.MoveTowards(transform.position, heightTarget, Time.deltaTime * upwardSpeed);
+        projectileRigidBody.MovePosition(newPosition);
 
-        
+        if (Vector3.Distance(newPosition, heightTarget) <= 0.5) { 
+            hasReachedHeight = true;
+        }    
+    
+    }
+    private void Homing() {
+        homingDelay = 0;
+        homingTime += Time.deltaTime;
+                
+        Vector3 newPosition = Vector3.MoveTowards(transform.position, player.position, Time.deltaTime * homingSpeed);
+        projectileRigidBody.MovePosition(newPosition);
+    }
+
+    private void OnTriggerEnter(Collider other) {
+
+        if (other.CompareTag("Player")) { 
+            //Damage Player
+            IDamageable damageable = other.attachedRigidbody.gameObject.GetComponent<IDamageable>();
+            damageable.TakeDamage(damage);
+            Destroy(gameObject);
+        }
+        else { 
+            Destroy(other.gameObject);
+            Destroy(gameObject);
+        }
     }
 }

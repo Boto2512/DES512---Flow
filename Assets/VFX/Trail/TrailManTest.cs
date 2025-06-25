@@ -33,7 +33,7 @@ public class TrailManTest : MonoBehaviour
 
         if (TimerAmount > TimeLimit)
         {
-            Debug.Log("Sumit <3");
+            Debug.Log("Sumit <3 \nHA GAAAAAYYYYYY!!!");
             trailMaterial.SetVector("_SpeedTrail", new Vector2(speedOfTrail.x, speedOfTrail.y));
             trailMaterial.SetColor("_ColourOne", newColourOne);
             trailMaterial.SetColor("_ColourTwo", newColourTwo);
