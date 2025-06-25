@@ -50,7 +50,7 @@ public class ThirdPersonTestController : MonoBehaviour {
 
     [Header("Movement")]
     [SerializeField, Min(0f)] private float acceleration;
-    [SerializeField, Min(0f)] private float airAccelerationMultiplier;
+    [SerializeField, Min(0f)] private float airAcceleration;
     [SerializeField, Min(0f)] private float airDrag;
     [SerializeField, Min(0f)] private float groundDrag;
     [SerializeField, Min(0f)] private float noMovementDrag;
@@ -237,7 +237,7 @@ public class ThirdPersonTestController : MonoBehaviour {
 
             Vector3 relativeMovement = new(movementInput.y, 0f, movementInput.x);
             relativeMovement.Normalize();
-            relativeMovement *= acceleration;
+            relativeMovement *= inAir ? airAcceleration : acceleration;
 
             relativeMovement *= GetGroundedStateMovementModifier();
 
@@ -406,10 +406,15 @@ public class ThirdPersonTestController : MonoBehaviour {
                 timeSpentGrounded = 0f;
 
                 enableGroundedStateCheck = false;
+                this.CancelInvoke("End Slide");
                 break;
 
             default:
                 break;
+        }
+
+        if (!inAir && prevGroundedState == PlayerGroundedState.InAir) {
+            this.InvokeOverwrite("End Slide", () => rb.linearDamping = groundDrag, slideTime);
         }
     }
 
@@ -437,10 +442,7 @@ public class ThirdPersonTestController : MonoBehaviour {
 
     private float GetGroundedStateMovementModifier() {
         return groundedState switch {
-            PlayerGroundedState.None => 0f,
-            PlayerGroundedState.InAir => airAccelerationMultiplier,
             PlayerGroundedState.OnSlope => slopeSpeedMultiplier,
-            PlayerGroundedState.OnGround => 1f,
             _ => 1f
         };
     }
