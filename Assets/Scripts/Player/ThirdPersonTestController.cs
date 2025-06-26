@@ -258,7 +258,6 @@ public class ThirdPersonTestController : MonoBehaviour {
         relativeMovement *= GetGroundedStateMovementModifier();
 
         Vector3 worldMovement = new(Vector3.Dot(relativeMovement, movementForward), 0f, Vector3.Dot(relativeMovement, movementRight));
-
         return worldMovement;
     }
 
