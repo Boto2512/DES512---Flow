@@ -44,13 +44,10 @@ public class LaserHazard : MonoBehaviour
         if (Physics.Raycast(start, direction, out RaycastHit hit, laserLength, hitLayers))
         {
             end = hit.point;
-
-            if (hit.collider.CompareTag("Player"))
-            {
-                Debug.Log("Damaged!");
-            }
+            Debug.Log("Damaged!");
+            
         }
-
+        Debug.DrawLine(start, end,Color.red, laserDuration);
         // Draw the laser
         StartCoroutine(FireLaserEffect(start, end));
     }

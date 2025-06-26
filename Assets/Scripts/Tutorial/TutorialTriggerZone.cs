@@ -7,12 +7,12 @@ public class TutorialTriggerZone : MonoBehaviour
 
     private bool hasTriggered = false;
 
-    private void OnCollisionEnter(Collision collision)
+    private void OnTriggerEnter(Collider collision)
 {
     if (hasTriggered) return;
     if (!TutorialManager.Instance.IsCurrentStep(stepIndex)) return;
 
-    if (collision.gameObject.CompareTag("Player"))
+    if (collision.transform.parent.CompareTag("Player"))
     {
         hasTriggered = true;
         TutorialManager.Instance.NotifyStepConfirmed();
