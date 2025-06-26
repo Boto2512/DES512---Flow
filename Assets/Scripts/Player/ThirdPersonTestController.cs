@@ -4,6 +4,7 @@ using System.Linq;
 using TMPro;
 using Unity.Cinemachine;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(Rigidbody))]
@@ -99,19 +100,17 @@ public class ThirdPersonTestController : MonoBehaviour {
     [Header("Camera Settings")]
     [SerializeField, Range(0f, 15f)] private float cameraDistance = 3f;
     [SerializeField, Range(1, 120)] private int sensitivity = 60;
-    private CinemachineInputAxisController inputAxisController;
-    private CinemachineOrbitalFollow orbitalFollow;
-    private CinemachineDeoccluder deoccluder;
-    private CinemachineCamera ccamera;
-    private GameObject cameraObject;
+    [SerializeField] private CinemachineInputAxisController inputAxisController;
+    [SerializeField] private CinemachineOrbitalFollow orbitalFollow;
+    [SerializeField] private CinemachineDeoccluder deoccluder;
+    [SerializeField] private CinemachineCamera ccamera;
+    [SerializeField] private GameObject cameraObject;
 
     #endregion Camera Variables
 
     #region Input Variables
 
     private Vector2 movementInput;
-    private bool attackPressed;
-    private bool throwPressed;
     private bool jumpActivated;
 
     #endregion Input Variables
@@ -123,8 +122,21 @@ public class ThirdPersonTestController : MonoBehaviour {
 
     #endregion Debug Variables
 
+    #region Misc Child Objects
+
+    [SerializeField] private GameObject model;
+    [SerializeField] private Transform throwTrasnform;
+
+    #endregion Misc Child Objects
+
+    #region Events
+
+    public UnityEvent PrimaryAction = new();
+    public UnityEvent SecondaryAction = new();
+
+    #endregion Events
+
     private Rigidbody rb;
-    private GameObject model;
 
     private void Awake() {
         Cursor.lockState = CursorLockMode.Locked;
@@ -434,19 +446,17 @@ public class ThirdPersonTestController : MonoBehaviour {
 
     public void AttackInput(InputAction.CallbackContext context) {
         if (context.started) {
-            attackPressed = true;
+            PrimaryAction.Invoke();
         }
         else if (context.canceled) {
-            attackPressed = false;
         }
     }
 
     public void ThrowInput(InputAction.CallbackContext context) {
         if (context.started) {
-            throwPressed = true;
+            SecondaryAction.Invoke();
         }
         else if (context.canceled) {
-            throwPressed = false;
         }
     }
 
