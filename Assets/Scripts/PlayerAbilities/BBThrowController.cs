@@ -1,36 +1,40 @@
+using AYellowpaper;
 using UnityEngine;
 
 public class BBThrowController : MonoBehaviour {
 
     [SerializeField] private BBThrowConfig Config;
 
-    [SerializeReference] public IMomentumModifiable momentousEntity;
+    [SerializeField] private InterfaceReference<IMomentumModifiable> momentousEntity;
     [SerializeField] private Transform throwTransform;
-    [SerializeField] private GameObject bounceBomb;
-    [SerializeField, Min(0f)] private float throwPower;
-    [SerializeField, Min(0f)] private float fuseTime;
 
     private GameObject bombInstance;
+    private bool toggle = false;            // false = can throw/cannot blow, true = cannot throw/can blow
 
     public void ThrowBomb() {
-        if (bombInstance != null)
+        if (toggle)
             return;
 
-        bombInstance = Instantiate(bounceBomb, throwTransform.position, throwTransform.rotation);
-        bombInstance.GetComponent<Rigidbody>().AddForce(momentousEntity.GetMomentum() + throwTransform.forward * throwPower, ForceMode.VelocityChange);
+        bombInstance = Instantiate(Config.BounceBomb, throwTransform.position, throwTransform.rotation);
+        bombInstance.GetComponent<Rigidbody>().AddForce(momentousEntity.Value.GetMomentum() + throwTransform.forward * Config.ThrowPower, ForceMode.VelocityChange);
+
+        this.InvokeExclusive("toggle blow status", () => toggle = true, Time.fixedDeltaTime);       // one physics tick later
     }
 
     public void TriggerDetonation() {
-        if (bombInstance == null)
+        if (!toggle)
             return;
 
         // animation stuff here
 
-        this.InvokeExclusive("detonate", DetonateBomb, fuseTime);
+        this.InvokeExclusive("detonate", DetonateBomb, Config.FuseTime);
     }
 
     private void DetonateBomb() {
         bombInstance.GetComponent<BounceBomb>().Activate();
         Destroy(bombInstance);
+
+        toggle = false;
+
     }
 }

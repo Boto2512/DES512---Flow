@@ -125,7 +125,7 @@ public class BounceBomb : MonoBehaviour {
         }
 
         //Vector3 newMomentum = new(directionFromBlast.x * newHorizontalSpeed, newVerticalSpeed, directionFromBlast.z * newHorizontalSpeed);
-        Debug.Log($"Old: {entity.GetMomentum()}; New: {newMomentum}");
+        Debug.Log($"Old: {entity.GetMomentum()}; New: {newMomentum}; InStrongBlast: {inStrongBlast}");
         entity.SetMomentum(newMomentum);
     }
 

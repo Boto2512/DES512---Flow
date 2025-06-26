@@ -145,16 +145,14 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable {
             groundMask = Globals.GROUND_MASK;
         }
 
-        cameraObject = this.GetComponentInChildren<Camera>().gameObject;
-        ccamera = this.GetComponentInChildren<CinemachineCamera>();
+        //inputAxisController = this.GetComponentInChildren<CinemachineInputAxisController>();
+        //orbitalFollow = this.GetComponentInChildren<CinemachineOrbitalFollow>();
+        //deoccluder = this.GetComponentInChildren<CinemachineDeoccluder>();
+        //ccamera = this.GetComponentInChildren<CinemachineCamera>();
+        //cameraObject = this.GetComponentInChildren<Camera>().gameObject;
 
-        orbitalFollow = this.GetComponentInChildren<CinemachineOrbitalFollow>();
-
-        deoccluder = this.GetComponentInChildren<CinemachineDeoccluder>();
         deoccluder.CollideAgainst = Globals.OBSTACLE_MASK;
         deoccluder.TransparentLayers = ~Globals.OBSTACLE_MASK;
-
-        inputAxisController = this.GetComponentInChildren<CinemachineInputAxisController>();
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -176,8 +174,7 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable {
         throwTransform.rotation = ccamera.transform.rotation;
         prevGroundedState = groundedState;
 
-        debugSpeedText.text = $"Forward: {Vector3.Dot(rb.linearVelocity, movementForward):0.####}\n" +
-            $"Right: {Vector3.Dot(rb.linearVelocity, movementRight):0.####}\n" +
+        debugSpeedText.text = $"Forward: {rb.linearVelocity.Horizontal().magnitude:0.####}\n" +
             $"Up: {Vector3.Dot(rb.linearVelocity, Vector3.up):0.####}\n" +
             $"Overall: {rb.linearVelocity.magnitude:0.####}";
     }
