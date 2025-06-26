@@ -14,19 +14,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultHealth: 100
   defaultAccelertionSpeed: 1.5
-  accelerationTime: 3
+  accelerationTime: 7
   deceleration: 0.5
   defaultMaxMovementSpeed: 14
+  airSpeedIncrease: 0.5
+  slopeSpeedImpact: 5
+  boostedMaxMovementSpeed: 0
   counterForce: 50
   maxVeloctiyDuration: 1
   defaultVelocityDecayRate: 2
   veloctiyStorageFrequency: 0.5
-  airSpeedIncrease: 0.5
   maxFallSpeed: -69.4
   airControlMultiplier: 0.4
   maxSlopeAngle: 44.2
   minSlopeAngle: 5
-  slopeSpeedImpact: 5
   downwardsForce: 180
   jumpForce: 7
   maxJumpMultiplier: 18
