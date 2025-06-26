@@ -36,6 +36,7 @@ Transform:
   - {fileID: 888584771713122257}
   - {fileID: 7279243878063980943}
   - {fileID: 7380681604456692523}
+  - {fileID: 2256391750723316940}
   - {fileID: 4105869271263575072}
   - {fileID: 6294404749483042219}
   m_Father: {fileID: 4836390072344657585}
@@ -465,7 +466,7 @@ MonoBehaviour:
       Enabled: 1
       Input:
         InputAction: {fileID: -6547441687521043312, guid: bb81ff71908a41342adf5f5fe49eb6aa, type: 3}
-        Gain: 0.64
+        Gain: 0.8
         LegacyInput: 
         LegacyGain: 1
         CancelDeltaTime: 1
@@ -478,7 +479,7 @@ MonoBehaviour:
       Enabled: 1
       Input:
         InputAction: {fileID: -6547441687521043312, guid: bb81ff71908a41342adf5f5fe49eb6aa, type: 3}
-        Gain: -0.64
+        Gain: -0.8
         LegacyInput: 
         LegacyGain: 1
         CancelDeltaTime: 1
@@ -783,6 +784,37 @@ Transform:
   - {fileID: 6706220494377980649}
   - {fileID: 2860039077709293170}
   m_Father: {fileID: 4836390072344657585}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &5197107549975687946
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2256391750723316940}
+  m_Layer: 7
+  m_Name: TargetPosition
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2256391750723316940
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5197107549975687946}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.5, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 507275832145236507}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5841653213381137955
 GameObject:
@@ -1230,25 +1262,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0faf3c4cb8abc8f4e93e1293bbf3f94b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  momentumStorageTime: 0.05
-  slideTime: 0.1
-  acceleration: 16
-  airAcceleration: 16
-  airDrag: 1
-  groundDrag: 2
-  noMovementDrag: 6
-  jumpForce: 7.5
-  coyoteTime: 0.2
+  Config: {fileID: 11400000, guid: ec70776f062a7384d9c19b1a195cbe30, type: 2}
   groundCheckRange: 0.25
   groundMask:
     serializedVersion: 2
     m_Bits: 64
   groundCheckTransform: {fileID: 888584771713122257}
-  minSlopeAngle: 5
-  maxSlopeAngle: 45
-  slopeSpeedMultiplier: 3
   cameraDistance: 4
-  sensitivity: 48
   inputAxisController: {fileID: 4027203352618599092}
   orbitalFollow: {fileID: 315027132837937101}
   deoccluder: {fileID: 5258042323365169959}
@@ -1258,6 +1278,7 @@ MonoBehaviour:
   model: {fileID: 676800034371076729}
   throwTransform: {fileID: 7279243878063980943}
   momentumPosition: {fileID: 7380681604456692523}
+  targetPosition: {fileID: 2256391750723316940}
   PrimaryAction:
     m_PersistentCalls:
       m_Calls: []

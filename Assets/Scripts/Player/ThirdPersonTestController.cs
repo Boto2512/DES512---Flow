@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using TMPro;
 using Unity.Cinemachine;
 using UnityEngine;
@@ -12,51 +10,43 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
 
     [SerializeField] private PlayerControllerConfig Config;
 
-    #region Momentum Storage
+    #region Momentum Storage [NOT IN USE RIGHT NOW]
 
-    [SerializeField, Min(0f)] private float momentumStorageTime;
-    private readonly List<StoredMomentum> storedMomentums = new();
-    private StoredMomentum fastestMomentum = new(Vector3.zero, 0f);
+    //[SerializeField, Min(0f)] private float momentumStorageTime;
+    //private readonly List<StoredMomentum> storedMomentums = new();
+    //private StoredMomentum fastestMomentum = new(Vector3.zero, 0f);
 
-    [SerializeField, Min(0f)] private float slideTime;
     private bool slideEnded = true;
 
-    private readonly struct StoredMomentum {
-        public readonly Vector3 Momentum { get; }
-        public readonly float TimeStamp { get; }
+    //private readonly struct StoredMomentum {
+    //    public readonly Vector3 Momentum { get; }
+    //    public readonly float TimeStamp { get; }
 
-        public StoredMomentum(Vector3 Momentum, float TimeStamp) {
-            this.Momentum = Momentum;
-            this.TimeStamp = TimeStamp;
-        }
+    //    public StoredMomentum(Vector3 Momentum, float TimeStamp) {
+    //        this.Momentum = Momentum;
+    //        this.TimeStamp = TimeStamp;
+    //    }
 
-        public void Deconstruct(out Vector3 momentum, out float timeStamp) {
-            momentum = Momentum;
-            timeStamp = TimeStamp;
-        }
+    //    public void Deconstruct(out Vector3 momentum, out float timeStamp) {
+    //        momentum = Momentum;
+    //        timeStamp = TimeStamp;
+    //    }
 
-        public static StoredMomentum Compare(StoredMomentum a, StoredMomentum b) {
-            float aSqrMag = a.Momentum.sqrMagnitude;
-            float bSqrMag = b.Momentum.sqrMagnitude;
-            if (aSqrMag == bSqrMag) {
-                return a.TimeStamp > b.TimeStamp ? a : b;
-            }
-            else {
-                return aSqrMag > bSqrMag ? a : b;
-            }
-        }
-    }
+    //    public static StoredMomentum Compare(StoredMomentum a, StoredMomentum b) {
+    //        float aSqrMag = a.Momentum.sqrMagnitude;
+    //        float bSqrMag = b.Momentum.sqrMagnitude;
+    //        if (aSqrMag == bSqrMag) {
+    //            return a.TimeStamp > b.TimeStamp ? a : b;
+    //        }
+    //        else {
+    //            return aSqrMag > bSqrMag ? a : b;
+    //        }
+    //    }
+    //}
 
     #endregion Momentum Storage
 
     #region Movement Variables
-
-    [Header("Movement")]
-    [SerializeField, Min(0f)] private float acceleration;
-    [SerializeField, Min(0f)] private float airAcceleration;
-    [SerializeField, Min(0f)] private float airDrag;
-    [SerializeField, Min(0f)] private float groundDrag;
-    [SerializeField, Min(0f)] private float noMovementDrag;
 
     private Vector3 movementForward;
     private Vector3 movementBackward => -movementForward;
@@ -67,27 +57,20 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
 
     #region Jump Variables
 
-    [Header("Jump")]
-    [SerializeField, Min(0f)] private float jumpForce;
-    [SerializeField, Min(0f)] private float coyoteTime;
     private float coyoteTimer = 0f;
 
-    private bool canJump => !hasJumped && (!inAir || coyoteTimer <= coyoteTime);
+    private bool canJump => !hasJumped && (!inAir || coyoteTimer <= Config.CoyoteTime);
     private bool hasJumped = false;
 
     #endregion Jump Variables
 
     #region Ground & Slope Check
 
-    [Header("Ground & Slope Check")]
+    [Header("Ground Check")]
     [SerializeField, Min(0f)] private float groundCheckRange = 0.25f;
     [SerializeField] private LayerMask groundMask;
     [SerializeField] private Transform groundCheckTransform;
     private Vector3 groundCheckPosition => groundCheckTransform.position;
-
-    [SerializeField, Min(0f)] private float minSlopeAngle;
-    [SerializeField, Min(0f)] private float maxSlopeAngle;
-    [SerializeField, Min(0f)] private float slopeSpeedMultiplier;
 
     private PlayerGroundedState groundedState = PlayerGroundedState.None;
     private PlayerGroundedState prevGroundedState = PlayerGroundedState.None;
@@ -102,7 +85,6 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
 
     [Header("Camera Settings")]
     [SerializeField, Range(0f, 15f)] private float cameraDistance = 3f;
-    [SerializeField, Range(1, 120)] private int sensitivity = 60;
     [SerializeField] private CinemachineInputAxisController inputAxisController;
     [SerializeField] private CinemachineOrbitalFollow orbitalFollow;
     [SerializeField] private CinemachineDeoccluder deoccluder;
@@ -127,6 +109,7 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
 
     #region Misc Child Objects
 
+    [Header("Miscellaneous Child Objects")]
     [SerializeField] private GameObject model;
     [SerializeField] private Transform throwTransform;
     [SerializeField] private Transform momentumPosition;
@@ -175,7 +158,7 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
         throwTransform.rotation = ccamera.transform.rotation;
         prevGroundedState = groundedState;
 
-        debugSpeedText.text = $"Forward: {rb.linearVelocity.Horizontal().magnitude:0.####}\n" +
+        debugSpeedText.text = $"Horizontal: {rb.linearVelocity.Horizontal().magnitude:0.####}\n" +
             $"Up: {Vector3.Dot(rb.linearVelocity, Vector3.up):0.####}\n" +
             $"Overall: {rb.linearVelocity.magnitude:0.####}";
     }
@@ -183,10 +166,23 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
     private void FixedUpdate() {
         Rotation();
         Movement();
-        UpdateMomentumStorage();
+        //UpdateMomentumStorage();
     }
 
     private void OnCollisionEnter(Collision collision) {
+        if (collision == null)
+            return;
+
+        GameObject gameObject = collision.gameObject;
+        if (gameObject == null)
+            return;
+
+        if (!enableGroundedStateCheck && Utility.DoesMaskContainLayer(groundMask, gameObject.layer)) {
+            enableGroundedStateCheck = true;
+        }
+    }
+
+    private void OnCollisionStay(Collision collision) {
         if (collision == null)
             return;
 
@@ -204,10 +200,10 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
         this.GetComponentInChildren<CinemachineDeoccluder>().AvoidObstacles.DistanceLimit = cameraDistance;
 
         var tempInputAxisController = this.GetComponentInChildren<CinemachineInputAxisController>();
-        tempInputAxisController.Controllers[0].Input.Gain = (1f / 75f) * sensitivity;
-        tempInputAxisController.Controllers[1].Input.Gain = -(1f / 75f) * sensitivity;
+        tempInputAxisController.Controllers[0].Input.Gain = (1f / 75f) * Config.Sensitivity;
+        tempInputAxisController.Controllers[1].Input.Gain = -(1f / 75f) * Config.Sensitivity;
 
-        this.GetComponent<Rigidbody>().linearDamping = groundDrag;
+        this.GetComponent<Rigidbody>().linearDamping = Config.GroundDrag;
     }
 
     private void OnDrawGizmos() {
@@ -240,7 +236,7 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
         if (!hasInputX && !hasInputY) {     // no input
             if (!inAir) {                   // on ground
                 if (slideEnded) {
-                    rb.linearDamping = noMovementDrag;
+                    rb.linearDamping = Config.StoppingDrag;
                 }
                 else {
                     rb.linearDamping = 0f;
@@ -251,7 +247,7 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
             }
         }
         else if (hasInputX || hasInputY) {
-            rb.linearDamping = inAir || !slideEnded ? airDrag : groundDrag;
+            rb.linearDamping = inAir || !slideEnded ? Config.AirDrag : Config.GroundDrag;
 
             Vector3 worldMovement = GenerateWorldMovement();
             rb.AddForce(worldMovement, ForceMode.Force);
@@ -261,7 +257,7 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
     private Vector3 GenerateWorldMovement() {
         Vector3 relativeMovement = new(movementInput.y, 0f, movementInput.x);
         relativeMovement.Normalize();
-        relativeMovement *= inAir ? airAcceleration : acceleration;
+        relativeMovement *= inAir ? Config.AirAcceleration : Config.Acceleration;
 
         relativeMovement *= GetGroundedStateMovementModifier();
 
@@ -271,38 +267,38 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
 
     #endregion Movement
 
-    #region Momentum Storage
+    #region Momentum Storage [NOT IN USE RIGHT NOW]
 
-    private void UpdateMomentumStorage() {
-        StoredMomentum currentMomentumToStore = new(rb.linearVelocity, Time.fixedTime);
+    //private void UpdateMomentumStorage() {
+    //    StoredMomentum currentMomentumToStore = new(rb.linearVelocity, Time.fixedTime);
 
-        if (fastestMomentum.Momentum.sqrMagnitude < currentMomentumToStore.Momentum.sqrMagnitude) {
-            fastestMomentum = currentMomentumToStore;
-            storedMomentums.Clear();
+    //    if (fastestMomentum.Momentum.sqrMagnitude < currentMomentumToStore.Momentum.sqrMagnitude) {
+    //        fastestMomentum = currentMomentumToStore;
+    //        storedMomentums.Clear();
 
-            storedMomentums.Add(currentMomentumToStore);
-        }
-        else {
-            storedMomentums.Add(currentMomentumToStore);
+    //        storedMomentums.Add(currentMomentumToStore);
+    //    }
+    //    else {
+    //        storedMomentums.Add(currentMomentumToStore);
 
-            float earliestAllowedTimeStamp = currentMomentumToStore.TimeStamp - momentumStorageTime;
-            bool anyRemoved = false;
+    //        float earliestAllowedTimeStamp = currentMomentumToStore.TimeStamp - momentumStorageTime;
+    //        bool anyRemoved = false;
 
-            while (storedMomentums.Any()) {
-                if (storedMomentums.First().TimeStamp < earliestAllowedTimeStamp) {
-                    storedMomentums.RemoveAt(0);
-                    anyRemoved = true;
-                }
-                else {
-                    break;
-                }
-            }
+    //        while (storedMomentums.Any()) {
+    //            if (storedMomentums.First().TimeStamp < earliestAllowedTimeStamp) {
+    //                storedMomentums.RemoveAt(0);
+    //                anyRemoved = true;
+    //            }
+    //            else {
+    //                break;
+    //            }
+    //        }
 
-            if (anyRemoved) {
-                fastestMomentum = storedMomentums.Aggregate((sm1, sm2) => StoredMomentum.Compare(sm1, sm2));
-            }
-        }
-    }
+    //        if (anyRemoved) {
+    //            fastestMomentum = storedMomentums.Aggregate((sm1, sm2) => StoredMomentum.Compare(sm1, sm2));
+    //        }
+    //    }
+    //}
 
     #endregion Momentum Storage
 
@@ -318,11 +314,11 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
     #region Jump
 
     private void Jump() {
-        rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+        rb.AddForce(Vector3.up * Config.JumpForce, ForceMode.Impulse);
     }
 
     private void CoyoteUpdate() {
-        if (coyoteTimer < coyoteTime) {
+        if (coyoteTimer < Config.CoyoteTime) {
             coyoteTimer += Time.deltaTime;
         }
     }
@@ -331,13 +327,21 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
 
     #region Ground & Slopes
 
+    private bool DefaultGroundCheck(out RaycastHit hitInfo) {
+        return Physics.Raycast(groundCheckPosition, Vector3.down, out hitInfo, groundCheckRange, groundMask, QueryTriggerInteraction.Collide);
+    }
+
+    private bool DefaultGroundCheck() {
+        return DefaultGroundCheck(out _);
+    }
+
     private void GroundedStateCheck() {
         if (!enableGroundedStateCheck)
             return;
 
-        if (Physics.Raycast(groundCheckPosition, Vector3.down, out RaycastHit hitInfo, groundCheckRange, groundMask, QueryTriggerInteraction.Collide)) {
+        if (DefaultGroundCheck(out RaycastHit hitInfo)) {
             float angle = Vector3.Angle(Vector3.up, hitInfo.normal);
-            groundedState = (angle < maxSlopeAngle && angle > minSlopeAngle) ? PlayerGroundedState.OnSlope : PlayerGroundedState.OnGround;
+            groundedState = (angle < Config.MaxSlopeAngle && angle > Config.MinSlopeAngle) ? PlayerGroundedState.OnSlope : PlayerGroundedState.OnGround;
         }
         else {
             groundedState = PlayerGroundedState.InAir;
@@ -360,18 +364,17 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
 
             case PlayerGroundedState.OnGround:
                 slideEnded = false;
-                this.InvokeExclusive("End Slide", () => { /*rb.linearDamping = groundDrag;*/ slideEnded = true; }, slideTime);
+                this.InvokeExclusive("End Slide", () => slideEnded = true, Config.SlideTime);
                 hasJumped = false;
                 break;
 
             case PlayerGroundedState.OnSlope:
                 slideEnded = false;
-                this.InvokeExclusive("End Slide", () => { /*rb.linearDamping = groundDrag;*/ slideEnded = true; }, slideTime);
+                this.InvokeExclusive("End Slide", () => slideEnded = true, Config.SlideTime);
                 hasJumped = false;
                 break;
 
             case PlayerGroundedState.InAir:
-                rb.linearDamping = airDrag;
                 coyoteTimer = 0f;
                 timeSpentGrounded = 0f;
 
@@ -409,7 +412,7 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
 
     private float GetGroundedStateMovementModifier() {
         return groundedState switch {
-            PlayerGroundedState.OnSlope => slopeSpeedMultiplier,
+            PlayerGroundedState.OnSlope => Config.SlopeSpeedMultiplier,
             _ => 1f
         };
     }
@@ -479,8 +482,8 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
         if (inputAxisController.Controllers.Count < 2)
             return;
 
-        inputAxisController.Controllers[0].Input.Gain = (1f / 75f) * sensitivity;
-        inputAxisController.Controllers[1].Input.Gain = -(1f / 75f) * sensitivity;
+        inputAxisController.Controllers[0].Input.Gain = (1f / 75f) * Config.Sensitivity;
+        inputAxisController.Controllers[1].Input.Gain = -(1f / 75f) * Config.Sensitivity;
     }
 
     #endregion Sensitivity

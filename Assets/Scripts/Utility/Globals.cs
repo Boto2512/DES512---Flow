@@ -34,11 +34,12 @@ public static class Globals {
         get { return player; }
         set {
             player = value;
+            PLAYER_TARGET = value as ITargetable;
             EVENT_PLAYER_MODIFIED.Invoke();
         }
     }
     public static readonly UnityEvent EVENT_PLAYER_MODIFIED = new();
-    public static ITargetable PLAYER_TARGET = PLAYER as ITargetable;
+    public static ITargetable PLAYER_TARGET = null;
 
     public static readonly TagHandle PLAYER_TAG = TagHandle.GetExistingTag("Player");
 }
