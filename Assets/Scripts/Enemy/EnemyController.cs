@@ -1,9 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.AI;
 using UnityEngine.Events;
-using static UnityEngine.Rendering.DebugUI;
+using UnityEngine.UI;
 
 public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
     #region Damage Variables
@@ -22,7 +21,7 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
 
     private ITargetable target;
     private Vector3 targetPosition => target.Target.position;
-    private void SetTarget() => target = Globals.PLAYER;
+    private void SetTarget() => target = Globals.PLAYER_TARGET;
     private Vector3 desiredDestination = Vector3.zero;                  // only use when isTargetReachable is true
 
     // flags for AI
@@ -141,12 +140,10 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
     }
 
     public void Heal(float value) {
-        if (health + value <= healthBar.maxValue)
-        {
+        if (health + value <= healthBar.maxValue) {
             health += value;
         }
-        else
-        {
+        else {
             health = healthBar.maxValue;
         }
     }
@@ -205,7 +202,7 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
             bombBounced = false;
         }
     }
-    
+
     private void Pursue() {
         SetAgentDestination(GetPursueDestination());
     }

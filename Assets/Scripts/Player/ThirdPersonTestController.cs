@@ -8,7 +8,9 @@ using UnityEngine.Events;
 using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(Rigidbody))]
-public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable {
+public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITargetable {
+
+    [SerializeField] private PlayerControllerConfig Config;
 
     #region Momentum Storage
 
@@ -93,6 +95,7 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable {
     private float timeSpentGrounded = 0f;
     private bool inAir => groundedState == PlayerGroundedState.InAir;
 
+
     #endregion Ground & Slope Check
 
     #region Camera Variables
@@ -127,6 +130,7 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable {
     [SerializeField] private GameObject model;
     [SerializeField] private Transform throwTransform;
     [SerializeField] private Transform momentumPosition;
+    [SerializeField] private Transform targetPosition;
 
     #endregion Misc Child Objects
 
@@ -138,18 +142,15 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable {
     #endregion Events
 
     private Rigidbody rb;
+    public Transform Target => targetPosition;
 
     private void Awake() {
         Cursor.lockState = CursorLockMode.Locked;
+        Globals.PLAYER = this;
+
         if (groundMask == 0) {
             groundMask = Globals.GROUND_MASK;
         }
-
-        //inputAxisController = this.GetComponentInChildren<CinemachineInputAxisController>();
-        //orbitalFollow = this.GetComponentInChildren<CinemachineOrbitalFollow>();
-        //deoccluder = this.GetComponentInChildren<CinemachineDeoccluder>();
-        //ccamera = this.GetComponentInChildren<CinemachineCamera>();
-        //cameraObject = this.GetComponentInChildren<Camera>().gameObject;
 
         deoccluder.CollideAgainst = Globals.OBSTACLE_MASK;
         deoccluder.TransparentLayers = ~Globals.OBSTACLE_MASK;
