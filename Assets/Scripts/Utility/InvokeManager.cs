@@ -84,7 +84,7 @@ public static class InvokeManager {
     /// <param name="mb"></param>
     /// <param name="key"></param>
     /// <returns>Signifies whether a pending invocation was cancelled</returns>
-    public static bool CancelInvoke(MonoBehaviour mb, string key) {
+    public static bool InvokeCancel(MonoBehaviour mb, string key) {
         Hash128 hash = GenerateHash(mb, key);
 
         bool cancelled = false;

@@ -5,6 +5,7 @@ using System.Collections;
 using UnityEngine.VFX;
 using UnityEngine.UI;
 using TMPro;
+using static UnityEngine.Rendering.DebugUI;
 public class ThirdPersonController : MonoBehaviour, IMomentumModifiable, IDamageable, ITargetable
 {
     #region     ========================= Variables =========================
@@ -675,6 +676,18 @@ public class ThirdPersonController : MonoBehaviour, IMomentumModifiable, IDamage
     public void Kill() {
         Debug.LogError("Player should not be oneshotted");
         throw new System.NotImplementedException();
+    }
+
+    public void Heal(float value)
+    {
+        if (health + value <= healthBar.maxValue)
+        {
+            health += value;
+        }
+        else
+        {
+            health = healthBar.maxValue;
+        }
     }
     #endregion  ========================= Damage Interface  =========================
 
