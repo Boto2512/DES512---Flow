@@ -230,9 +230,20 @@ public class SemiKinematicPlayerController : MonoBehaviour {
     private void HorizontalMovement() {
         bool hasInputX = movementInput.x != 0;
         bool hasInputY = movementInput.y != 0;
+        Debug.Log($"{movementInput.x},{movementInput.y}");
 
-        if (!hasInputX && !hasInputY && !inAir && slideEnded) {
-            rb.linearDamping = noMovementDrag;
+        if (!hasInputX && !hasInputY) {
+            if (!inAir) {       // on ground
+                if (slideEnded) {
+                    rb.linearDamping = noMovementDrag;
+                }
+                else {
+                    rb.linearDamping = 0f;
+                }
+            }
+            else if (inAir) {
+                rb.linearDamping = 0f;
+            }
         }
         else if (hasInputX || hasInputY) {
             rb.linearDamping = inAir ? airDrag : groundDrag;
@@ -396,13 +407,13 @@ public class SemiKinematicPlayerController : MonoBehaviour {
 
             case PlayerGroundedState.OnGround:
                 slideEnded = false;
-                this.InvokeExclusive("End Slide", () => { rb.linearDamping = groundDrag; slideEnded = true; }, slideTime);
+                this.InvokeExclusive("End Slide", () => { /*rb.linearDamping = groundDrag;*/ slideEnded = true; }, slideTime);
                 hasJumped = false;
                 break;
 
             case PlayerGroundedState.OnSlope:
                 slideEnded = false;
-                this.InvokeExclusive("End Slide", () => { rb.linearDamping = groundDrag; slideEnded = true; }, slideTime);
+                this.InvokeExclusive("End Slide", () => { /*rb.linearDamping = groundDrag;*/ slideEnded = true; }, slideTime);
                 hasJumped = false;
                 break;
 
