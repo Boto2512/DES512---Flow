@@ -494,8 +494,8 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable {
         return rb.linearVelocity;
     }
 
-    public void SetMomentum(Vector3 value) {
-        rb.AddForce(value, ForceMode.VelocityChange);
+    public void SetMomentum(Vector3 newMomentum) {
+        rb.linearVelocity = newMomentum;
     }
 
     #endregion IMomentumModifiable
