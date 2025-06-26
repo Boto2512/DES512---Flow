@@ -10,13 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: aa258b82ee64a9e4592af5aad6456628, type: 3}
-  m_Name: DefaultBounceBombConfigSumit
+  m_Name: BBConfig_Sumit
   m_EditorClassIdentifier: 
-  WeakBlastRadius: 7
-  WeakBlastPower: 5
+  WeakBlastRadius: 10
+  WeakBlastPower: 0
   WeakSpeedMinimum: 10
-  StrongBlastRadius: 4
-  StrongBlastPower: 2.5
-  StrongSpeedMinimum: 10
-  VerticalGainRatio: 0.7
+  StrongBlastRadius: 10
+  StrongBlastPower: 0
+  StrongSpeedMinimum: 15
+  UseFixedVerticalSpeed: 1
+  FixedVerticalSpeed: 6
+  VerticalGainMinimum: 3
+  VerticalGainRatio: 0.194
   EntityProjectionScale: 0

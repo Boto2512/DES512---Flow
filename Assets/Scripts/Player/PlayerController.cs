@@ -3,7 +3,6 @@ using DG.Tweening;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.Splines.ExtrusionShapes;
 using UnityEngine.UI;
 using UnityEngine.VFX
     ;
@@ -331,6 +330,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
         if (!isGrounded) { MaxFallSpeed(); }
 
 
+
         if (SlopeCheck() && !exitSlope) {
             if (playerRigidBody.linearVelocity.magnitude > currentMaxMovementSpeed) {
                 playerRigidBody.linearVelocity = playerRigidBody.linearVelocity.normalized * currentMaxMovementSpeed;
@@ -355,10 +355,6 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
             }
         }
 
-        if (currentMaxMovementSpeed == config.defaultMaxMovementSpeed) { return; }
-        else if (horizontalInput == 0 || verticalInput == 0) { return; }
-        //else if (current config.defaultMaxMovementSpeed + config.airSpeedIncrease)
-
         if (horizontalInput != 0 || verticalInput != 0 && currentMaxMovementSpeed != config.defaultMaxMovementSpeed) {
             ReduceMaxSpeed();
         }
@@ -372,6 +368,9 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
 
     private void ReduceMaxSpeed() {
         timeAtMaxVelocity += Time.deltaTime;
+        /*if (timeAtMaxVelocity > config.maxVeloctiyDuration) {
+            currentMaxMovementSpeed = Mathf.MoveTowards(currentMaxMovementSpeed, config.defaultMaxMovementSpeed, config.velocityDecayRate * Time.deltaTime);
+        }*/
 
         if (timeAtMaxVelocity > config.maxVeloctiyDuration) {
             currentMaxMovementSpeed = Mathf.SmoothDamp(currentMaxMovementSpeed, config.defaultMaxMovementSpeed, ref velocityDecayRate, config.maxVeloctiyDuration);
@@ -669,19 +668,14 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
     }
 
     public void SetMomentum(Vector3 value) {
-        playerRigidBody.linearVelocity = value;
+        //playerRigidBody.AddForce(value, ForceMode.VelocityChange);
+        playerRigidBody.linearVelocity=value;
 
-        float addedSpeed = config.defaultMaxMovementSpeed + value.magnitude;
+        Debug.Log($"blast magnitude {value.magnitude}| currentMovementSpeed {config.defaultMaxMovementSpeed} || total {config.defaultMaxMovementSpeed + value.magnitude}");
+        if (CheckIfSpeedIncreases(value.magnitude)) {
+        currentMaxMovementSpeed = config.defaultMaxMovementSpeed + value.magnitude;
 
-        if (addedSpeed >= config.boostedMaxMovementSpeed) {
-            Debug.Log("SpeedCap");
-            addedSpeed = config.boostedMaxMovementSpeed;
         }
-        Debug.Log($"Added Speed {addedSpeed}");
-        if (CheckIfSpeedIncreases(addedSpeed)) {
-            currentMaxMovementSpeed = config.defaultMaxMovementSpeed + addedSpeed;
-        }
-
         hasBombBounced = true;
         groundCheckEnabled = false;
         this.InvokeExclusive("EnableGroundCheck", EnableGroundCheck, 0.1f);
