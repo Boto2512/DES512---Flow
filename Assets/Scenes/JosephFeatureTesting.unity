@@ -232,6 +232,7 @@ GameObject:
   - component: {fileID: 80844774}
   - component: {fileID: 80844773}
   - component: {fileID: 80844772}
+  - component: {fileID: 80844775}
   - component: {fileID: 80844771}
   m_Layer: 7
   m_Name: ThirdPerson
@@ -415,6 +416,7 @@ MonoBehaviour:
   groundMask:
     serializedVersion: 2
     m_Bits: 64
+  groundCheckTransform: {fileID: 397613674}
   minSlopeAngle: 5
   maxSlopeAngle: 45
   slopeSpeedMultiplier: 3
@@ -426,14 +428,39 @@ MonoBehaviour:
   ccamera: {fileID: 0}
   cameraObject: {fileID: 0}
   debugSpeedText: {fileID: 405549053}
-  model: {fileID: 0}
-  throwTrasnform: {fileID: 0}
+  model: {fileID: 803572988}
+  throwTransform: {fileID: 359497354}
+  momentumPosition: {fileID: 1703016799}
   PrimaryAction:
     m_PersistentCalls:
       m_Calls: []
   SecondaryAction:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 80844775}
+        m_TargetAssemblyTypeName: BBThrowController, Assembly-CSharp
+        m_MethodName: ThrowBomb
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 80844775}
+        m_TargetAssemblyTypeName: BBThrowController, Assembly-CSharp
+        m_MethodName: TriggerDetonation
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!54 &80844773
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -480,6 +507,30 @@ Transform:
   - {fileID: 8412089}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &80844775
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 80844770}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa104c0f5dc37a74c9bf41ceaef6e61d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Config: {fileID: 0}
+  momentousEntity:
+    rid: -2
+  throwTransform: {fileID: 359497354}
+  bounceBomb: {fileID: 569634559799669078, guid: 905d297ab0a893c4ca79c31d5bac738d, type: 3}
+  throwPower: 10
+  fuseTime: 0.15
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!1 &359497353
 GameObject:
   m_ObjectHideFlags: 0
@@ -1025,6 +1076,7 @@ Transform:
   - {fileID: 397613674}
   - {fileID: 1463804653}
   - {fileID: 359497354}
+  - {fileID: 1703016799}
   m_Father: {fileID: 80844774}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &803572990
@@ -2192,6 +2244,37 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1703016798
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1703016799}
+  m_Layer: 7
+  m_Name: MomentumPosition
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1703016799
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1703016798}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -0.5, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 803572989}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1943051960
 GameObject:

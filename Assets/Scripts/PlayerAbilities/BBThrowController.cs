@@ -4,9 +4,9 @@ public class BBThrowController : MonoBehaviour {
 
     [SerializeField] private BBThrowConfig Config;
 
-    [SerializeField] private IMomentumModifiable momentousEntity;
+    [SerializeReference] public IMomentumModifiable momentousEntity;
     [SerializeField] private Transform throwTransform;
-    [SerializeField] private BounceBomb bounceBomb;
+    [SerializeField] private GameObject bounceBomb;
     [SerializeField, Min(0f)] private float throwPower;
     [SerializeField, Min(0f)] private float fuseTime;
 
@@ -16,7 +16,7 @@ public class BBThrowController : MonoBehaviour {
         if (bombInstance != null)
             return;
 
-        bombInstance = Instantiate(bounceBomb, throwTransform.position, throwTransform.rotation).gameObject;
+        bombInstance = Instantiate(bounceBomb, throwTransform.position, throwTransform.rotation);
         bombInstance.GetComponent<Rigidbody>().AddForce(momentousEntity.GetMomentum() + throwTransform.forward * throwPower, ForceMode.VelocityChange);
     }
 

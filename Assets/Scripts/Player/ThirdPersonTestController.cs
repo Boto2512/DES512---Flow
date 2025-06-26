@@ -8,7 +8,7 @@ using UnityEngine.Events;
 using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(Rigidbody))]
-public class ThirdPersonTestController : MonoBehaviour {
+public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable {
 
     #region Momentum Storage
 
@@ -80,7 +80,7 @@ public class ThirdPersonTestController : MonoBehaviour {
     [Header("Ground & Slope Check")]
     [SerializeField, Min(0f)] private float groundCheckRange = 0.25f;
     [SerializeField] private LayerMask groundMask;
-    private Transform groundCheckTransform;
+    [SerializeField] private Transform groundCheckTransform;
     private Vector3 groundCheckPosition => groundCheckTransform.position;
 
     [SerializeField, Min(0f)] private float minSlopeAngle;
@@ -125,7 +125,8 @@ public class ThirdPersonTestController : MonoBehaviour {
     #region Misc Child Objects
 
     [SerializeField] private GameObject model;
-    [SerializeField] private Transform throwTrasnform;
+    [SerializeField] private Transform throwTransform;
+    [SerializeField] private Transform momentumPosition;
 
     #endregion Misc Child Objects
 
@@ -144,7 +145,6 @@ public class ThirdPersonTestController : MonoBehaviour {
             groundMask = Globals.GROUND_MASK;
         }
 
-        groundCheckTransform = this.transform.Find("Model").Find("GroundCheck");        // TODO: make this more general
         cameraObject = this.GetComponentInChildren<Camera>().gameObject;
         ccamera = this.GetComponentInChildren<CinemachineCamera>();
 
@@ -160,7 +160,6 @@ public class ThirdPersonTestController : MonoBehaviour {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start() {
         rb = this.GetComponent<Rigidbody>();
-        model = this.transform.Find("Model").gameObject;
 
         UpdateSensitivity();
         orbitalFollow.Radius = cameraDistance;
@@ -174,6 +173,7 @@ public class ThirdPersonTestController : MonoBehaviour {
 
         model.transform.rotation = Quaternion.Euler(0f, cameraObject.transform.rotation.eulerAngles.y, 0f);
         ccamera.Target.TrackingTarget.rotation = ccamera.transform.rotation;
+        throwTransform.rotation = ccamera.transform.rotation;
         prevGroundedState = groundedState;
 
         debugSpeedText.text = $"Forward: {Vector3.Dot(rb.linearVelocity, movementForward):0.####}\n" +
@@ -186,8 +186,6 @@ public class ThirdPersonTestController : MonoBehaviour {
         Rotation();
         Movement();
         UpdateMomentumStorage();
-
-
     }
 
     private void OnCollisionEnter(Collision collision) {
@@ -488,4 +486,20 @@ public class ThirdPersonTestController : MonoBehaviour {
     }
 
     #endregion Sensitivity
+
+    #region IMomentumModifiable
+
+    public Vector3 GetPosition() {
+        return momentumPosition.position;
+    }
+
+    public Vector3 GetMomentum() {
+        return rb.linearVelocity;
+    }
+
+    public void SetMomentum(Vector3 value) {
+        rb.AddForce(value, ForceMode.VelocityChange);
+    }
+
+    #endregion IMomentumModifiable
 }
