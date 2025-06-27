@@ -194,6 +194,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
                 jumpReleased = false;
                 exitSlope = true;
                 hasJumped = true;
+                timeAtMaxVelocity = 0;
 
                 this.InvokeExclusive("Reset Jump", ResetJump, config.jumpCooldown);
 
@@ -351,14 +352,17 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
                 timeAtMaxVelocity = 0;
             }
         }
-        //Debug.Log(currentMaxMovementSpeed +" " + config.defaultMaxMovementSpeed + config.airSpeedIncrease +" "+ config.defaultMaxMovementSpeed + config.boostedMaxMovementSpeed);
-        if (currentMaxMovementSpeed >= config.defaultMaxMovementSpeed + config.airSpeedIncrease &&
-            currentMaxMovementSpeed <= config.defaultMaxMovementSpeed + config.boostedMaxMovementSpeed) {
-            //Debug.Log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\nAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-            if(playerRigidBody.linearVelocity.magnitude < currentMaxMovementSpeed) { currentMaxMovementSpeed = playerRigidBody.linearVelocity.magnitude; }
+        ////Debug.Log(currentMaxMovementSpeed +" " + config.defaultMaxMovementSpeed + config.airSpeedIncrease +" "+ config.defaultMaxMovementSpeed + config.boostedMaxMovementSpeed);
+        //float airSpeed = config.defaultMaxMovementSpeed + config.boostedMaxMovementSpeed;
+        //float boostedSpeed = config.defaultMaxMovementSpeed + config.airSpeedIncrease;
+        //if (currentMaxMovementSpeed >= airSpeed && currentMaxMovementSpeed <= boostedSpeed)
+        //{
+        //    //Debug.Log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\nAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+        //    if (playerRigidBody.linearVelocity.magnitude < currentMaxMovementSpeed) { currentMaxMovementSpeed = playerRigidBody.linearVelocity.magnitude; }
 
-        } 
-        else if (horizontalInput != 0 || verticalInput != 0 && currentMaxMovementSpeed != config.defaultMaxMovementSpeed) {
+        //}
+        //else if 
+        if (horizontalInput != 0 || verticalInput != 0 && currentMaxMovementSpeed != config.defaultMaxMovementSpeed) {
                 ReduceMaxSpeed();
 
             Debug.Log("reduce max speed");
