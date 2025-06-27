@@ -1,17 +1,52 @@
+using System;
+using TMPro;
 using Unity.Cinemachine;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(Rigidbody))]
-public class ThirdPersonTestController : MonoBehaviour {
+public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITargetable {
+
+    [SerializeField] private PlayerControllerConfig Config;
+
+    #region Momentum Storage [NOT IN USE RIGHT NOW]
+
+    //[SerializeField, Min(0f)] private float momentumStorageTime;
+    //private readonly List<StoredMomentum> storedMomentums = new();
+    //private StoredMomentum fastestMomentum = new(Vector3.zero, 0f);
+
+    private bool slideEnded = true;
+
+    //private readonly struct StoredMomentum {
+    //    public readonly Vector3 Momentum { get; }
+    //    public readonly float TimeStamp { get; }
+
+    //    public StoredMomentum(Vector3 Momentum, float TimeStamp) {
+    //        this.Momentum = Momentum;
+    //        this.TimeStamp = TimeStamp;
+    //    }
+
+    //    public void Deconstruct(out Vector3 momentum, out float timeStamp) {
+    //        momentum = Momentum;
+    //        timeStamp = TimeStamp;
+    //    }
+
+    //    public static StoredMomentum Compare(StoredMomentum a, StoredMomentum b) {
+    //        float aSqrMag = a.Momentum.sqrMagnitude;
+    //        float bSqrMag = b.Momentum.sqrMagnitude;
+    //        if (aSqrMag == bSqrMag) {
+    //            return a.TimeStamp > b.TimeStamp ? a : b;
+    //        }
+    //        else {
+    //            return aSqrMag > bSqrMag ? a : b;
+    //        }
+    //    }
+    //}
+
+    #endregion Momentum Storage
 
     #region Movement Variables
-
-    [Header("Movement")]
-    [SerializeField, Min(0f)] private float acceleration;
-    [SerializeField, Min(0f)] private float deceleration;
-    [SerializeField, Min(0f)] private float groundDrag;
-    private float constGroundDrag;
 
     private Vector3 movementForward;
     private Vector3 movementBackward => -movementForward;
@@ -22,27 +57,27 @@ public class ThirdPersonTestController : MonoBehaviour {
 
     #region Jump Variables
 
-    [Header("Jump")]
-    [SerializeField, Min(0f)] private float jumpForce;
-    [SerializeField, Min(0f)] private float coyoteTime;
+    private float coyoteTimer = 0f;
+
+    private bool canJump => !hasJumped && (!inAir || coyoteTimer <= Config.CoyoteTime);
+    private bool hasJumped = false;
 
     #endregion Jump Variables
 
     #region Ground & Slope Check
 
-    [Header("Ground & Slope Check")]
+    [Header("Ground Check")]
     [SerializeField, Min(0f)] private float groundCheckRange = 0.25f;
     [SerializeField] private LayerMask groundMask;
-    private Transform groundCheckTransform;
+    [SerializeField] private Transform groundCheckTransform;
     private Vector3 groundCheckPosition => groundCheckTransform.position;
 
-    [SerializeField, Min(0f)] private float minSlopeAngle;
-    [SerializeField, Min(0f)] private float maxSlopeAngle;
-    [SerializeField, Min(0f)] private float slopeSpeedMultiplier;
-    private float currentSlopeMultiplier = 1f;
-
     private PlayerGroundedState groundedState = PlayerGroundedState.None;
+    private PlayerGroundedState prevGroundedState = PlayerGroundedState.None;
     private bool enableGroundedStateCheck = true;
+    private float timeSpentGrounded = 0f;
+    private bool inAir => groundedState == PlayerGroundedState.InAir;
+
 
     #endregion Ground & Slope Check
 
@@ -50,63 +85,114 @@ public class ThirdPersonTestController : MonoBehaviour {
 
     [Header("Camera Settings")]
     [SerializeField, Range(0f, 15f)] private float cameraDistance = 3f;
-    [SerializeField, Range(1, 120)] private int sensitivity = 60;
-    private CinemachineInputAxisController inputAxisController;
-    private CinemachineOrbitalFollow orbitalFollow;
-    private CinemachineDeoccluder deoccluder;
-    private GameObject cameraObject;
+    [SerializeField] private CinemachineInputAxisController inputAxisController;
+    [SerializeField] private CinemachineOrbitalFollow orbitalFollow;
+    [SerializeField] private CinemachineDeoccluder deoccluder;
+    [SerializeField] private CinemachineCamera ccamera;
+    [SerializeField] private GameObject cameraObject;
 
     #endregion Camera Variables
 
     #region Input Variables
 
     private Vector2 movementInput;
-    private bool attackPressed;
-    private bool throwPressed;
     private bool jumpActivated;
 
     #endregion Input Variables
 
+    #region Debug Variables
+
+    [Header("Debug")]
+    [SerializeField] private TextMeshProUGUI debugSpeedText;
+
+    #endregion Debug Variables
+
+    #region Misc Child Objects
+
+    [Header("Miscellaneous Child Objects")]
+    [SerializeField] private GameObject model;
+    [SerializeField] private Transform throwTransform;
+    [SerializeField] private Transform momentumPosition;
+    [SerializeField] private Transform targetPosition;
+
+    #endregion Misc Child Objects
+
+    #region Events
+
+    public UnityEvent PrimaryAction = new();
+    public UnityEvent SecondaryAction = new();
+
+    #endregion Events
+
     private Rigidbody rb;
+    public Transform Target => targetPosition;
 
     private void Awake() {
         Cursor.lockState = CursorLockMode.Locked;
+        Globals.PLAYER = this;
+
         if (groundMask == 0) {
             groundMask = Globals.GROUND_MASK;
         }
 
-        groundCheckTransform = this.transform.Find("Model").Find("GroundCheck");        // TODO: make this more general
-        cameraObject = this.GetComponentInChildren<Camera>().gameObject;
-
-        orbitalFollow = this.GetComponentInChildren<CinemachineOrbitalFollow>();
-
-        deoccluder = this.GetComponentInChildren<CinemachineDeoccluder>();
         deoccluder.CollideAgainst = Globals.OBSTACLE_MASK;
         deoccluder.TransparentLayers = ~Globals.OBSTACLE_MASK;
-
-        inputAxisController = this.GetComponentInChildren<CinemachineInputAxisController>();
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start() {
         rb = this.GetComponent<Rigidbody>();
+
         UpdateSensitivity();
         orbitalFollow.Radius = cameraDistance;
         deoccluder.AvoidObstacles.DistanceLimit = cameraDistance;
-
-        rb.linearDamping = groundDrag;
-        constGroundDrag = groundDrag;
     }
 
     // Update is called once per frame
     void Update() {
         GroundedStateCheck();
         GroundedStateUpdates();
+
+        model.transform.rotation = Quaternion.Euler(0f, cameraObject.transform.rotation.eulerAngles.y, 0f);
+        ccamera.Target.TrackingTarget.rotation = ccamera.transform.rotation;
+        throwTransform.rotation = ccamera.transform.rotation;
+        prevGroundedState = groundedState;
+
+        debugSpeedText.text = $"Horizontal: {rb.linearVelocity.Horizontal().magnitude:0.####}\n" +
+            $"Up: {Vector3.Dot(rb.linearVelocity, Vector3.up):0.####}\n" +
+            $"Overall: {rb.linearVelocity.magnitude:0.####}";
     }
 
     private void FixedUpdate() {
         Rotation();
         Movement();
+        //UpdateMomentumStorage();
+    }
+
+    private void OnCollisionEnter(Collision collision) {
+        if (collision == null)
+            return;
+
+        GameObject gameObject = collision.gameObject;
+        if (gameObject == null)
+            return;
+
+        if (!enableGroundedStateCheck && Utility.DoesMaskContainLayer(groundMask, gameObject.layer)) {
+            enableGroundedStateCheck = true;
+        }
+    }
+
+    private void OnCollisionStay(Collision collision) {
+        if (collision == null)
+            return;
+
+        GameObject gameObject = collision.gameObject;
+        if (gameObject == null)
+            return;
+
+        if (!enableGroundedStateCheck && Utility.DoesMaskContainLayer(groundMask, gameObject.layer)) {
+            enableGroundedStateCheck = true;
+        }
     }
 
     private void OnValidate() {
@@ -114,10 +200,16 @@ public class ThirdPersonTestController : MonoBehaviour {
         this.GetComponentInChildren<CinemachineDeoccluder>().AvoidObstacles.DistanceLimit = cameraDistance;
 
         var tempInputAxisController = this.GetComponentInChildren<CinemachineInputAxisController>();
-        tempInputAxisController.Controllers[0].Input.Gain = (1f / 75f) * sensitivity;
-        tempInputAxisController.Controllers[1].Input.Gain = -(1f / 75f) * sensitivity;
+        tempInputAxisController.Controllers[0].Input.Gain = (1f / 75f) * Config.Sensitivity;
+        tempInputAxisController.Controllers[1].Input.Gain = -(1f / 75f) * Config.Sensitivity;
 
-        this.GetComponent<Rigidbody>().linearDamping = groundDrag;
+        this.GetComponent<Rigidbody>().linearDamping = Config.GroundDrag;
+    }
+
+    private void OnDrawGizmos() {
+        //Gizmos.color = Color.red;
+        //Gizmos.DrawLine(model.transform.position, model.transform.position + model.transform.forward);
+        //Gizmos.DrawLine(model.transform.position, model.transform.position + ccamera.transform.forward);
     }
 
     #region Movement
@@ -126,39 +218,89 @@ public class ThirdPersonTestController : MonoBehaviour {
         // need to normalise movement since MoveInput() accumulates inputs
         movementInput = movementInput.normalized;
 
-        HorizontalMovement();
         VerticalMovement();
-    }
-
-    private void HorizontalMovement() {
-        if (movementInput.x != 0) {
-            rb.AddForce(300 * currentSlopeMultiplier * movementInput.x * Time.fixedDeltaTime * acceleration * movementRight, ForceMode.Force);
-        }
-        else {
-
-        }
-
-        if (movementInput.y != 0) {
-            rb.AddForce(300 * currentSlopeMultiplier * movementInput.y * Time.fixedDeltaTime * acceleration * movementForward, ForceMode.Force);
-        }
-        else {
-
-        }
+        HorizontalMovement();
     }
 
     private void VerticalMovement() {
-
+        if (jumpActivated && canJump) {
+            Jump();
+            hasJumped = true;
+        }
     }
 
-    private void Accelerate() {
+    private void HorizontalMovement() {
+        bool hasInputX = movementInput.x != 0;
+        bool hasInputY = movementInput.y != 0;
 
+        if (!hasInputX && !hasInputY) {     // no input
+            if (!inAir) {                   // on ground
+                if (slideEnded) {
+                    rb.linearDamping = Config.StoppingDrag;
+                }
+                else {
+                    rb.linearDamping = 0f;
+                }
+            }
+            else {
+                rb.linearDamping = 0f;
+            }
+        }
+        else if (hasInputX || hasInputY) {
+            rb.linearDamping = inAir || !slideEnded ? Config.AirDrag : Config.GroundDrag;
+
+            Vector3 worldMovement = GenerateWorldMovement();
+            rb.AddForce(worldMovement, ForceMode.Force);
+        }
     }
 
-    private void Decelerate() {
+    private Vector3 GenerateWorldMovement() {
+        Vector3 relativeMovement = new(movementInput.y, 0f, movementInput.x);
+        relativeMovement.Normalize();
+        relativeMovement *= inAir ? Config.AirAcceleration : Config.Acceleration;
 
+        relativeMovement *= GetGroundedStateMovementModifier();
+
+        Vector3 worldMovement = new(Vector3.Dot(relativeMovement, movementForward), 0f, Vector3.Dot(relativeMovement, movementRight));
+        return worldMovement;
     }
 
     #endregion Movement
+
+    #region Momentum Storage [NOT IN USE RIGHT NOW]
+
+    //private void UpdateMomentumStorage() {
+    //    StoredMomentum currentMomentumToStore = new(rb.linearVelocity, Time.fixedTime);
+
+    //    if (fastestMomentum.Momentum.sqrMagnitude < currentMomentumToStore.Momentum.sqrMagnitude) {
+    //        fastestMomentum = currentMomentumToStore;
+    //        storedMomentums.Clear();
+
+    //        storedMomentums.Add(currentMomentumToStore);
+    //    }
+    //    else {
+    //        storedMomentums.Add(currentMomentumToStore);
+
+    //        float earliestAllowedTimeStamp = currentMomentumToStore.TimeStamp - momentumStorageTime;
+    //        bool anyRemoved = false;
+
+    //        while (storedMomentums.Any()) {
+    //            if (storedMomentums.First().TimeStamp < earliestAllowedTimeStamp) {
+    //                storedMomentums.RemoveAt(0);
+    //                anyRemoved = true;
+    //            }
+    //            else {
+    //                break;
+    //            }
+    //        }
+
+    //        if (anyRemoved) {
+    //            fastestMomentum = storedMomentums.Aggregate((sm1, sm2) => StoredMomentum.Compare(sm1, sm2));
+    //        }
+    //    }
+    //}
+
+    #endregion Momentum Storage
 
     #region Rotation
 
@@ -169,15 +311,37 @@ public class ThirdPersonTestController : MonoBehaviour {
 
     #endregion Rotation
 
+    #region Jump
+
+    private void Jump() {
+        rb.AddForce(Vector3.up * Config.JumpForce, ForceMode.Impulse);
+    }
+
+    private void CoyoteUpdate() {
+        if (coyoteTimer < Config.CoyoteTime) {
+            coyoteTimer += Time.deltaTime;
+        }
+    }
+
+    #endregion Jump
+
     #region Ground & Slopes
+
+    private bool DefaultGroundCheck(out RaycastHit hitInfo) {
+        return Physics.Raycast(groundCheckPosition, Vector3.down, out hitInfo, groundCheckRange, groundMask, QueryTriggerInteraction.Collide);
+    }
+
+    private bool DefaultGroundCheck() {
+        return DefaultGroundCheck(out _);
+    }
 
     private void GroundedStateCheck() {
         if (!enableGroundedStateCheck)
             return;
 
-        if (Physics.Raycast(groundCheckPosition, Vector3.down, out RaycastHit hitInfo, groundCheckRange, groundMask, QueryTriggerInteraction.Collide)) {
+        if (DefaultGroundCheck(out RaycastHit hitInfo)) {
             float angle = Vector3.Angle(Vector3.up, hitInfo.normal);
-            groundedState = (angle < maxSlopeAngle && angle > minSlopeAngle) ? PlayerGroundedState.OnSlope : PlayerGroundedState.OnGround;
+            groundedState = (angle < Config.MaxSlopeAngle && angle > Config.MinSlopeAngle) ? PlayerGroundedState.OnSlope : PlayerGroundedState.OnGround;
         }
         else {
             groundedState = PlayerGroundedState.InAir;
@@ -185,30 +349,72 @@ public class ThirdPersonTestController : MonoBehaviour {
     }
 
     private void GroundedStateUpdates() {
+        if (groundedState == prevGroundedState) {
+            GroundedStateConserved();
+        }
+        else {
+            GroundedStateChanged();
+        }
+    }
+
+    private void GroundedStateChanged() {
         switch (groundedState) {
             case PlayerGroundedState.None:
-                groundDrag = constGroundDrag;
-                currentSlopeMultiplier = 1f;
                 break;
 
             case PlayerGroundedState.OnGround:
-                groundDrag = constGroundDrag;
-                currentSlopeMultiplier = 1f;
+                slideEnded = false;
+                this.InvokeExclusive("End Slide", () => slideEnded = true, Config.SlideTime);
+                hasJumped = false;
                 break;
 
             case PlayerGroundedState.OnSlope:
-                groundDrag = 0f;
-                currentSlopeMultiplier = slopeSpeedMultiplier;
+                slideEnded = false;
+                this.InvokeExclusive("End Slide", () => slideEnded = true, Config.SlideTime);
+                hasJumped = false;
                 break;
 
             case PlayerGroundedState.InAir:
-                groundDrag = 0f;
-                currentSlopeMultiplier = 1f;
+                coyoteTimer = 0f;
+                timeSpentGrounded = 0f;
+
+                enableGroundedStateCheck = false;
+                this.InvokeCancel("End Slide");
+                slideEnded = true;
                 break;
 
             default:
                 break;
         }
+    }
+
+    private void GroundedStateConserved() {
+        switch (groundedState) {
+            case PlayerGroundedState.None:
+                break;
+
+            case PlayerGroundedState.OnGround:
+                timeSpentGrounded += Time.deltaTime;
+                break;
+
+            case PlayerGroundedState.OnSlope:
+                timeSpentGrounded += Time.deltaTime;
+                break;
+
+            case PlayerGroundedState.InAir:
+                CoyoteUpdate();
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    private float GetGroundedStateMovementModifier() {
+        return groundedState switch {
+            PlayerGroundedState.OnSlope => Config.SlopeSpeedMultiplier,
+            _ => 1f
+        };
     }
 
     #endregion Ground & Slopes
@@ -239,19 +445,17 @@ public class ThirdPersonTestController : MonoBehaviour {
 
     public void AttackInput(InputAction.CallbackContext context) {
         if (context.started) {
-            attackPressed = true;
+            PrimaryAction.Invoke();
         }
         else if (context.canceled) {
-            attackPressed = false;
         }
     }
 
     public void ThrowInput(InputAction.CallbackContext context) {
         if (context.started) {
-            throwPressed = true;
+            SecondaryAction.Invoke();
         }
         else if (context.canceled) {
-            throwPressed = false;
         }
     }
 
@@ -278,9 +482,25 @@ public class ThirdPersonTestController : MonoBehaviour {
         if (inputAxisController.Controllers.Count < 2)
             return;
 
-        inputAxisController.Controllers[0].Input.Gain = (1f / 75f) * sensitivity;
-        inputAxisController.Controllers[1].Input.Gain = -(1f / 75f) * sensitivity;
+        inputAxisController.Controllers[0].Input.Gain = (1f / 75f) * Config.Sensitivity;
+        inputAxisController.Controllers[1].Input.Gain = -(1f / 75f) * Config.Sensitivity;
     }
 
     #endregion Sensitivity
+
+    #region IMomentumModifiable
+
+    public Vector3 GetPosition() {
+        return momentumPosition.position;
+    }
+
+    public Vector3 GetMomentum() {
+        return rb.linearVelocity;
+    }
+
+    public void SetMomentum(Vector3 newMomentum) {
+        rb.linearVelocity = newMomentum;
+    }
+
+    #endregion IMomentumModifiable
 }

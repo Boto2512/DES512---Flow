@@ -1,10 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.VFX;
 
-public class Projectile : MonoBehaviour
-{
+public class Projectile : MonoBehaviour {
     [SerializeField] private float projectileSpeed = 4;
     [SerializeField] private Vector3 playerLocation;
     [SerializeField] private float timeToFire;
@@ -17,9 +13,9 @@ public class Projectile : MonoBehaviour
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start() {
-        playerLocation = Globals.PLAYER.Target.position;
+        playerLocation = Globals.PLAYER_TARGET.Target.position;
 
-        rb = GetComponent<Rigidbody>();    
+        rb = GetComponent<Rigidbody>();
 
         direction = (playerLocation - rb.position).normalized;
 
@@ -33,7 +29,7 @@ public class Projectile : MonoBehaviour
     }
 
 
-    
+
     void Update() {
 
         rb.position += direction * projectileSpeed * Time.deltaTime;
