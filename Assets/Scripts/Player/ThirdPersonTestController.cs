@@ -1,14 +1,32 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 [RequireComponent(typeof(Rigidbody))]
-public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITargetable {
+public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITargetable, IDamageable {
+
+    #region Variables
 
     [SerializeField] private PlayerControllerConfig Config;
+
+    #region Attack & Damage
+
+    [SerializeField, Min(0f)] private float attack;
+    [SerializeField, Min(0f)] private float attackRange;
+    [SerializeField] private LayerMask attackMask;
+    [SerializeField] private List<SpeedStageThreshold> damageThresholds;
+
+    [SerializeField, Min(0f)] private float maxHealth;
+    [SerializeField, Min(0f)] private float health;
+    [SerializeField] private Slider healthBar;
+
+    #endregion Attack & Damage
 
     #region Momentum Storage [NOT IN USE RIGHT NOW]
 
@@ -16,7 +34,6 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
     //private readonly List<StoredMomentum> storedMomentums = new();
     //private StoredMomentum fastestMomentum = new(Vector3.zero, 0f);
 
-    private bool slideEnded = true;
 
     //private readonly struct StoredMomentum {
     //    public readonly Vector3 Momentum { get; }
@@ -45,6 +62,7 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
     //}
 
     #endregion Momentum Storage
+    private bool slideEnded = true;
 
     #region Movement Variables
 
@@ -127,6 +145,10 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
     private Rigidbody rb;
     public Transform Target => targetPosition;
 
+    #endregion Variables
+
+    #region MonoBehaviour Functions
+
     private void Awake() {
         Cursor.lockState = CursorLockMode.Locked;
         Globals.PLAYER = this;
@@ -146,6 +168,9 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
         UpdateSensitivity();
         orbitalFollow.Radius = cameraDistance;
         deoccluder.AvoidObstacles.DistanceLimit = cameraDistance;
+
+        healthBar.maxValue = maxHealth;
+        healthBar.value = health;
     }
 
     // Update is called once per frame
@@ -204,6 +229,8 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
         tempInputAxisController.Controllers[1].Input.Gain = -(1f / 75f) * Config.Sensitivity;
 
         this.GetComponent<Rigidbody>().linearDamping = Config.GroundDrag;
+
+        damageThresholds = damageThresholds.OrderBy(dt => dt.SpeedThreshold).ToList();
     }
 
     private void OnDrawGizmos() {
@@ -211,6 +238,49 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
         //Gizmos.DrawLine(model.transform.position, model.transform.position + model.transform.forward);
         //Gizmos.DrawLine(model.transform.position, model.transform.position + ccamera.transform.forward);
     }
+
+    #endregion MonoBehaviour Functions
+
+    #region Attack
+
+    public void Attack() {
+        float damage = CalculateDamage();
+
+        // TODO: change it so attack range scales with speed too
+
+        IDamageable[] damageables = GetEnemiesInAttackBox();
+        foreach (var damageable in damageables) {
+            damageable.TakeDamage(damage);
+        }
+    }
+
+    private float CalculateDamage() {
+        if (damageThresholds.Count < 1) {
+            return attack;
+        }
+
+        for (int i = 1; i < damageThresholds.Count; i++) {
+            if (rb.linearVelocity.magnitude < damageThresholds[i].SpeedThreshold) {
+                return attack * damageThresholds[i - 1].DamageMultiplier;
+            }
+        }
+
+        return attack * damageThresholds.Last().DamageMultiplier;
+    }
+
+    private IDamageable[] GetEnemiesInAttackBox() {
+        // TODO: change this to a rotation sweep capsule cast
+
+        Vector3 halfAttackForward = attackRange * ccamera.transform.forward / 2f;
+        return Physics.OverlapBox(this.transform.position + halfAttackForward, new Vector3(attackRange, attackRange, attackRange) / 2f, ccamera.transform.rotation, attackMask, QueryTriggerInteraction.Collide)
+            .Where(collider => Utility.DoesMaskContainLayer(attackMask, collider.gameObject.layer)
+                && collider.attachedRigidbody != null
+                && collider.attachedRigidbody.GetComponent<IDamageable>() != null)
+            .Select(collider => collider.attachedRigidbody.GetComponent<IDamageable>())
+            .ToArray();
+    }
+
+    #endregion Attack
 
     #region Movement
 
@@ -250,7 +320,7 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
             rb.linearDamping = inAir || !slideEnded ? Config.AirDrag : Config.GroundDrag;
 
             Vector3 worldMovement = GenerateWorldMovement();
-            rb.AddForce(worldMovement, ForceMode.Force);
+            rb.AddForce(worldMovement, ForceMode.Acceleration);
         }
     }
 
@@ -503,4 +573,26 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
     }
 
     #endregion IMomentumModifiable
+
+    #region IDamageable
+
+    public float GetHealth() {
+        return health;
+    }
+
+    public void TakeDamage(float amount) {
+        health -= amount;
+        healthBar.value = health;
+        Debug.Log($"Damage Amount: {amount}, Current Health: {health}");
+    }
+
+    public void Kill() {
+        throw new System.NotImplementedException();
+    }
+
+    public void Heal(float amount) {
+        health = Mathf.Clamp(health + amount, 0f, maxHealth);
+    }
+
+    #endregion IDamageable
 }
