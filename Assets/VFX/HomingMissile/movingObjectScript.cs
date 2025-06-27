@@ -3,7 +3,7 @@ using UnityEngine.VFX;
 
 public class movingObjectScript : MonoBehaviour
 {
-    private Vector3 playerTargetLocation => Globals.PLAYER_TARGET.Target.position;
+    //private Vector3 playerTargetLocation => Globals.PLAYER.Target.position;
     [SerializeField] private Transform hitTransform;
     [SerializeField] private float projectileSpeed = 4;
     [SerializeField] private float projectileCooldown;
