@@ -20,7 +20,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: M_Copper
+  m_Name: Rocks_Dark (replace with grdient map trimsheet)
   m_Shader: {fileID: -6465566751694194690, guid: 8d5cbc2790ab64f4db44076cc6de7911, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -50,7 +50,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Normal_Map:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: 0135c0718cb0b1442854016cd430db31, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Outline_Texture:
@@ -75,14 +75,14 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - Brightness_Rim: 3.49
-    - Rim_Power: 0.2
-    - Toon_Ramp_Offset: 0.361
+    - Brightness_Rim: 0.57
+    - Rim_Power: 0.73
+    - Toon_Ramp_Offset: 0.458
     - Toon_Ramp_Smoothness: 0
     - _Ambient: 0
     - _Gloss_amount: 0
     - _Normal_Map_1: 0
-    - _Normal_Strength: 1
+    - _Normal_Strength: -0.58
     - _Outline_Amount: -0.022
     - _Outline_Brightness: 1
     - _QueueControl: 0
@@ -90,12 +90,12 @@ Material:
     - _Soft_Outline_Amount: 0.39
     - _Soft_Outline_Brightness: 1
     - _Soft_Outline_Softness: 2
-    - _Toon_Ramp_Offset_Point: 0.5
+    - _Toon_Ramp_Offset_Point: 0.139
     m_Colors:
-    - Toon_Ramp_Tint: {r: 0.49056596, g: 0.49056596, b: 0.49056596, a: 1}
-    - _Color: {r: 0.6132076, g: 0.4503747, b: 0.32106623, a: 1}
+    - Toon_Ramp_Tint: {r: 0.7423906, g: 0.7441432, b: 0.7830189, a: 1}
+    - _Color: {r: 0.23629408, g: 0.24630651, b: 0.2830189, a: 1}
     - _Gloss_Tint: {r: 1, g: 1, b: 1, a: 1}
-    - _Outline_Tint: {r: 0.9960785, g: 0.93725497, b: 0.8078432, a: 1}
+    - _Outline_Tint: {r: 1, g: 1, b: 1, a: 1}
     - _Solt_Outline_Tint: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
