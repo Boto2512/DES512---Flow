@@ -96,6 +96,8 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
     private float timeSpentGrounded = 0f;
     private bool inAir => groundedState == PlayerGroundedState.InAir;
 
+    private Vector3 slopePlane = Vector3.up;
+
 
     #endregion Ground & Slope Check
 
@@ -295,6 +297,8 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
     private void VerticalMovement() {
         if (jumpActivated && canJump) {
             Jump();
+            enableGroundedStateCheck = false;
+            groundedState = PlayerGroundedState.InAir;
             hasJumped = true;
         }
     }
@@ -384,6 +388,7 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
     #region Jump
 
     private void Jump() {
+        rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
         rb.AddForce(Vector3.up * Config.JumpForce, ForceMode.Impulse);
     }
 
@@ -411,11 +416,21 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
 
         if (DefaultGroundCheck(out RaycastHit hitInfo)) {
             float angle = Vector3.Angle(Vector3.up, hitInfo.normal);
+            slopePlane = -hitInfo.normal;
             groundedState = (angle < Config.MaxSlopeAngle && angle > Config.MinSlopeAngle) ? PlayerGroundedState.OnSlope : PlayerGroundedState.OnGround;
         }
         else {
             groundedState = PlayerGroundedState.InAir;
         }
+    }
+
+    private void StickToSlope() {
+        rb.AddForce(slopePlane * 50f, ForceMode.Force);
+
+        //CapsuleCollider collider = model.GetComponent<CapsuleCollider>();
+        //if (Physics.SphereCast(collider.transform.position, collider.radius, Vector3.down, out RaycastHit hitInfo, 100f, Globals.GROUND_MASK)) {
+        //    rb.position = new Vector3(rb.position.x, hitInfo.point.y + collider.bounds.extents.y, rb.position.z);
+        //}
     }
 
     private void GroundedStateUpdates() {
@@ -442,6 +457,8 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
                 slideEnded = false;
                 this.InvokeExclusive("End Slide", () => slideEnded = true, Config.SlideTime);
                 hasJumped = false;
+
+                rb.useGravity = false;
                 break;
 
             case PlayerGroundedState.InAir:
@@ -456,6 +473,10 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
             default:
                 break;
         }
+
+        if (groundedState != PlayerGroundedState.OnSlope) {
+            rb.useGravity = true;
+        }
     }
 
     private void GroundedStateConserved() {
@@ -469,6 +490,7 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
 
             case PlayerGroundedState.OnSlope:
                 timeSpentGrounded += Time.deltaTime;
+                StickToSlope();
                 break;
 
             case PlayerGroundedState.InAir:
