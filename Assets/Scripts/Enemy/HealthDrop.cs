@@ -25,8 +25,8 @@ public class HealthDrop : MonoBehaviour
 
         floatTween = transform.DOLocalMove(floatVector, floatDuration);
         floatTween.SetLoops(-1, LoopType.Yoyo);
-        rotateTween = transform.DORotate(new Vector3(0, 360, 0), rotationDuration, RotateMode.Fast);
-        rotateTween.SetLoops(-1, LoopType.Restart);
+        rotateTween = transform.DOLocalRotate(new Vector3(0, 360, 0), rotationDuration, RotateMode.FastBeyond360);
+        rotateTween.SetLoops(-1, LoopType.Yoyo);
     }
 
     private void OnTriggerEnter(Collider other)

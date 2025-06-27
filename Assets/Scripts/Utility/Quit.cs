@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Quit : MonoBehaviour
 {
@@ -7,6 +8,8 @@ public class Quit : MonoBehaviour
     }
 
     public void QuitGame() {
-        Application.Quit();
+        Scene currentScene = SceneManager.GetActiveScene();
+        if (currentScene.buildIndex == 0) { Application.Quit(); }
+        else { SceneManager.LoadScene(0); }
     }
 }
