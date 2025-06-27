@@ -149,6 +149,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
     }
 
     void Update() {
+        Debug.Log($"SlopeCheck {SlopeCheck()}");
         DeathCheck();
         GroundCheck();
 
@@ -168,7 +169,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
             GetLastAirVelocity();
         }
 
-        speedText.text = $"Horizontal: {Utility.Horizontal(playerRigidBody.linearVelocity).magnitude}\n Vertical: {Utility.Vertical(playerRigidBody.linearVelocity)} ";
+        speedText.text = $"Horizontal: {Utility.Horizontal(playerRigidBody.linearVelocity).magnitude}\nVertical: {Utility.Vertical(playerRigidBody.linearVelocity).magnitude}\nTotal: {playerRigidBody.linearVelocity.magnitude} ";
         //speedText.text = $"Left: {LeftSpeed()}\nRight: {RightSpeed()}\nUp: {UpSpeed()}\nDown: {DownSpeed()}\nOverall: {playerRigidBody.linearVelocity.magnitude}";
 
         //if (Input.GetKey(KeyCode.LeftShift)) { playerRigidBody.AddForce(orientation.forward * 3, ForceMode.Impulse); }
@@ -272,22 +273,19 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
     private void Acceleration() {
         if (horizontalInput != 0 || verticalInput != 0) {
             //movementSpeed = Mathf.SmoothDamp(movementSpeed, currentMaxMovementSpeed, ref accelerationSpeed, config.accelerationTime);
-            movementSpeed = Mathf.Lerp(0, currentMaxMovementSpeed, accelerationProgress);
+            movementSpeed = Mathf.Lerp(0, config.defaultMaxMovementSpeed, accelerationProgress);
             accelerationProgress += Time.deltaTime * (config.defaultAccelertionSpeed * 0.1f);
             accelerationProgress = Mathf.Clamp(accelerationProgress, 0, 1);
         }
-        else {
-            float inverseProgress = 1 - accelerationProgress;
-            movementSpeed = Mathf.Lerp(config.defaultMaxMovementSpeed, 0, inverseProgress);
-
-            accelerationProgress -= Time.deltaTime * config.deceleration * 0.1f;
-            accelerationProgress = Mathf.Clamp(accelerationProgress, 0, 1);
+        else if (playerRigidBody.linearVelocity.magnitude < 0.2f){
+            accelerationProgress = 0;
         }
 
     }
 
     private void CounterForce() {
         Vector2 magnitude = FindVelRelativeToLook();
+
         if (isGrounded) {
             if (Mathf.Abs(magnitude.x) > 0.01f && Mathf.Abs(horizontalInput) < 0.05f || (magnitude.x < -0.01f && horizontalInput > 0) || (magnitude.x > 0.01f && horizontalInput < 0)) {
                 playerRigidBody.AddForce(currentMaxMovementSpeed * orientation.right * Time.deltaTime * -magnitude.x * config.counterForce);
@@ -300,7 +298,6 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
 
     /// <summary>
     /// Find the velocity relative to where the player is looking
-    /// Useful for vectors calculations regarding movement and limiting movement
     /// </summary>
     /// <returns> Returns a vector 2 of the velocity relative to where player is looking</returns>
     public Vector2 FindVelRelativeToLook() {
@@ -354,13 +351,17 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
                 timeAtMaxVelocity = 0;
             }
         }
+        //Debug.Log(currentMaxMovementSpeed +" " + config.defaultMaxMovementSpeed + config.airSpeedIncrease +" "+ config.defaultMaxMovementSpeed + config.boostedMaxMovementSpeed);
+        if (currentMaxMovementSpeed >= config.defaultMaxMovementSpeed + config.airSpeedIncrease &&
+            currentMaxMovementSpeed <= config.defaultMaxMovementSpeed + config.boostedMaxMovementSpeed) {
+            //Debug.Log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\nAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+            if(playerRigidBody.linearVelocity.magnitude < currentMaxMovementSpeed) { currentMaxMovementSpeed = playerRigidBody.linearVelocity.magnitude; }
 
-        if (currentMaxMovementSpeed == config.defaultMaxMovementSpeed) { return; }
-        else if (horizontalInput == 0 || verticalInput == 0) { return; }
-        //else if (current config.defaultMaxMovementSpeed + config.airSpeedIncrease)
+        } 
+        else if (horizontalInput != 0 || verticalInput != 0 && currentMaxMovementSpeed != config.defaultMaxMovementSpeed) {
+                ReduceMaxSpeed();
 
-        if (horizontalInput != 0 || verticalInput != 0 && currentMaxMovementSpeed != config.defaultMaxMovementSpeed) {
-            ReduceMaxSpeed();
+            Debug.Log("reduce max speed");
         }
         else {
             currentMaxMovementSpeed = config.defaultMaxMovementSpeed;
@@ -374,6 +375,8 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
         timeAtMaxVelocity += Time.deltaTime;
 
         if (timeAtMaxVelocity > config.maxVeloctiyDuration) {
+
+            Debug.Log("lowering max sped");
             currentMaxMovementSpeed = Mathf.SmoothDamp(currentMaxMovementSpeed, config.defaultMaxMovementSpeed, ref velocityDecayRate, config.maxVeloctiyDuration);
         }
     }
@@ -505,6 +508,8 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
     private bool SlopeCheck() {
         if (Physics.Raycast(groundCheckPosition.position, Vector3.down, out slopeHit, config.groundCheckRange)) {
             float angle = Vector3.Angle(Vector3.up, slopeHit.normal);
+            Debug.DrawRay(slopeHit.point, slopeHit.normal, Color.green, 5f);
+
             return angle < config.maxSlopeAngle && angle > config.minSlopeAngle;
         }
         return false;
@@ -685,7 +690,6 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
         hasBombBounced = true;
         groundCheckEnabled = false;
         this.InvokeExclusive("EnableGroundCheck", EnableGroundCheck, 0.1f);
-
     }
     #endregion  ========================= Momentum Interface  =========================
 
