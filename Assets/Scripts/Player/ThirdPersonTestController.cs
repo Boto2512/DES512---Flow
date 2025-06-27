@@ -71,6 +71,8 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
     private Vector3 movementRight;
     private Vector3 movementLeft => -movementRight;
 
+    private bool hasReportedMovement = false;
+
     #endregion Movement Variables
 
     #region Jump Variables
@@ -287,6 +289,14 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
     #region Movement
 
     private void Movement() {
+
+        if (!hasReportedMovement && (movementInput.x != 0 || movementInput.y != 0))
+        {
+            hasReportedMovement = true;
+            TutorialEvents.OnPlayerMoved?.Invoke();
+
+        }
+
         // need to normalise movement since MoveInput() accumulates inputs
         movementInput = movementInput.normalized;
 
