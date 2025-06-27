@@ -8,7 +8,7 @@ public class JumpTest : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.F2))
         {
-            Jump(Globals.PLAYER);
+            //Jump(Globals.PLAYER);
         }
     }
 

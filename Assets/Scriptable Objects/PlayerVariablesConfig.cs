@@ -10,8 +10,8 @@ public class PlayerVariablesConfig : ScriptableObject
 
     [Tooltip("Starting value for the acceleration")]
     public float defaultAccelertionSpeed;
-    [Tooltip("Time takes for acceleration to reach maxMovementSpeed")]
-    public float accelerationTime;
+    //[Tooltip("Time takes for acceleration to reach maxMovementSpeed")]
+    //public float accelerationTime;
     //[Tooltip("Currently not in use")]
     public float deceleration;
 
