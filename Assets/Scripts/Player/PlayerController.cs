@@ -276,11 +276,12 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
             accelerationProgress = Mathf.Clamp(accelerationProgress, 0, 1);
         }
         else {
+            accelerationProgress = 0;
             float inverseProgress = 1 - accelerationProgress;
             movementSpeed = Mathf.Lerp(config.defaultMaxMovementSpeed, 0, inverseProgress);
 
-            accelerationProgress -= Time.deltaTime * config.deceleration * 0.1f;
-            accelerationProgress = Mathf.Clamp(accelerationProgress, 0, 1);
+            //accelerationProgress -= Time.deltaTime * config.deceleration * 0.1f;
+            //accelerationProgress = Mathf.Clamp(accelerationProgress, 0, 1);
         }
 
     }
