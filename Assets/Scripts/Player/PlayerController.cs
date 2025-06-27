@@ -318,7 +318,6 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
     private void MaxFallSpeed() {
         float yVelocity = playerRigidBody.linearVelocity.y;
         if (yVelocity <= config.maxFallSpeed) {
-            Debug.Log("MaxFallSpeed");
             playerRigidBody.linearVelocity = new Vector3(playerRigidBody.linearVelocity.x, config.maxFallSpeed, playerRigidBody.linearVelocity.z);
         }
     }
@@ -348,6 +347,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
         }
         else if (SlopeCheck() && CheckIfSpeedIncreases(config.slopeSpeedImpact)) {
             if (playerRigidBody.linearVelocity.y < 0) {
+                Debug.Log("INCREASING SPEED DUE TO SLOPE");
                 currentMaxMovementSpeed = config.defaultMaxMovementSpeed + config.slopeSpeedImpact;
                 timeAtMaxVelocity = 0;
             }
@@ -364,8 +364,6 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
         //else if 
         if (horizontalInput != 0 || verticalInput != 0 && currentMaxMovementSpeed != config.defaultMaxMovementSpeed) {
                 ReduceMaxSpeed();
-
-            Debug.Log("reduce max speed");
         }
         else {
             currentMaxMovementSpeed = config.defaultMaxMovementSpeed;
@@ -380,7 +378,6 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
 
         if (timeAtMaxVelocity > config.maxVeloctiyDuration) {
 
-            Debug.Log("lowering max sped");
             currentMaxMovementSpeed = Mathf.SmoothDamp(currentMaxMovementSpeed, config.defaultMaxMovementSpeed, ref velocityDecayRate, config.maxVeloctiyDuration);
         }
     }
@@ -683,10 +680,8 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
         float addedSpeed = config.defaultMaxMovementSpeed + value.magnitude;
 
         if (addedSpeed >= config.boostedMaxMovementSpeed) {
-            Debug.Log("SpeedCap");
             addedSpeed = config.boostedMaxMovementSpeed;
         }
-        Debug.Log($"Added Speed {addedSpeed}");
         if (CheckIfSpeedIncreases(addedSpeed)) {
             currentMaxMovementSpeed = config.defaultMaxMovementSpeed + addedSpeed;
         }
