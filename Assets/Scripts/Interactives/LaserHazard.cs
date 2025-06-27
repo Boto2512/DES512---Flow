@@ -12,6 +12,9 @@ public class LaserHazard : MonoBehaviour
     [Header("Raycast Settings")]
     [SerializeField] private LayerMask hitLayers;
 
+    [Header("Player Setting")]
+    [SerializeField] private float damage;
+
     private LineRenderer lineRenderer;
     private float timer;
 
@@ -45,7 +48,8 @@ public class LaserHazard : MonoBehaviour
         {
             end = hit.point;
             Debug.Log("Damaged!");
-            
+            IDamageable damageable = hit.transform.GetComponent<IDamageable>();
+            damageable.TakeDamage(damage);
         }
         Debug.DrawLine(start, end,Color.red, laserDuration);
         // Draw the laser
