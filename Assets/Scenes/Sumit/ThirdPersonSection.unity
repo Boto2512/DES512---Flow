@@ -23401,9 +23401,6 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 1049274515}
     m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 9012737342808474076, guid: aaeb2ca2c2bc4a64590477ae8d7402e1, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1422160949}
     - targetCorrespondingSourceObject: {fileID: 4424541116577020812, guid: aaeb2ca2c2bc4a64590477ae8d7402e1, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2110317053}
@@ -30322,7 +30319,7 @@ MonoBehaviour:
     meshQuery:
       layers: 16777223
       maskAndChannels: 234881031
-    surfaceParameter: 50076
+    surfaceParameter: 50224
     meshQueryIndex: 0
     subMeshQueryIndex: 0
     geometryHashValue: 384253828121670168
@@ -30758,6 +30755,56 @@ Mesh:
     offset: 0
     size: 0
     path: 
+--- !u!1 &329907494
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 329907496}
+  - component: {fileID: 329907495}
+  m_Layer: 0
+  m_Name: Tutorial Manager_1
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &329907495
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 329907494}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1be163c16c19da54aaaffbaf15054d56, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveStepGif: {fileID: 21300000, guid: 24aa89fa2b05a284a962cd4276a356fd, type: 3}
+  ReachedBounceBombStepGif: {fileID: 21300000, guid: b7627c7b376de6b42af80daa321717eb, type: 3}
+  UsedBounceBombStepGif: {fileID: 21300000, guid: 01b2db3bb0199794e960d6c089918bac, type: 3}
+  EnemyKilledStepGif: {fileID: 21300000, guid: 342fa1cd0323f21488d7a5c8acb9800e, type: 3}
+  EnemyFastKillStepGif: {fileID: 21300000, guid: a840d6fdefedbfa45a5ed7fa53c469ef, type: 3}
+  BarrelExplodedStepGif: {fileID: 21300000, guid: fb7bd7df7285b624595a57a2d0c4c80b, type: 3}
+--- !u!4 &329907496
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 329907494}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -73.51671, y: 67.10217, z: -105.58034}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!43 &340916161
 Mesh:
   m_ObjectHideFlags: 0
@@ -63143,7 +63190,7 @@ MonoBehaviour:
     meshQuery:
       layers: 33554440
       maskAndChannels: 8
-    surfaceParameter: 50676
+    surfaceParameter: 50802
     meshQueryIndex: 2
     subMeshQueryIndex: 0
     geometryHashValue: 359912295249084772
@@ -124418,7 +124465,7 @@ MonoBehaviour:
     meshQuery:
       layers: 16777223
       maskAndChannels: 234881031
-    surfaceParameter: 50194
+    surfaceParameter: 50336
     meshQueryIndex: 5
     subMeshQueryIndex: 0
     geometryHashValue: 9083223940151481867
@@ -151306,7 +151353,7 @@ MonoBehaviour:
     meshQuery:
       layers: 33554440
       maskAndChannels: 8
-    surfaceParameter: 50676
+    surfaceParameter: 50802
     meshQueryIndex: 1
     subMeshQueryIndex: 0
     geometryHashValue: -5390691955250856516
@@ -232421,7 +232468,7 @@ MonoBehaviour:
     meshQuery:
       layers: 16777223
       maskAndChannels: 234881031
-    surfaceParameter: 50076
+    surfaceParameter: 50224
     meshQueryIndex: 0
     subMeshQueryIndex: 0
     geometryHashValue: -5390691955250856516
@@ -260180,7 +260227,7 @@ MonoBehaviour:
     meshQuery:
       layers: 16777223
       maskAndChannels: 234881031
-    surfaceParameter: 50224
+    surfaceParameter: 50364
     meshQueryIndex: 1
     subMeshQueryIndex: 0
     geometryHashValue: 8715540822427662068
@@ -268406,29 +268453,6 @@ MonoBehaviour:
     - EdgeIndices: 07000000060000000500000004000000
       TexGenIndex: 5
     Generation: 8
---- !u!1 &1422160943 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 9012737342808474076, guid: aaeb2ca2c2bc4a64590477ae8d7402e1, type: 3}
-  m_PrefabInstance: {fileID: 246547189}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1422160949
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1422160943}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1be163c16c19da54aaaffbaf15054d56, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  moveStepGif: {fileID: 21300000, guid: 24aa89fa2b05a284a962cd4276a356fd, type: 3}
-  ReachedBounceBombStepGif: {fileID: 21300000, guid: b7627c7b376de6b42af80daa321717eb, type: 3}
-  UsedBounceBombStepGif: {fileID: 21300000, guid: 01b2db3bb0199794e960d6c089918bac, type: 3}
-  EnemyKilledStepGif: {fileID: 21300000, guid: 342fa1cd0323f21488d7a5c8acb9800e, type: 3}
-  EnemyFastKillStepGif: {fileID: 21300000, guid: a840d6fdefedbfa45a5ed7fa53c469ef, type: 3}
-  BarrelExplodedStepGif: {fileID: 21300000, guid: fb7bd7df7285b624595a57a2d0c4c80b, type: 3}
 --- !u!1 &1423218408
 GameObject:
   m_ObjectHideFlags: 0
@@ -363230,6 +363254,63 @@ MonoBehaviour:
   m_SelectedFaces: 
   m_SelectedEdges: []
   m_SelectedVertices: 
+--- !u!1 &1933969205
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1933969208}
+  - component: {fileID: 1933969207}
+  - component: {fileID: 1933969206}
+  m_Layer: 0
+  m_Name: GameController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1933969206
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1933969205}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d79873b76c38f54784a0ec6f8b3f639, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1933969207
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1933969205}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 133e8303f5b14e54ba7e31e3a7829d29, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &1933969208
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1933969205}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 100.98175, y: 0, z: 718.58875}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1943095299
 GameObject:
   m_ObjectHideFlags: 0
@@ -386263,3 +386344,5 @@ SceneRoots:
   - {fileID: 848813845}
   - {fileID: 246547189}
   - {fileID: 2078478585}
+  - {fileID: 1933969208}
+  - {fileID: 329907496}
