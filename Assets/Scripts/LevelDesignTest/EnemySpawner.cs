@@ -11,20 +11,17 @@ namespace LevelDesign {
 
 
         public void Update(){
-            if (Input.GetKeyDown(KeyCode.F1))
+            if (!IsThereAnyEnemyExisting)
             {
                 Spawn();
             }
         }
 
         public void Spawn(){
-            if (IsThereAnyEnemyExisting){
-                Debug.Log("Haven't killed all enemies.");
-                return;
-            }
+            
 
             SpawningIndex++;
-
+            Debug.Log($"Spawn wave {SpawningIndex}");
             if (SpawningIndex>= SpawnData.Count){
                 Debug.Log("You win!");
             }

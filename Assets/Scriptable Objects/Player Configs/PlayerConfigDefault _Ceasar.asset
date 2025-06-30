@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 40a94c9420f4fe145a7d0494be94da47, type: 3}
+  m_Name: PlayerConfigDefault _Ceasar
+  m_EditorClassIdentifier: 
+  defaultHealth: 100
+  defaultAccelertionSpeed: 2
+  accelerationTime: 2
+  deceleration: 0.5
+  defaultMaxMovementSpeed: 14
+  airSpeedIncrease: 0.5
+  slopeSpeedImpact: 5
+  boostedMaxMovementSpeed: 0
+  counterForce: 50
+  maxVeloctiyDuration: 1.5
+  defaultVelocityDecayRate: 2
+  veloctiyStorageFrequency: 0.5
+  maxFallSpeed: -69.4
+  airControlMultiplier: 0.65
+  maxSlopeAngle: 44.2
+  minSlopeAngle: 5
+  downwardsForce: 180
+  jumpForce: 7
+  maxJumpMultiplier: 18
+  fallMultiplier: 20
+  bombFallMultiplier: 20
+  jumpCooldown: 1
+  coyoteTime: 0.2
+  groundCheckRange: 0.25
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 2147483712
+  wallKickRange: 2
+  wallKickCooldown: 1
+  attackScale: {x: 3, y: 2, z: 3}
+  attackMask:
+    serializedVersion: 2
+    m_Bits: 256
+  attackRange: 0.5
+  attackDamage: 50
+  attackCooldown: 1
+  firstBreakpoint: 15
+  secondBreakpoint: 20
+  bounceBomb: {fileID: 569634559799669078, guid: 905d297ab0a893c4ca79c31d5bac738d, type: 3}
+  bombThrowPower: 5
+  fuseTime: 0.15

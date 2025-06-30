@@ -13,6 +13,14 @@ public class JumpPad : MonoBehaviour
         }
     }
 
+    //private void OnTriggerEnter(Collider other)
+    //{
+    //    if (other.transform.CompareTag(triggeredTag))
+    //    {
+    //        Jump(other.transform.parent.GetComponent<PlayerController>());
+    //    }
+    //}
+
     private void Jump(IMomentumModifiable entity)
     {
         entity.SetMomentum(entity.GetMomentum()+transform.up * jumpForce);

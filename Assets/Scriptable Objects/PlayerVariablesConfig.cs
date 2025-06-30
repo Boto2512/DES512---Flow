@@ -10,14 +10,20 @@ public class PlayerVariablesConfig : ScriptableObject
 
     [Tooltip("Starting value for the acceleration")]
     public float defaultAccelertionSpeed;
-    [Tooltip("Time takes for acceleration to reach maxMovementSpeed")]
-    public float accelerationTime;
+    //[Tooltip("Time takes for acceleration to reach maxMovementSpeed")]
+    //public float accelerationTime;
     //[Tooltip("Currently not in use")]
-    public float deceleration;
-    
-    //public float startSpeed;
+    //public float deceleration;
 
+    //public float startSpeed;
+    [Tooltip("The max movementspeed for running")]
     public float defaultMaxMovementSpeed;
+    [Tooltip("the amount the player's max speed increases when in air")]
+    public float airSpeedIncrease;
+    [Tooltip("the amount the player's max speed increases by when on a slope")]
+    public float slopeSpeedImpact;
+    [Tooltip("the max movementspeed for anything that boosts the player's movement")]
+    public float boostedMaxMovementSpeed;
     [Space(10)]
     [Tooltip("Applies a force when there is no player input to slow the player")]
     public float counterForce;
@@ -31,8 +37,6 @@ public class PlayerVariablesConfig : ScriptableObject
     public float veloctiyStorageFrequency;
 
     [Space(10)]
-    [Tooltip("the amount the player's max speed and acceleration increases by when in air")]
-    public float airSpeedIncrease;
     public float maxFallSpeed;
     [Range(0, 1), Tooltip("Controls how much control the player has when in the air (0 is none, 1 is full)")]
     public float airControlMultiplier;
@@ -43,8 +47,7 @@ public class PlayerVariablesConfig : ScriptableObject
     public float maxSlopeAngle;
     [Tooltip("Minimum slope angle the player gets a speed boost from")]
     public float minSlopeAngle;
-    [Tooltip("the amount the player's max speed and acceleration increases by when on a slope")]
-    public float slopeSpeedImpact;
+    
     [SerializeField,Tooltip("Force applied to keep player on slopes when going down them")] 
     public float downwardsForce;
 

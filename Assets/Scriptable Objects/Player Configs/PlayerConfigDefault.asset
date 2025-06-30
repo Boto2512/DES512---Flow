@@ -14,21 +14,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultHealth: 100
   defaultAccelertionSpeed: 10
-  accelerationTime: 3
-  deceleration: 2
   defaultMaxMovementSpeed: 8
-  counterForce: 50
+  airSpeedIncrease: 3
+  slopeSpeedImpact: 3
+  boostedMaxMovementSpeed: 22
+  counterForce: 33
   maxVeloctiyDuration: 1
   defaultVelocityDecayRate: 2
   veloctiyStorageFrequency: 0.5
-  airSpeedIncrease: 3
   maxFallSpeed: -50
-  airControlMultiplier: 0.15
+  airControlMultiplier: 0.05
   maxSlopeAngle: 45
   minSlopeAngle: 5
-  slopeSpeedImpact: 5
-  downwardsForce: 180
-  jumpForce: 7
+  downwardsForce: 80
+  jumpForce: 5
   maxJumpMultiplier: 15
   fallMultiplier: 15
   bombFallMultiplier: 10
@@ -37,7 +36,7 @@ MonoBehaviour:
   groundCheckRange: 0.25
   groundMask:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 2147483712
   wallKickRange: 2
   wallKickCooldown: 1
   attackScale: {x: 1, y: 2, z: 1}
