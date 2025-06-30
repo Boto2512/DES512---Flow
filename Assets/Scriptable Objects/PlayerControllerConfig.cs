@@ -9,6 +9,8 @@ public class PlayerControllerConfig : ScriptableObject {
     [Header("Movement")]
     [Min(0f)] public float Acceleration = 16f;
     [Min(0f)] public float AirAcceleration = 16f;
+    [Tooltip("Only applies to horizontal acceleration")]
+    [Min(0f)] public float MaxAcceleration = 32f;
     [Min(0f)] public float AirDrag = 1f;
     [Min(0f)] public float GroundDrag = 2f;
     [Min(0f)] public float StoppingDrag = 6f;

@@ -96,7 +96,7 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
     private float timeSpentGrounded = 0f;
     private bool inAir => groundedState == PlayerGroundedState.InAir;
 
-    private Vector3 slopePlane = Vector3.up;
+    private Vector3 inverseSlopeNormal = Vector3.up;
 
 
     #endregion Ground & Slope Check
@@ -340,6 +340,8 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
             Vector3 worldMovement = GenerateWorldMovement();
             rb.AddForce(worldMovement, ForceMode.Acceleration);
         }
+
+
     }
 
     private Vector3 GenerateWorldMovement() {
@@ -351,6 +353,14 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
 
         Vector3 worldMovement = new(Vector3.Dot(relativeMovement, movementForward), 0f, Vector3.Dot(relativeMovement, movementRight));
         return worldMovement;
+    }
+
+    private void Decelerate() {
+        float horizontalSpeed = rb.linearVelocity.HorizontalMagnitude();
+        if (horizontalSpeed > Config.MaxAcceleration) {
+            float maxUnassistedAirSpeed = Config.AirAcceleration / Config.AirDrag;
+
+        }
     }
 
     #endregion Movement
@@ -430,7 +440,7 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
 
         if (DefaultGroundCheck(out RaycastHit hitInfo)) {
             float angle = Vector3.Angle(Vector3.up, hitInfo.normal);
-            slopePlane = -hitInfo.normal;
+            inverseSlopeNormal = -hitInfo.normal;
             groundedState = (angle < Config.MaxSlopeAngle && angle > Config.MinSlopeAngle) ? PlayerGroundedState.OnSlope : PlayerGroundedState.OnGround;
         }
         else {
@@ -439,7 +449,7 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
     }
 
     private void StickToSlope() {
-        rb.AddForce(slopePlane * 50f, ForceMode.Force);
+        rb.AddForce(inverseSlopeNormal * 50f, ForceMode.Force);
 
         //CapsuleCollider collider = model.GetComponent<CapsuleCollider>();
         //if (Physics.SphereCast(collider.transform.position, collider.radius, Vector3.down, out RaycastHit hitInfo, 100f, Globals.GROUND_MASK)) {
