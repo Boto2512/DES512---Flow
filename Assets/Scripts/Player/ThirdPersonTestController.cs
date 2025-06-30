@@ -76,7 +76,7 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
     #region Jump Variables
 
     private float coyoteTimer = 0f;
-
+    private float fallTimer = 0f;
     private bool canJump => !hasJumped && (!inAir || coyoteTimer <= Config.CoyoteTime);
     private bool hasJumped = false;
 
@@ -300,6 +300,20 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
             enableGroundedStateCheck = false;
             groundedState = PlayerGroundedState.InAir;
             hasJumped = true;
+        }
+
+        if (inAir) {
+            if (rb.linearVelocity.y < 0f) {
+                if (fallTimer < Config.MaxFallAccelerationTime) {
+                    fallTimer += Time.fixedDeltaTime;
+                    if (fallTimer > Config.MaxFallAccelerationTime)
+                        fallTimer = Config.MaxFallAccelerationTime;
+                }
+                rb.AddForce(new(0f, -Mathf.Lerp(Config.MinFallAcceleration, Config.MaxFallAcceleration, fallTimer / Config.MaxFallAccelerationTime), 0f), ForceMode.Acceleration);
+            }
+            else {
+                fallTimer = 0f;
+            }
         }
     }
 
