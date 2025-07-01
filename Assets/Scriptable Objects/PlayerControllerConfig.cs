@@ -6,13 +6,23 @@ public class PlayerControllerConfig : ScriptableObject {
     [Header("Momentum Storage")]
     public float SlideTime = 0.1f;
 
-    [Header("Movement")]
+    [Header("Acceleration")]
     [Min(0f)] public float Acceleration = 16f;
     [Min(0f)] public float AirAcceleration = 16f;
     [Tooltip("Only applies to horizontal acceleration")]
     [Min(0f)] public float MaxAcceleration = 32f;
+    [Tooltip("Time spent over MaxAcceleration before beginning decelerating back to MaxAcceleration")]
+    [Min(0f)] public float TimeToDecelerate = 2f;
+
+    [Space(10)]
+    [Min(0f)] public float CounterStrafeMultiplier = 2f;
+    [Tooltip("The angle allowed either side of -180deg from the current velocity for the CounterStrafeMultiplier to be applied")]
+    [Min(0f)] public float CounterStrafeAngleError = 15f;
+
+    [Header("Drag")]
     [Min(0f)] public float AirDrag = 1f;
     [Min(0f)] public float GroundDrag = 2f;
+    [Tooltip("The drag applied when no inputs are being pressed")]
     [Min(0f)] public float StoppingDrag = 6f;
 
     [Header("Jump")]

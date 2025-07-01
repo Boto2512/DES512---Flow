@@ -71,6 +71,10 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
     private Vector3 movementRight;
     private Vector3 movementLeft => -movementRight;
 
+    private float currentHighestAccelerationSquared = 0f;
+    private bool waitingToDecelerate = false;
+    private bool decelerating = false;
+
     #endregion Movement Variables
 
     #region Jump Variables
@@ -117,6 +121,8 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
 
     private Vector2 movementInput;
     private bool jumpActivated;
+
+    private bool hasInput => movementInput.x != 0 || movementInput.y != 0;
 
     #endregion Input Variables
 
@@ -292,6 +298,7 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
 
         VerticalMovement();
         HorizontalMovement();
+        //Decelerate();
     }
 
     private void VerticalMovement() {
@@ -318,10 +325,9 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
     }
 
     private void HorizontalMovement() {
-        bool hasInputX = movementInput.x != 0;
-        bool hasInputY = movementInput.y != 0;
-
-        if (!hasInputX && !hasInputY) {     // no input
+        //bool hasInputX = movementInput.x != 0;
+        //bool hasInputY = movementInput.y != 0;
+        if (!hasInput) {     // no input
             if (!inAir) {                   // on ground
                 if (slideEnded) {
                     rb.linearDamping = Config.StoppingDrag;
@@ -334,14 +340,12 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
                 rb.linearDamping = 0f;
             }
         }
-        else if (hasInputX || hasInputY) {
+        else {
             rb.linearDamping = inAir || !slideEnded ? Config.AirDrag : Config.GroundDrag;
 
             Vector3 worldMovement = GenerateWorldMovement();
             rb.AddForce(worldMovement, ForceMode.Acceleration);
         }
-
-
     }
 
     private Vector3 GenerateWorldMovement() {
@@ -356,10 +360,36 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
     }
 
     private void Decelerate() {
-        float horizontalSpeed = rb.linearVelocity.HorizontalMagnitude();
-        if (horizontalSpeed > Config.MaxAcceleration) {
-            float maxUnassistedAirSpeed = Config.AirAcceleration / Config.AirDrag;
+        if (!inAir)
+            return;
 
+        float accelerationSquared = rb.linearVelocity.HorizontalSqrMagnitude();
+
+        if (decelerating && accelerationSquared <= Config.MaxAcceleration) {
+            decelerating = false;
+        }
+
+        if (accelerationSquared > Config.MaxAcceleration * Config.MaxAcceleration) {
+            if (accelerationSquared <= currentHighestAccelerationSquared)
+                return;
+            currentHighestAccelerationSquared = accelerationSquared;
+
+            waitingToDecelerate = true;
+            Debug.Log("waiting to decelerate");
+            this.InvokeOverwrite("decelerate", () => {
+                decelerating = true;
+                rb.linearDamping = rb.linearVelocity.HorizontalMagnitude() / Config.MaxAcceleration;
+                waitingToDecelerate = false;
+                currentHighestAccelerationSquared = 0f;
+                Debug.Log("decelerating");
+            }, Config.TimeToDecelerate);
+        }
+        else {
+            if (waitingToDecelerate) {
+                Debug.Log("cancelling deceleration");
+                this.InvokeCancel("decelerate");
+                waitingToDecelerate = false;
+            }
         }
     }
 
@@ -472,16 +502,9 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
                 break;
 
             case PlayerGroundedState.OnGround:
-                slideEnded = false;
-                this.InvokeExclusive("End Slide", () => slideEnded = true, Config.SlideTime);
-                hasJumped = false;
                 break;
 
             case PlayerGroundedState.OnSlope:
-                slideEnded = false;
-                this.InvokeExclusive("End Slide", () => slideEnded = true, Config.SlideTime);
-                hasJumped = false;
-
                 rb.useGravity = false;
                 break;
 
@@ -500,6 +523,18 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
 
         if (groundedState != PlayerGroundedState.OnSlope) {
             rb.useGravity = true;
+        }
+
+        if (!inAir) {
+            if (waitingToDecelerate && slideEnded) {
+                this.InvokeCancel("decelerate");
+                Debug.Log("cancelling deceleration");
+                waitingToDecelerate = false;
+            }
+
+            slideEnded = false;
+            this.InvokeExclusive("End Slide", () => slideEnded = true, Config.SlideTime);
+            hasJumped = false;
         }
     }
 
