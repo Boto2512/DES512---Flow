@@ -298,6 +298,7 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
 
         VerticalMovement();
         HorizontalMovement();
+        //rb.linearVelocity = new Vector3(Mathf.Clamp(rb.linearVelocity.x, -Config.MaxAcceleration, Config.MaxAcceleration), rb.linearVelocity.y, Mathf.Clamp(rb.linearVelocity.z, -Config.MaxAcceleration, Config.MaxAcceleration));
         //Decelerate();
     }
 
@@ -316,7 +317,8 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
                     if (fallTimer > Config.MaxFallAccelerationTime)
                         fallTimer = Config.MaxFallAccelerationTime;
                 }
-                rb.AddForce(new(0f, -Mathf.Lerp(Config.MinFallAcceleration, Config.MaxFallAcceleration, fallTimer / Config.MaxFallAccelerationTime), 0f), ForceMode.Acceleration);
+                float currentFallingAcceleration = Mathf.Lerp(Config.MinFallAcceleration, Config.MaxFallAcceleration, fallTimer / Config.MaxFallAccelerationTime);
+                rb.AddForce(new(0f, -currentFallingAcceleration, 0f), ForceMode.Acceleration);
             }
             else {
                 fallTimer = 0f;
@@ -336,15 +338,24 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
             }
         }
         else {
-            rb.linearDamping = inAir || !slideEnded ? Config.AirDrag : Config.GroundDrag;
+            //rb.linearDamping = inAir || !slideEnded ? Config.AirDrag : Config.GroundDrag;
 
             Vector3 worldMovement = GenerateWorldMovement();
-            if (IsMovementACounterStrafe(worldMovement.Flattened())) {
-                rb.AddForce(worldMovement * Config.CounterStrafeMultiplier, ForceMode.Acceleration);
+
+            if (inAir) {
+                if (KeepMomentumDespiteInputCheck(worldMovement.Flattened())) {
+                    worldMovement = Vector3.ProjectOnPlane(worldMovement, rb.linearVelocity.Horizontal());
+                    rb.linearDamping = 0f;
+                }
+                else {
+                    rb.linearDamping = Config.AirDrag;
+                }
             }
-            else {
-                rb.AddForce(worldMovement, ForceMode.Acceleration);
+            else if (slideEnded) {
+                rb.linearDamping = Config.GroundDrag;
             }
+
+            rb.AddForce(worldMovement, ForceMode.Acceleration);
         }
     }
 
@@ -356,6 +367,10 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
         relativeMovement *= GetGroundedStateMovementModifier();
 
         Vector3 worldMovement = new(Vector3.Dot(relativeMovement, movementForward), 0f, Vector3.Dot(relativeMovement, movementRight));
+        if (IsMovementACounterStrafe(worldMovement.Flattened())) {
+            worldMovement *= Config.CounterStrafeMultiplier;
+        }
+
         return worldMovement;
     }
 
@@ -363,6 +378,28 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
         float angleFromInverse = 180f - Vector2.Angle(rb.linearVelocity.Flattened(), desiredHorizontalMovement);
 
         return angleFromInverse <= Config.CounterStrafeAngleError;
+    }
+
+    private bool KeepMomentumDespiteInputCheck(Vector2 desiredHorizontalMovement) {
+        Vector2 currentHorizontalVelocity = rb.linearVelocity.Flattened();
+
+        // if desired movement isn't somewhat in the same direction as the current movement
+        if (Vector2.Dot(currentHorizontalVelocity, desiredHorizontalMovement) <= 0f) {
+            return false;
+        }
+
+        // if current movement is within maximum air acceleration when unassisted (just by jumping)
+        float maxUnassistedAirAcceleration = Config.AirAcceleration / Config.AirDrag;
+        if (currentHorizontalVelocity.sqrMagnitude <= maxUnassistedAirAcceleration * maxUnassistedAirAcceleration) {
+            return false;
+        }
+
+        // if the angle between the desired movement and current movement is too large
+        if (Vector2.Angle(desiredHorizontalMovement, currentHorizontalVelocity) > Config.KeepMomentumDespiteInputAngle) {
+            return false;
+        }
+
+        return true;
     }
 
     private void Decelerate() {

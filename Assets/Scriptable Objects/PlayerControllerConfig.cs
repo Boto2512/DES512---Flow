@@ -24,6 +24,8 @@ public class PlayerControllerConfig : ScriptableObject {
     [Min(0f)] public float GroundDrag = 2f;
     [Tooltip("The drag applied when no inputs are being pressed")]
     [Min(0f)] public float StoppingDrag = 6f;
+    [Tooltip("The angle between the input and current velocity at which air drag won't be applied whilst bunny hopping")]
+    [Min(0f)] public float KeepMomentumDespiteInputAngle = 25f;
 
     [Header("Jump")]
     [Min(0f)] public float JumpForce = 7.5f;
