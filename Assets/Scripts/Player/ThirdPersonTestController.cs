@@ -328,13 +328,8 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
         //bool hasInputX = movementInput.x != 0;
         //bool hasInputY = movementInput.y != 0;
         if (!hasInput) {     // no input
-            if (!inAir) {                   // on ground
-                if (slideEnded) {
-                    rb.linearDamping = Config.StoppingDrag;
-                }
-                else {
-                    rb.linearDamping = 0f;
-                }
+            if (!inAir && slideEnded) {
+                rb.linearDamping = Config.StoppingDrag;
             }
             else {
                 rb.linearDamping = 0f;
@@ -344,7 +339,12 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
             rb.linearDamping = inAir || !slideEnded ? Config.AirDrag : Config.GroundDrag;
 
             Vector3 worldMovement = GenerateWorldMovement();
-            rb.AddForce(worldMovement, ForceMode.Acceleration);
+            if (IsMovementACounterStrafe(worldMovement.Flattened())) {
+                rb.AddForce(worldMovement * Config.CounterStrafeMultiplier, ForceMode.Acceleration);
+            }
+            else {
+                rb.AddForce(worldMovement, ForceMode.Acceleration);
+            }
         }
     }
 
@@ -357,6 +357,12 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
 
         Vector3 worldMovement = new(Vector3.Dot(relativeMovement, movementForward), 0f, Vector3.Dot(relativeMovement, movementRight));
         return worldMovement;
+    }
+
+    private bool IsMovementACounterStrafe(Vector2 desiredHorizontalMovement) {
+        float angleFromInverse = 180f - Vector2.Angle(rb.linearVelocity.Flattened(), desiredHorizontalMovement);
+
+        return angleFromInverse <= Config.CounterStrafeAngleError;
     }
 
     private void Decelerate() {

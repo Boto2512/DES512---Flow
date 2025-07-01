@@ -28,6 +28,8 @@ public class PlayerControllerConfig : ScriptableObject {
     [Header("Jump")]
     [Min(0f)] public float JumpForce = 7.5f;
     [Min(0f)] public float CoyoteTime = 0.2f;
+
+    [Space(10)]
     [Min(0f)] public float MinFallAcceleration = 10f;
     [Min(0f)] public float MaxFallAcceleration = 100f;
     [Tooltip("How long spent falling in seconds it takes to reach MaxFallAcceleration from MinFallAcceleration")]
