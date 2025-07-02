@@ -15,9 +15,14 @@ MonoBehaviour:
   SlideTime: 0.1
   Acceleration: 16
   AirAcceleration: 16
+  MaxAcceleration: 32
+  TimeToDecelerate: 2
+  CounterStrafeMultiplier: 4
+  CounterStrafeAngleError: 25
   AirDrag: 1
   GroundDrag: 2
   StoppingDrag: 6
+  KeepMomentumDespiteInputAngle: 25
   JumpForce: 7.5
   CoyoteTime: 0.2
   MinFallAcceleration: 10
