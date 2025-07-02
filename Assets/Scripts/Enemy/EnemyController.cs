@@ -9,6 +9,7 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
     [Header("Health")]
     [SerializeField, Min(0f)] float health = 100;
     [SerializeField] Slider healthBar;
+    [SerializeField] GameObject healthDrop;
 
     [Header("Debug Events")]
     [SerializeField] private UnityEvent takeDamage = new();
@@ -137,6 +138,7 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
         Debug.Log("Enemy Oneshotted - due to speed");
         healthBar.value = 0;
         Destroy(this.gameObject);
+        Instantiate(healthDrop);
     }
 
     public void Heal(float value) {
