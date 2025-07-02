@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -98,10 +99,17 @@ public class PlayerMovementController : MonoBehaviour, IMomentumModifiable {
 
     [Header("Misc Child Objects")]
     [SerializeField] private Transform momentumPosition;
+    [SerializeField] private Transform movementDirectionTransform;
 
     #endregion Misc Child Objects
 
-    [SerializeField] private Transform movementDirectionTransform;
+    #region Debug Objects
+
+    [Header("Debug")]
+    [SerializeField] private TextMeshProUGUI debugSpeedText;
+
+    #endregion Debug Objects
+
 
     private Rigidbody rb;
 
@@ -124,6 +132,10 @@ public class PlayerMovementController : MonoBehaviour, IMomentumModifiable {
         GroundedStateUpdates();
 
         prevGroundedState = groundedState;
+
+        debugSpeedText.text = $"Horizontal: {rb.linearVelocity.Horizontal().magnitude:0.####}\n" +
+            $"Up: {Vector3.Dot(rb.linearVelocity, Vector3.up):0.####}\n" +
+            $"Overall: {rb.linearVelocity.magnitude:0.####}";
     }
 
     private void FixedUpdate() {
