@@ -15,12 +15,12 @@ MonoBehaviour:
   defaultHealth: 100
   defaultAccelertionSpeed: 3.5
   defaultMaxMovementSpeed: 12
-  airSpeedIncrease: 0
-  slopeSpeedImpact: 8
-  boostedMaxMovementSpeed: 20
+  airSpeedIncrease: 2
+  slopeSpeedImpact: 10
+  boostedMaxMovementSpeed: 22
   counterForce: 50
   maxVeloctiyDuration: 2
-  defaultVelocityDecayRate: 3.5
+  defaultVelocityDecayRate: 3
   veloctiyStorageFrequency: 0.5
   maxFallSpeed: -69.8
   airControlMultiplier: 0.3
@@ -28,9 +28,9 @@ MonoBehaviour:
   minSlopeAngle: 5
   downwardsForce: 10
   jumpForce: 7
-  maxJumpMultiplier: 35
-  fallMultiplier: 18
-  bombFallMultiplier: 35
+  maxJumpMultiplier: 5
+  fallMultiplier: 15
+  bombFallMultiplier: 20
   jumpCooldown: 1
   coyoteTime: 0.2
   groundCheckRange: 0.25
