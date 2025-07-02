@@ -1,8 +1,10 @@
 using UnityEngine;
 using System;
+using LevelDesign;
 
 public class SpeedrunTester : MonoBehaviour
 {
+    [SerializeField] private EnemySpawner spawner;
 
     private DateTime startTime;
 
@@ -17,12 +19,13 @@ public class SpeedrunTester : MonoBehaviour
     }
 
 
-    private void OnCollisionEnter(Collision collision)
+
+
+    private void OnTriggerEnter(Collider other)
     {
-        if (collision.transform.CompareTag(tag_player))
+        if (other.transform.parent.CompareTag(tag_player))
         {
-            Debug.LogError($"Arrived at the destination.\nTime:{DateTime.Now.Subtract(startTime).TotalSeconds}");
+            Debug.LogError($"Arrived at the destination.\nTime:{DateTime.Now.Subtract(startTime).TotalSeconds}\nKilled Enemy:{spawner.SpawnedEnemy-spawner.LeftEnemy}/{spawner.SpawnedEnemy}");
         }
     }
-
 }
