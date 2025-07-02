@@ -10,6 +10,6 @@ public class Quit : MonoBehaviour
     public void QuitGame() {
         Scene currentScene = SceneManager.GetActiveScene();
         if (currentScene.buildIndex == 0) { Application.Quit(); }
-        else { SceneManager.LoadScene(0); }
+        else { SceneManager.LoadScene(0); Cursor.visible = true; Cursor.lockState = CursorLockMode.None; }
     }
 }
