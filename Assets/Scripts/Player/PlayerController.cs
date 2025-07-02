@@ -593,6 +593,10 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
             return;
         }
     }
+
+    private void ChangeFOV() {
+        
+    }
     #endregion ========================= Speed Stages =========================
 
     #region ========================= Attack =========================
