@@ -1,33 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using TMPro;
-using Unity.Cinemachine;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.InputSystem;
-using UnityEngine.UI;
 
 [RequireComponent(typeof(Rigidbody))]
-public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITargetable, IDamageable {
-
-    #region Variables
+public class PlayerMovementController : MonoBehaviour, IMomentumModifiable {
 
     [SerializeField] private PlayerControllerConfig Config;
-    [SerializeField] private PlayerCameraConfig CameraConfig;
-
-    #region Attack & Damage
-
-    [SerializeField, Min(0f)] private float attack;
-    [SerializeField, Min(0f)] private float attackRange;
-    [SerializeField] private LayerMask attackMask;
-    [SerializeField] private List<SpeedStageThreshold> damageThresholds;
-
-    [SerializeField, Min(0f)] private float maxHealth;
-    [SerializeField, Min(0f)] private float health;
-    [SerializeField] private Slider healthBar;
-
-    #endregion Attack & Damage
 
     #region Momentum Storage [NOT IN USE RIGHT NOW]
 
@@ -108,18 +85,6 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
 
     #endregion Ground & Slope Check
 
-    #region Camera Variables
-
-    [Header("Camera Settings")]
-    [SerializeField, Range(0f, 15f)] private float cameraDistance = 3f;
-    [SerializeField] private CinemachineInputAxisController inputAxisController;
-    [SerializeField] private CinemachineOrbitalFollow orbitalFollow;
-    [SerializeField] private CinemachineDeoccluder deoccluder;
-    [SerializeField] private CinemachineCamera ccamera;
-    [SerializeField] private GameObject cameraObject;
-
-    #endregion Camera Variables
-
     #region Input Variables
 
     private Vector2 movementInput;
@@ -129,74 +94,36 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
 
     #endregion Input Variables
 
-    #region Debug Variables
-
-    [Header("Debug")]
-    [SerializeField] private TextMeshProUGUI debugSpeedText;
-
-    #endregion Debug Variables
-
     #region Misc Child Objects
 
-    [Header("Miscellaneous Child Objects")]
-    [SerializeField] private GameObject model;
-    [SerializeField] private Transform throwTransform;
+    [Header("Misc Child Objects")]
     [SerializeField] private Transform momentumPosition;
-    [SerializeField] private Transform targetPosition;
 
     #endregion Misc Child Objects
 
-    #region Events
-
-    public UnityEvent PrimaryAction = new();
-    public UnityEvent SecondaryAction = new();
-
-    #endregion Events
+    [SerializeField] private Transform movementDirectionTransform;
 
     private Rigidbody rb;
-    public Transform Target => targetPosition;
-
-    #endregion Variables
 
     #region MonoBehaviour Functions
 
     private void Awake() {
-        Cursor.lockState = CursorLockMode.Locked;
-        Globals.PLAYER = this;
-
-        if (groundMask == 0) {
-            groundMask = Globals.GROUND_MASK;
-        }
-
-        deoccluder.CollideAgainst = Globals.OBSTACLE_MASK;
-        deoccluder.TransparentLayers = ~Globals.OBSTACLE_MASK;
+        rb = this.GetComponent<Rigidbody>();
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start() {
-        rb = this.GetComponent<Rigidbody>();
-
-        UpdateSensitivity();
-        orbitalFollow.Radius = cameraDistance;
-        deoccluder.AvoidObstacles.DistanceLimit = cameraDistance;
-
-        healthBar.maxValue = maxHealth;
-        healthBar.value = health;
+    private void Start() {
+        if (groundMask == 0) {
+            groundMask = Globals.GROUND_MASK;
+        }
     }
 
     // Update is called once per frame
-    void Update() {
+    private void Update() {
         GroundedStateCheck();
         GroundedStateUpdates();
 
-        model.transform.rotation = Quaternion.Euler(0f, cameraObject.transform.rotation.eulerAngles.y, 0f);
-        ccamera.Target.TrackingTarget.rotation = ccamera.transform.rotation;
-        throwTransform.rotation = ccamera.transform.rotation;
         prevGroundedState = groundedState;
-
-        debugSpeedText.text = $"Horizontal: {rb.linearVelocity.Horizontal().magnitude:0.####}\n" +
-            $"Up: {Vector3.Dot(rb.linearVelocity, Vector3.up):0.####}\n" +
-            $"Overall: {rb.linearVelocity.magnitude:0.####}";
     }
 
     private void FixedUpdate() {
@@ -232,66 +159,10 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
     }
 
     private void OnValidate() {
-        this.GetComponentInChildren<CinemachineOrbitalFollow>().Radius = cameraDistance;
-        this.GetComponentInChildren<CinemachineDeoccluder>().AvoidObstacles.DistanceLimit = cameraDistance;
-
-        var tempInputAxisController = this.GetComponentInChildren<CinemachineInputAxisController>();
-        tempInputAxisController.Controllers[0].Input.Gain = (1f / 75f) * CameraConfig.HorizontalSensitivity;
-        tempInputAxisController.Controllers[1].Input.Gain = -(1f / 75f) * CameraConfig.VerticalSensitivity;
-
         this.GetComponent<Rigidbody>().linearDamping = Config.GroundDrag;
-
-        damageThresholds = damageThresholds.OrderBy(dt => dt.SpeedThreshold).ToList();
-    }
-
-    private void OnDrawGizmos() {
-        //Gizmos.color = Color.red;
-        //Gizmos.DrawLine(model.transform.position, model.transform.position + model.transform.forward);
-        //Gizmos.DrawLine(model.transform.position, model.transform.position + ccamera.transform.forward);
     }
 
     #endregion MonoBehaviour Functions
-
-    #region Attack
-
-    public void Attack() {
-        float damage = CalculateDamage();
-
-        // TODO: change it so attack range scales with speed too
-
-        IDamageable[] damageables = GetEnemiesInAttackBox();
-        foreach (var damageable in damageables) {
-            damageable.TakeDamage(damage);
-        }
-    }
-
-    private float CalculateDamage() {
-        if (damageThresholds.Count < 1) {
-            return attack;
-        }
-
-        for (int i = 1; i < damageThresholds.Count; i++) {
-            if (rb.linearVelocity.magnitude < damageThresholds[i].SpeedThreshold) {
-                return attack * damageThresholds[i - 1].DamageMultiplier;
-            }
-        }
-
-        return attack * damageThresholds.Last().DamageMultiplier;
-    }
-
-    private IDamageable[] GetEnemiesInAttackBox() {
-        // TODO: change this to a rotation sweep capsule cast
-
-        Vector3 halfAttackForward = attackRange * ccamera.transform.forward / 2f;
-        return Physics.OverlapBox(this.transform.position + halfAttackForward, new Vector3(attackRange, attackRange, attackRange) / 2f, ccamera.transform.rotation, attackMask, QueryTriggerInteraction.Collide)
-            .Where(collider => Utility.DoesMaskContainLayer(attackMask, collider.gameObject.layer)
-                && collider.attachedRigidbody != null
-                && collider.attachedRigidbody.GetComponent<IDamageable>() != null)
-            .Select(collider => collider.attachedRigidbody.GetComponent<IDamageable>())
-            .ToArray();
-    }
-
-    #endregion Attack
 
     #region Movement
 
@@ -300,7 +171,6 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
         if (!hasReportedMovement && (movementInput.x != 0 || movementInput.y != 0)) {
             hasReportedMovement = true;
             TutorialEvents.OnPlayerMoved?.Invoke();
-
         }
 
         // need to normalise movement since MoveInput() accumulates inputs
@@ -486,7 +356,7 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
     #region Rotation
 
     private void Rotation() {
-        movementForward = cameraObject.transform.forward.Horizontal().normalized;
+        movementForward = movementDirectionTransform.forward.Horizontal().normalized;
         movementRight = Vector3.Cross(Vector3.up, movementForward).normalized;
     }
 
@@ -625,72 +495,37 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
 
     #region Input
 
+    // in case direct input is required
     public void MoveInput(InputAction.CallbackContext context) {
-        Vector2 tempInput = context.ReadValue<Vector2>();
+        MoveInput(context.ReadValue<Vector2>());
+    }
 
-        if (tempInput.x == 0) {
+    // same as above
+    public void JumpInput(InputAction.CallbackContext context) {
+        JumpInput(context.ReadValueAsButton());
+    }
+
+    public void MoveInput(Vector2 input) {
+        if (input.x == 0) {
             movementInput.x = 0;
         }
         else {
-            movementInput.x += tempInput.x;
+            movementInput.x += input.x;
         }
 
-        if (tempInput.y == 0) {
+        if (input.y == 0) {
             movementInput.y = 0;
         }
         else {
-            movementInput.y += tempInput.y;
+            movementInput.y += input.y;
         }
     }
 
-    public void LookInput(InputAction.CallbackContext context) {
-        // do nothing
-    }
-
-    public void AttackInput(InputAction.CallbackContext context) {
-        if (context.started) {
-            PrimaryAction.Invoke();
-        }
-        else if (context.canceled) {
-        }
-    }
-
-    public void ThrowInput(InputAction.CallbackContext context) {
-        if (context.started) {
-            SecondaryAction.Invoke();
-        }
-        else if (context.canceled) {
-        }
-    }
-
-    public void JumpInput(InputAction.CallbackContext context) {
-        if (context.started) {
-            jumpActivated = true;
-        }
-        else if (context.canceled) {
-            jumpActivated = false;
-        }
+    public void JumpInput(bool activated) {
+        jumpActivated = activated;
     }
 
     #endregion Input
-
-    #region Sensitivity
-
-    private void UpdateSensitivity() {
-        if (inputAxisController == null)
-            return;
-
-        if (inputAxisController.Controllers == null)
-            return;
-
-        if (inputAxisController.Controllers.Count < 2)
-            return;
-
-        inputAxisController.Controllers[0].Input.Gain = (1f / 75f) * CameraConfig.HorizontalSensitivity;
-        inputAxisController.Controllers[1].Input.Gain = -(1f / 75f) * CameraConfig.VerticalSensitivity;
-    }
-
-    #endregion Sensitivity
 
     #region IMomentumModifiable
 
@@ -707,26 +542,4 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
     }
 
     #endregion IMomentumModifiable
-
-    #region IDamageable
-
-    public float GetHealth() {
-        return health;
-    }
-
-    public void TakeDamage(float amount) {
-        health -= amount;
-        healthBar.value = health;
-        Debug.Log($"Damage Amount: {amount}, Current Health: {health}");
-    }
-
-    public void Kill() {
-        throw new System.NotImplementedException();
-    }
-
-    public void Heal(float amount) {
-        health = Mathf.Clamp(health + amount, 0f, maxHealth);
-    }
-
-    #endregion IDamageable
 }
