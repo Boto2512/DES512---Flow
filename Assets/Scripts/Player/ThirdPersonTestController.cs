@@ -71,6 +71,10 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
     private Vector3 movementRight;
     private Vector3 movementLeft => -movementRight;
 
+    private float currentHighestAccelerationSquared = 0f;
+    private bool waitingToDecelerate = false;
+    private bool decelerating = false;
+
     private bool hasReportedMovement = false;
 
     #endregion Movement Variables
@@ -78,7 +82,7 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
     #region Jump Variables
 
     private float coyoteTimer = 0f;
-
+    private float fallTimer = 0f;
     private bool canJump => !hasJumped && (!inAir || coyoteTimer <= Config.CoyoteTime);
     private bool hasJumped = false;
 
@@ -98,7 +102,7 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
     private float timeSpentGrounded = 0f;
     private bool inAir => groundedState == PlayerGroundedState.InAir;
 
-    private Vector3 slopePlane = Vector3.up;
+    private Vector3 inverseSlopeNormal = Vector3.up;
 
 
     #endregion Ground & Slope Check
@@ -119,6 +123,8 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
 
     private Vector2 movementInput;
     private bool jumpActivated;
+
+    private bool hasInput => movementInput.x != 0 || movementInput.y != 0;
 
     #endregion Input Variables
 
@@ -302,6 +308,8 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
 
         VerticalMovement();
         HorizontalMovement();
+        //rb.linearVelocity = new Vector3(Mathf.Clamp(rb.linearVelocity.x, -Config.MaxAcceleration, Config.MaxAcceleration), rb.linearVelocity.y, Mathf.Clamp(rb.linearVelocity.z, -Config.MaxAcceleration, Config.MaxAcceleration));
+        //Decelerate();
     }
 
     private void VerticalMovement() {
@@ -311,29 +319,52 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
             groundedState = PlayerGroundedState.InAir;
             hasJumped = true;
         }
+
+        if (inAir) {
+            if (rb.linearVelocity.y < 0f) {
+                if (fallTimer < Config.MaxFallAccelerationTime) {
+                    fallTimer += Time.fixedDeltaTime;
+                    if (fallTimer > Config.MaxFallAccelerationTime)
+                        fallTimer = Config.MaxFallAccelerationTime;
+                }
+                float currentFallingAcceleration = Mathf.Lerp(Config.MinFallAcceleration, Config.MaxFallAcceleration, fallTimer / Config.MaxFallAccelerationTime);
+                rb.AddForce(new(0f, -currentFallingAcceleration, 0f), ForceMode.Acceleration);
+            }
+            else {
+                fallTimer = 0f;
+            }
+        }
     }
 
     private void HorizontalMovement() {
-        bool hasInputX = movementInput.x != 0;
-        bool hasInputY = movementInput.y != 0;
-
-        if (!hasInputX && !hasInputY) {     // no input
-            if (!inAir) {                   // on ground
-                if (slideEnded) {
-                    rb.linearDamping = Config.StoppingDrag;
-                }
-                else {
-                    rb.linearDamping = 0f;
-                }
+        //bool hasInputX = movementInput.x != 0;
+        //bool hasInputY = movementInput.y != 0;
+        if (!hasInput) {     // no input
+            if (!inAir && slideEnded) {
+                rb.linearDamping = Config.StoppingDrag;
             }
             else {
                 rb.linearDamping = 0f;
             }
         }
-        else if (hasInputX || hasInputY) {
-            rb.linearDamping = inAir || !slideEnded ? Config.AirDrag : Config.GroundDrag;
+        else {
+            //rb.linearDamping = inAir || !slideEnded ? Config.AirDrag : Config.GroundDrag;
 
             Vector3 worldMovement = GenerateWorldMovement();
+
+            if (inAir) {
+                if (KeepMomentumDespiteInputCheck(worldMovement.Flattened())) {
+                    worldMovement = Vector3.ProjectOnPlane(worldMovement, rb.linearVelocity.Horizontal());
+                    rb.linearDamping = 0f;
+                }
+                else {
+                    rb.linearDamping = Config.AirDrag;
+                }
+            }
+            else if (slideEnded) {
+                rb.linearDamping = Config.GroundDrag;
+            }
+
             rb.AddForce(worldMovement, ForceMode.Acceleration);
         }
     }
@@ -346,7 +377,73 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
         relativeMovement *= GetGroundedStateMovementModifier();
 
         Vector3 worldMovement = new(Vector3.Dot(relativeMovement, movementForward), 0f, Vector3.Dot(relativeMovement, movementRight));
+        if (IsMovementACounterStrafe(worldMovement.Flattened())) {
+            worldMovement *= Config.CounterStrafeMultiplier;
+        }
+
         return worldMovement;
+    }
+
+    private bool IsMovementACounterStrafe(Vector2 desiredHorizontalMovement) {
+        float angleFromInverse = 180f - Vector2.Angle(rb.linearVelocity.Flattened(), desiredHorizontalMovement);
+
+        return angleFromInverse <= Config.CounterStrafeAngleError;
+    }
+
+    private bool KeepMomentumDespiteInputCheck(Vector2 desiredHorizontalMovement) {
+        Vector2 currentHorizontalVelocity = rb.linearVelocity.Flattened();
+
+        // if desired movement isn't somewhat in the same direction as the current movement
+        if (Vector2.Dot(currentHorizontalVelocity, desiredHorizontalMovement) <= 0f) {
+            return false;
+        }
+
+        // if current movement is within maximum air acceleration when unassisted (just by jumping)
+        float maxUnassistedAirAcceleration = Config.AirAcceleration / Config.AirDrag;
+        if (currentHorizontalVelocity.sqrMagnitude <= maxUnassistedAirAcceleration * maxUnassistedAirAcceleration) {
+            return false;
+        }
+
+        // if the angle between the desired movement and current movement is too large
+        if (Vector2.Angle(desiredHorizontalMovement, currentHorizontalVelocity) > Config.KeepMomentumDespiteInputAngle) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private void Decelerate() {
+        if (!inAir)
+            return;
+
+        float accelerationSquared = rb.linearVelocity.HorizontalSqrMagnitude();
+
+        if (decelerating && accelerationSquared <= Config.MaxAcceleration) {
+            decelerating = false;
+        }
+
+        if (accelerationSquared > Config.MaxAcceleration * Config.MaxAcceleration) {
+            if (accelerationSquared <= currentHighestAccelerationSquared)
+                return;
+            currentHighestAccelerationSquared = accelerationSquared;
+
+            waitingToDecelerate = true;
+            Debug.Log("waiting to decelerate");
+            this.InvokeOverwrite("decelerate", () => {
+                decelerating = true;
+                rb.linearDamping = rb.linearVelocity.HorizontalMagnitude() / Config.MaxAcceleration;
+                waitingToDecelerate = false;
+                currentHighestAccelerationSquared = 0f;
+                Debug.Log("decelerating");
+            }, Config.TimeToDecelerate);
+        }
+        else {
+            if (waitingToDecelerate) {
+                Debug.Log("cancelling deceleration");
+                this.InvokeCancel("decelerate");
+                waitingToDecelerate = false;
+            }
+        }
     }
 
     #endregion Movement
@@ -426,7 +523,7 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
 
         if (DefaultGroundCheck(out RaycastHit hitInfo)) {
             float angle = Vector3.Angle(Vector3.up, hitInfo.normal);
-            slopePlane = -hitInfo.normal;
+            inverseSlopeNormal = -hitInfo.normal;
             groundedState = (angle < Config.MaxSlopeAngle && angle > Config.MinSlopeAngle) ? PlayerGroundedState.OnSlope : PlayerGroundedState.OnGround;
         }
         else {
@@ -435,7 +532,7 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
     }
 
     private void StickToSlope() {
-        rb.AddForce(slopePlane * 50f, ForceMode.Force);
+        rb.AddForce(inverseSlopeNormal * 50f, ForceMode.Force);
 
         //CapsuleCollider collider = model.GetComponent<CapsuleCollider>();
         //if (Physics.SphereCast(collider.transform.position, collider.radius, Vector3.down, out RaycastHit hitInfo, 100f, Globals.GROUND_MASK)) {
@@ -458,16 +555,9 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
                 break;
 
             case PlayerGroundedState.OnGround:
-                slideEnded = false;
-                this.InvokeExclusive("End Slide", () => slideEnded = true, Config.SlideTime);
-                hasJumped = false;
                 break;
 
             case PlayerGroundedState.OnSlope:
-                slideEnded = false;
-                this.InvokeExclusive("End Slide", () => slideEnded = true, Config.SlideTime);
-                hasJumped = false;
-
                 rb.useGravity = false;
                 break;
 
@@ -486,6 +576,18 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
 
         if (groundedState != PlayerGroundedState.OnSlope) {
             rb.useGravity = true;
+        }
+
+        if (!inAir) {
+            if (waitingToDecelerate && slideEnded) {
+                this.InvokeCancel("decelerate");
+                Debug.Log("cancelling deceleration");
+                waitingToDecelerate = false;
+            }
+
+            slideEnded = false;
+            this.InvokeExclusive("End Slide", () => slideEnded = true, Config.SlideTime);
+            hasJumped = false;
         }
     }
 
