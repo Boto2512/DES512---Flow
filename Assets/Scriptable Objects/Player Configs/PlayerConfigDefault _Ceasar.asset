@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: PlayerConfigDefault _Ceasar
   m_EditorClassIdentifier: 
   defaultHealth: 100
-  defaultAccelertionSpeed: 3.5
-  defaultMaxMovementSpeed: 12
-  airSpeedIncrease: 2
+  defaultAccelertionSpeed: 2.5
+  defaultMaxMovementSpeed: 10
+  airSpeedIncrease: 3
   slopeSpeedImpact: 12
-  boostedMaxMovementSpeed: 24
-  counterForce: 50
+  boostedMaxMovementSpeed: 22
+  counterForce: 20
   maxVeloctiyDuration: 2
   defaultVelocityDecayRate: 3
   veloctiyStorageFrequency: 0.5
@@ -44,10 +44,10 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 256
   attackRange: 0.5
-  attackDamage: 50
+  attackDamage: 35
   attackCooldown: 1
-  firstBreakpoint: 15
-  secondBreakpoint: 20
+  firstBreakpoint: 14
+  secondBreakpoint: 18
   bounceBomb: {fileID: 569634559799669078, guid: 905d297ab0a893c4ca79c31d5bac738d, type: 3}
-  bombThrowPower: 5
+  bombThrowPower: 7.5
   fuseTime: 0.15
