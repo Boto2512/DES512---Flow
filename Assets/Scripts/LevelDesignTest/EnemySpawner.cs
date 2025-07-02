@@ -9,6 +9,9 @@ namespace LevelDesign {
         private int SpawningIndex = -1;
         private bool IsThereAnyEnemyExisting => transform.childCount > 0;
 
+        public int LeftEnemy=>transform.childCount;
+        public int SpawnedEnemy { get;private set; }
+
 
         public void Update(){
             if (!IsThereAnyEnemyExisting)
@@ -27,6 +30,8 @@ namespace LevelDesign {
             }
             else{
                 SpawnData[SpawningIndex].Spawn(transform);
+
+                SpawnedEnemy += SpawnData[SpawningIndex].EnemyCount;
             }
 
         }
@@ -35,6 +40,8 @@ namespace LevelDesign {
         public class EnemyData{
             [SerializeField] private GameObject EnemyObj;
             [SerializeField] private List<Transform> SpawningPoints;
+
+            public int EnemyCount=>SpawningPoints.Count;   
 
             public void Spawn(Transform parent){
                 foreach (Transform t in SpawningPoints) {
