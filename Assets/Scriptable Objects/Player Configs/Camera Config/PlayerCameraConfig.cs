@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "PlayerCameraConfig", menuName = "Scriptable Objects/PlayerCameraConfig")]
+[CreateAssetMenu(fileName = "PlayerCameraConfig", menuName = "Scriptable Objects/Player Config/PlayerCameraConfig")]
 public class PlayerCameraConfig : ScriptableObject {
     [Header("Sensitivity")]
     [Range(1, 120)] public int HorizontalSensitivity = 45;

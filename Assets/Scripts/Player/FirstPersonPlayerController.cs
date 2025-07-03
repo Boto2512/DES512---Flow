@@ -7,7 +7,10 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(PlayerMovementController))]
 [RequireComponent(typeof(PlayerAttackController))]
 [RequireComponent(typeof(BBThrowController))]
-public class FirstPersonPlayerController : MonoBehaviour, ITargetable {
+public class FirstPersonPlayerController : MonoBehaviour, ITargetable, IHasSpeedThresholds {
+
+    [SerializeField] private PlayerControllerConfig Config;
+    public System.Collections.Generic.List<SpeedStageThreshold> Thresholds => Config.Thresholds;
 
     #region Facets of Character
 
