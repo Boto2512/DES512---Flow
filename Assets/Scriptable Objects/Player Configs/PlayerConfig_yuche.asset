@@ -10,28 +10,28 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 40a94c9420f4fe145a7d0494be94da47, type: 3}
-  m_Name: PlayerConfigDefault _yuche2
+  m_Name: PlayerConfig_yuche
   m_EditorClassIdentifier: 
   defaultHealth: 100
-  defaultAccelertionSpeed: 8
+  defaultAccelertionSpeed: 5
   defaultMaxMovementSpeed: 12
-  airSpeedIncrease: 1
-  slopeSpeedImpact: 10
+  airSpeedIncrease: 10
+  slopeSpeedImpact: 8
   boostedMaxMovementSpeed: 20
-  counterForce: 50
-  maxVeloctiyDuration: 2
-  defaultVelocityDecayRate: 3
+  counterForce: 20
+  maxVeloctiyDuration: 1
+  defaultVelocityDecayRate: 100
   veloctiyStorageFrequency: 0.5
-  maxFallSpeed: -69.4
+  maxFallSpeed: -50
   airControlMultiplier: 0.3
-  maxSlopeAngle: 45
+  maxSlopeAngle: 80
   minSlopeAngle: 5
-  downwardsForce: 10
-  jumpForce: 7
-  maxJumpMultiplier: 5
-  fallMultiplier: 18
-  bombFallMultiplier: 35
-  jumpCooldown: 1
+  downwardsForce: 250
+  jumpForce: 7.5
+  maxJumpMultiplier: 2
+  fallMultiplier: 15
+  bombFallMultiplier: 15
+  jumpCooldown: 0.5
   coyoteTime: 0.2
   groundCheckRange: 0.25
   groundMask:
@@ -39,15 +39,15 @@ MonoBehaviour:
     m_Bits: 2147483712
   wallKickRange: 2
   wallKickCooldown: 1
-  attackScale: {x: 5, y: 3, z: 5}
+  attackScale: {x: 3, y: 2, z: 0.1}
   attackMask:
     serializedVersion: 2
     m_Bits: 256
-  attackRange: 0.5
+  attackRange: 4
   attackDamage: 50
-  attackCooldown: 1
-  firstBreakpoint: 15
-  secondBreakpoint: 20
+  attackCooldown: 0.5
+  firstBreakpoint: 9
+  secondBreakpoint: 12
   bounceBomb: {fileID: 569634559799669078, guid: 905d297ab0a893c4ca79c31d5bac738d, type: 3}
   bombThrowPower: 10
   fuseTime: 0.15

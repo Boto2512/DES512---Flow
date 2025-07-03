@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ba358efba505e704ca7a2143c2045f9e, type: 3}
-  m_Name: SBPlayerControllerConfig
+  m_Name: YuCheLInPlayerControllerConfig
   m_EditorClassIdentifier: 
   SlideTime: 0.5
-  Acceleration: 20
-  AirAcceleration: 15
+  Acceleration: 18
+  AirAcceleration: 20
   MaxAcceleration: 32
   TimeToDecelerate: 2
   CounterStrafeMultiplier: 4
@@ -30,4 +30,4 @@ MonoBehaviour:
   MaxFallAccelerationTime: 5
   MinSlopeAngle: 5
   MaxSlopeAngle: 45
-  SlopeSpeedMultiplier: 1.5
+  SlopeSpeedMultiplier: 3
