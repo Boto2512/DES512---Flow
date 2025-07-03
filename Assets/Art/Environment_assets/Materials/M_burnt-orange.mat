@@ -20,7 +20,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: General_test
+  m_Name: M_burnt-orange
   m_Shader: {fileID: -6465566751694194690, guid: 8d5cbc2790ab64f4db44076cc6de7911, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -38,7 +38,7 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - MainTex:
-        m_Texture: {fileID: 2800000, guid: b42e035cd8edf554d9dda0ce5f32aa03, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - Mask_R_Emission:
@@ -75,9 +75,9 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - Brightness_Rim: 0.78
-    - Rim_Power: 0.54
-    - Toon_Ramp_Offset: 0.639
+    - Brightness_Rim: 2
+    - Rim_Power: 0.12
+    - Toon_Ramp_Offset: 0.55
     - Toon_Ramp_Smoothness: 0
     - _Ambient: 0
     - _Gloss_amount: 0
@@ -93,9 +93,9 @@ Material:
     - _Toon_Ramp_Offset_Point: 0.5
     m_Colors:
     - Toon_Ramp_Tint: {r: 0.49056596, g: 0.49056596, b: 0.49056596, a: 1}
-    - _Color: {r: 0.6886792, g: 0.6886792, b: 0.6886792, a: 1}
-    - _Gloss_Tint: {r: 1, g: 1, b: 1, a: 1}
-    - _Outline_Tint: {r: 0.9960785, g: 0.93725497, b: 0.8078432, a: 1}
+    - _Color: {r: 0.5660378, g: 0.25322944, b: 0.19490923, a: 1}
+    - _Gloss_Tint: {r: 0.9056604, g: 0.2947668, b: 0.2947668, a: 1}
+    - _Outline_Tint: {r: 1, g: 1, b: 1, a: 1}
     - _Solt_Outline_Tint: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
