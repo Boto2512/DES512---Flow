@@ -99,4 +99,21 @@ public static class InvokeManager {
 
         return cancelled;
     }
+
+    /// <summary>
+    /// Checks to see if there are any pending invocations attached to this MonoBehaviour object with the same key.
+    /// </summary>
+    /// <param name="mb"></param>
+    /// <param name="key"></param>
+    /// <returns>true if an invocation with the specified key on this MonoBehaviour object is pending</returns>
+    public static bool IsInvokePending(MonoBehaviour mb, string key) {
+        Hash128 hash = GenerateHash(mb, key);
+
+        bool isPending;
+        lock (invokedTasks) {
+            isPending = invokedTasks.ContainsKey(hash);
+        }
+
+        return isPending;
+    }
 }

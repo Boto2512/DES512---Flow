@@ -55,7 +55,17 @@ public static class MonoBehaviourExtension {
     /// Cancels any pending invocation attached to this MonoBehaviour object with the same key.
     /// </summary>
     /// <param name="key">Identifier string for the inner coroutine (key not shared amonst different MonoBehaviour instances)</param>
+    /// <returns>true if an invocation was cancelled</returns>
     public static bool InvokeCancel(this MonoBehaviour self, string key) {
         return InvokeManager.InvokeCancel(self, key);
+    }
+
+    /// <summary>
+    /// Checks to see if there are any pending invocations attached to this MonoBehaviour object with the same key.
+    /// </summary>
+    /// <param name="key">Identifier string for the inner coroutine (key not shared amonst different MonoBehaviour instances)</param>
+    /// <returns>true if an invocation with the specified key on this MonoBehaviour object is pending</returns>
+    public static bool IsInvokePending(this MonoBehaviour self, string key) {
+        return InvokeManager.IsInvokePending(self, key);
     }
 }
