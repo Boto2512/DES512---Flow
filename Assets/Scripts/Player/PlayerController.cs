@@ -3,6 +3,7 @@ using DG.Tweening;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.Splines;
 using UnityEngine.UI;
 using UnityEngine.VFX
     ;
@@ -628,21 +629,24 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
 
         if (enemies.Length != 0) {
             foreach (RaycastHit enemy in enemies) {
-                IDamageable damage = enemy.transform.GetComponent<IDamageable>();
-                IMomentumModifiable knockback = enemy.transform.GetComponent<IMomentumModifiable>();
+                enemy.transform.TryGetComponent<IDamageable>(out IDamageable damage);
+                enemy.transform.TryGetComponent<IMomentumModifiable>(out IMomentumModifiable knockback);
                 if (damage != null) {
                     if (currentStage >= 2) {
-                        knockback.SetMomentum(Knockback(knockback.GetPosition()));
                         damage.Kill();
 
                         TutorialEvents.enemyKilledVeryFast?.Invoke();
                     }
                     else {
-                        knockback.SetMomentum(Knockback(knockback.GetPosition()));
                         damage.TakeDamage(config.attackDamage);
                         TutorialEvents.OnEnemyKilled?.Invoke();
                     }
                 }
+                if (knockback != null)
+                {
+                    knockback.SetMomentum(Knockback(knockback.GetPosition()));
+                }
+                
             }
         }
     }
