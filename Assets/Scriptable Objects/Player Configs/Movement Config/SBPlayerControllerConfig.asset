@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba358efba505e704ca7a2143c2045f9e, type: 3}
   m_Name: SBPlayerControllerConfig
   m_EditorClassIdentifier: 
-  SlideTime: 0.5
+  SlideTime: 0.1
   Acceleration: 20
   AirAcceleration: 15
   MaxAcceleration: 32
@@ -21,11 +21,11 @@ MonoBehaviour:
   CounterStrafeAngleError: 25
   AirDrag: 1
   GroundDrag: 2
-  StoppingDrag: 6
+  StoppingDrag: 10
   KeepMomentumDespiteInputAngle: 25
   JumpForce: 7.5
   CoyoteTime: 0.2
-  MinFallAcceleration: 10
+  MinFallAcceleration: 12
   MaxFallAcceleration: 100
   MaxFallAccelerationTime: 5
   MinSlopeAngle: 5
