@@ -10,24 +10,24 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 40a94c9420f4fe145a7d0494be94da47, type: 3}
-  m_Name: PlayerConfigDefault_yuche
+  m_Name: PlayerConfig_yuche3
   m_EditorClassIdentifier: 
   defaultHealth: 100
-  defaultAccelertionSpeed: 5
-  defaultMaxMovementSpeed: 12
-  airSpeedIncrease: 10
-  slopeSpeedImpact: 8
-  boostedMaxMovementSpeed: 20
-  counterForce: 20
-  maxVeloctiyDuration: 1
-  defaultVelocityDecayRate: 100
+  defaultAccelertionSpeed: 10
+  defaultMaxMovementSpeed: 10
+  airSpeedIncrease: 3
+  slopeSpeedImpact: 5
+  boostedMaxMovementSpeed: 15
+  counterForce: 25
+  maxVeloctiyDuration: 2
+  defaultVelocityDecayRate: 2
   veloctiyStorageFrequency: 0.5
   maxFallSpeed: -50
-  airControlMultiplier: 0.3
-  maxSlopeAngle: 80
+  airControlMultiplier: 0.1
+  maxSlopeAngle: 45
   minSlopeAngle: 5
-  downwardsForce: 250
-  jumpForce: 7.5
+  downwardsForce: 180
+  jumpForce: 7
   maxJumpMultiplier: 2
   fallMultiplier: 15
   bombFallMultiplier: 15
@@ -39,15 +39,15 @@ MonoBehaviour:
     m_Bits: 2147483712
   wallKickRange: 2
   wallKickCooldown: 1
-  attackScale: {x: 3, y: 2, z: 0.1}
+  attackScale: {x: 2, y: 2, z: 5}
   attackMask:
     serializedVersion: 2
     m_Bits: 256
-  attackRange: 4
+  attackRange: 1
   attackDamage: 50
-  attackCooldown: 0.5
-  firstBreakpoint: 9
-  secondBreakpoint: 12
+  attackCooldown: 1
+  firstBreakpoint: 11
+  secondBreakpoint: 13
   bounceBomb: {fileID: 569634559799669078, guid: 905d297ab0a893c4ca79c31d5bac738d, type: 3}
   bombThrowPower: 10
   fuseTime: 0.15
