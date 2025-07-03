@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.VFX;
 
 public class LaserTrap : MonoBehaviour {
 
@@ -9,12 +10,24 @@ public class LaserTrap : MonoBehaviour {
     [SerializeField] private float laserDuration;
     [SerializeField] private float shootInterval;
     [SerializeField] private LayerMask canHitMask;
+    [SerializeField] private VisualEffect laserVFX;
 
     [Header("Distance Check")]
     [SerializeField] private LayerMask distanceMask;
 
-    private void Start()    {
-        GetLength();
+    private void Start()   {
+        laserVFX.Stop();
+        GetLength(); 
+        
+        if (laserVFX.HasFloat("Duration")) {
+            laserVFX.SetFloat("Duration", laserDuration);
+        }
+        if (laserVFX.HasFloat("LaserLength")) {
+            laserVFX.SetFloat("LaserLength", laserLength);
+        }
+        if (laserVFX.HasFloat("LaserWidth")) {
+            laserVFX.SetFloat("LaserWidth", laserRadius);
+        }
     }
 
     private void Update()
@@ -39,6 +52,7 @@ public class LaserTrap : MonoBehaviour {
         RaycastHit[] hits = Physics.SphereCastAll(start, laserRadius, direction, laserLength, canHitMask);
 
         Debug.DrawRay(start, direction * laserLength, Color.darkRed, laserDuration);
+        laserVFX.Play();
 
         foreach (RaycastHit hit in hits) {
             if (hit.transform.GetComponent<IDamageable>() != null) {

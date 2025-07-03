@@ -3,6 +3,7 @@ using DG.Tweening;
 using Unity.VisualScripting;
 using UnityEditor.ShaderGraph.Internal;
 using UnityEngine;
+using UnityEngine.VFX;
 
 public class TurretEnemy : MonoBehaviour, IDamageable
 {
@@ -20,10 +21,20 @@ public class TurretEnemy : MonoBehaviour, IDamageable
     [SerializeField] private float attackDelay;
     [SerializeField] private LayerMask canHitMask;
 
+    [SerializeField] private VisualEffect attackVFX;
     [SerializeField] private Transform orb;
     private Transform player;
     private void Start() {
         player = Globals.PLAYER.transform;
+
+        if (attackVFX.HasFloat("Duration"))
+        {
+            attackVFX.SetFloat("Duration", attackDelay);
+        }
+        if (attackVFX.HasFloat("LaserWidth"))
+        {
+            attackVFX.SetFloat("LaserWidth", attackRadius);
+        }
     }
 
     private void Update() {
@@ -41,8 +52,8 @@ public class TurretEnemy : MonoBehaviour, IDamageable
         else  {
             Physics.Raycast(start, direction, out RaycastHit hit, attackRange, canHitMask);
             if (hit.transform.CompareTag("Player")) {
-            orb.LookAt(player);
-            return true;
+                orb.LookAt(player);
+                return true;
             }
             else { return false; }
         }
@@ -66,6 +77,9 @@ public class TurretEnemy : MonoBehaviour, IDamageable
         } 
         else { Debug.Log("Attack Missed"); }
         Debug.DrawRay(start, direction * attackRange, Color.darkRed, 3f);
+
+        if (attackVFX.HasFloat("LaserLength")) { attackVFX.SetFloat("LaserLength", hit.distance); }
+        attackVFX.Play();
 
         if (hit.transform != null) {
             if (hit.transform.CompareTag("Player")) {
