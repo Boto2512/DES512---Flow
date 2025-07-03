@@ -157,19 +157,6 @@ public class PlayerMovementController : MonoBehaviour, IMomentumModifiable {
         }
     }
 
-    private void OnCollisionStay(Collision collision) {
-        if (collision == null)
-            return;
-
-        GameObject gameObject = collision.gameObject;
-        if (gameObject == null)
-            return;
-
-        if (!enableGroundedStateCheck && Utility.DoesMaskContainLayer(groundMask, gameObject.layer)) {
-            enableGroundedStateCheck = true;
-        }
-    }
-
     private void OnValidate() {
         this.GetComponent<Rigidbody>().linearDamping = Config.GroundDrag;
     }
