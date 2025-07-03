@@ -64,6 +64,7 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
                 && collider.attachedRigidbody != null
                 && collider.attachedRigidbody.GetComponent<IDamageable>() != null)
             .Select(collider => collider.attachedRigidbody.GetComponent<IDamageable>())
+            .Where(damageable => damageable != (IDamageable)this)
             .ToArray();
     }
 
