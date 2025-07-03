@@ -41,7 +41,4 @@ public class PlayerControllerConfig : ScriptableObject {
     [Min(0f)] public float MinSlopeAngle = 5f;
     [Min(0f)] public float MaxSlopeAngle = 45f;
     [Min(0f)] public float SlopeSpeedMultiplier = 3f;
-
-    [Header("Camera")]
-    [Range(1, 120)] public int Sensitivity = 60;
 }
