@@ -12,4 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a00f5ecc44362e41a0aaa86781d224f, type: 3}
   m_Name: DefaultPlayerControllerConfig
   m_EditorClassIdentifier: 
-  Thresholds: []
+  Thresholds:
+  - speedThreshold: 0
+    damageMultiplier: 0.7
+  - speedThreshold: 5
+    damageMultiplier: 1
+  - speedThreshold: 15
+    damageMultiplier: 2
+  - speedThreshold: 24
+    damageMultiplier: 3
