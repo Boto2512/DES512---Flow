@@ -15,7 +15,8 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
     private System.Collections.Generic.List<SpeedStageThreshold> damageThresholds => thresholdHolder.Thresholds;
 
     private void Start() {
-        rb = GetComponent<Rigidbody>();
+        rb = this.GetComponent<Rigidbody>();
+        thresholdHolder = this.GetComponent<IHasSpeedThresholds>();
 
         health = Config.StartingHealth;
 
