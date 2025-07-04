@@ -6,7 +6,7 @@ public class FirstPersonCameraController : MonoBehaviour {
 
     [SerializeField] private PlayerCameraConfig Config;
     private IHasSpeedThresholds thresholdHolder;
-    private IMomentumModifiable momentumHolder; 
+    private IMomentumModifiable momentumHolder;
     private SpeedStageThreshold currentThreshold => thresholdHolder.CurrentThreshold;
     private float currentFOV;
 
@@ -20,13 +20,10 @@ public class FirstPersonCameraController : MonoBehaviour {
 
     [SerializeField] private VisualEffect runningLines;
 
-    private IHasSpeedThresholds thresholdHolder;
-
     public Transform Orientation => cinemachineCamera.transform;
 
-    private void Awake()
-    {
-        
+    private void Awake() {
+
         thresholdHolder = this.GetComponent<IHasSpeedThresholds>();
         momentumHolder = this.GetComponent<IMomentumModifiable>();
     }
