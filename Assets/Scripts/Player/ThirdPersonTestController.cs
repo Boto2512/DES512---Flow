@@ -13,7 +13,7 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
 
     #region Variables
 
-    [SerializeField] private PlayerControllerConfig Config;
+    [SerializeField] private PlayerMovementConfig Config;
     [SerializeField] private PlayerCameraConfig CameraConfig;
 
     #region Attack & Damage
