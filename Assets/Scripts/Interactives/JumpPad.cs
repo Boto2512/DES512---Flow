@@ -9,7 +9,7 @@ public class JumpPad : MonoBehaviour
     {
         if (collision.transform.CompareTag(triggeredTag))
         {
-            Jump(collision.transform.GetComponent<PlayerController>());
+            Jump(collision.transform.GetComponent<IMomentumModifiable>());
         }
     }
 
