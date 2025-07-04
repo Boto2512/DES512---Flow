@@ -11,9 +11,12 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
     [SerializeField] private Transform orientation;
 
     private Rigidbody rb;
+    private IHasSpeedThresholds thresholdHolder;
+    private System.Collections.Generic.List<SpeedStageThreshold> damageThresholds => thresholdHolder.Thresholds;
 
     private void Start() {
-        rb = GetComponent<Rigidbody>();
+        rb = this.GetComponent<Rigidbody>();
+        thresholdHolder = this.GetComponent<IHasSpeedThresholds>();
 
         health = Config.StartingHealth;
 
@@ -39,17 +42,17 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
     }
 
     private float CalculateDamage() {
-        if (Config.DamageThresholds.Count < 1) {
+        if (damageThresholds.Count < 1) {
             return Config.Attack;
         }
 
-        for (int i = 1; i < Config.DamageThresholds.Count; i++) {
-            if (rb.linearVelocity.magnitude < Config.DamageThresholds[i].SpeedThreshold) {
-                return Config.Attack * Config.DamageThresholds[i - 1].DamageMultiplier;
+        for (int i = 1; i < damageThresholds.Count; i++) {
+            if (rb.linearVelocity.magnitude < damageThresholds[i].SpeedThreshold) {
+                return Config.Attack * damageThresholds[i - 1].DamageMultiplier;
             }
         }
 
-        return Config.Attack * Config.DamageThresholds.Last().DamageMultiplier;
+        return Config.Attack * damageThresholds.Last().DamageMultiplier;
     }
 
     private IDamageable[] GetEnemiesInAttackBox() {

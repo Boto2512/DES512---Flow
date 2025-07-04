@@ -5,7 +5,7 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerMovementController : MonoBehaviour, IMomentumModifiable {
 
-    [SerializeField] private PlayerControllerConfig Config;
+    [SerializeField] private PlayerMovementConfig Config;
 
     #region Momentum Storage [NOT IN USE RIGHT NOW]
 
@@ -112,11 +112,14 @@ public class PlayerMovementController : MonoBehaviour, IMomentumModifiable {
 
 
     private Rigidbody rb;
+    private IHasSpeedThresholds thresholdHolder;
+    private System.Collections.Generic.List<SpeedStageThreshold> thresholds => thresholdHolder.Thresholds;
 
     #region MonoBehaviour Functions
 
     private void Awake() {
         rb = this.GetComponent<Rigidbody>();
+        thresholdHolder = this.GetComponent<IHasSpeedThresholds>();
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
