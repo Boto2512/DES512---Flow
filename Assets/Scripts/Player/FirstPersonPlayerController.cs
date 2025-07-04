@@ -12,7 +12,7 @@ using UnityEngine.InputSystem;
 public class FirstPersonPlayerController : MonoBehaviour, ITargetable, IHasSpeedThresholds {
 
     [SerializeField] private PlayerControllerConfig Config;
-    public SpeedStageThreshold CurrentThreshold { get; private set; } = null;
+    public SpeedStageThreshold CurrentThreshold { get; private set; }
 
     #region Facets of Character
 
@@ -46,11 +46,13 @@ public class FirstPersonPlayerController : MonoBehaviour, ITargetable, IHasSpeed
         attackController = this.GetComponent<PlayerAttackController>();
         throwController = this.GetComponent<BBThrowController>();
         animationController = this.GetComponent<FirstPersonPhysicalAnimationController>();
+        CurrentThreshold = Config.Thresholds.First();
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start() {
         Globals.PLAYER = this;
+
     }
 
     // Update is called once per frame

@@ -19,15 +19,20 @@ public class FirstPersonCameraController : MonoBehaviour {
 
     public Transform Orientation => cinemachineCamera.transform;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    private void Awake()
+    {
+        
+        thresholdHolder = this.GetComponent<IHasSpeedThresholds>();
+        momentumHolder = this.GetComponent<IMomentumModifiable>();
+    }
+
     void Start() {
         Cursor.lockState = CursorLockMode.Locked;
 
-        thresholdHolder = this.GetComponent<IHasSpeedThresholds>();
-        momentumHolder = this.GetComponent<IMomentumModifiable>();
         UpdateSensitivity();
 
         currentFOV = currentThreshold.FieldOfView;
+        Debug.LogWarning($"currentFOV {currentFOV}");
     }
 
     // Update is called once per frame
