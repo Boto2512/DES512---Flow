@@ -24,7 +24,8 @@ public class NewViewModelSway : MonoBehaviour {
     [SerializeField] private float tiltVerticalMultiplier;
 
     private void Start() {
-
+        this.transform.SetParent(cameraTransform);
+        this.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
     }
 
     private void Update() {

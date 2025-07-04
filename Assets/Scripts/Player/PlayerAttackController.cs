@@ -12,7 +12,6 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
 
     private Rigidbody rb;
     private IHasSpeedThresholds thresholdHolder;
-    private System.Collections.Generic.List<SpeedStageThreshold> damageThresholds => thresholdHolder.Thresholds;
 
     private void Start() {
         rb = this.GetComponent<Rigidbody>();
@@ -42,17 +41,10 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
     }
 
     private float CalculateDamage() {
-        if (damageThresholds.Count < 1) {
+        if (thresholdHolder.CurrentThreshold == null)
             return Config.Attack;
-        }
 
-        for (int i = 1; i < damageThresholds.Count; i++) {
-            if (rb.linearVelocity.magnitude < damageThresholds[i].SpeedThreshold) {
-                return Config.Attack * damageThresholds[i - 1].DamageMultiplier;
-            }
-        }
-
-        return Config.Attack * damageThresholds.Last().DamageMultiplier;
+        return Config.Attack * thresholdHolder.CurrentThreshold.DamageMultiplier;
     }
 
     private IDamageable[] GetEnemiesInAttackBox() {
@@ -64,6 +56,7 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
                 && collider.attachedRigidbody != null
                 && collider.attachedRigidbody.GetComponent<IDamageable>() != null)
             .Select(collider => collider.attachedRigidbody.GetComponent<IDamageable>())
+            .Where(damageable => damageable != (IDamageable)this)
             .ToArray();
     }
 
