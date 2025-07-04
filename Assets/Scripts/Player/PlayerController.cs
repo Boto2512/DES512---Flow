@@ -707,8 +707,8 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
             addedSpeed = config.boostedMaxMovementSpeed;
         }
         if (CheckIfSpeedIncreases(addedSpeed)) {
-            currentMaxMovementSpeed = config.defaultMaxMovementSpeed + addedSpeed;
-        }
+            currentMaxMovementSpeed =  addedSpeed;
+        }//config.defaultMaxMovementSpeed +
 
         hasBombBounced = true;
         groundCheckEnabled = false;
