@@ -543,23 +543,4 @@ public class PlayerMovementController : MonoBehaviour, IMomentumModifiable {
     }
 
     #endregion IMomentumModifiable
-
-    #region Visual Effects
-
-    /// <summary>
-    /// Controls the intensity of the running lines visual effect
-    /// </summary>
-    /// <param name="speedOfLines"> how fast the speedlines will go </param>
-    /// <param name="spawnRate"> how fast speed lines will spawn </param>
-    //private void RunningLinesIntensity(Vector2 speedOfLines, float spawnRate) {
-    //    runningLines.enabled = true;
-    //    if (runningLines.HasVector2("SpeedOfLines")) {
-    //        runningLines.SetVector2("SpeedOfLines", speedOfLines);
-    //    }
-    //    if (runningLines.HasFloat("SpawnRate")) {
-    //        runningLines.SetFloat("SpawnRate", spawnRate);
-    //    }
-    //}
-
-    #endregion Visual Effects
 }
