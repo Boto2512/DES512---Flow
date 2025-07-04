@@ -1,10 +1,10 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "PlayerControllerConfig", menuName = "Scriptable Objects/PlayerControllerConfig")]
-public class PlayerControllerConfig : ScriptableObject {
+[CreateAssetMenu(fileName = "PlayerMovementConfig", menuName = "Scriptable Objects/Player Config/PlayerMovementConfig")]
+public class PlayerMovementConfig : ScriptableObject {
 
     [Header("Momentum Storage")]
-    public float SlideTime = 0.1f;
+    [Min(0f)] public float SlideTime = 0.1f;
 
     [Header("Acceleration")]
     [Min(0f)] public float Acceleration = 16f;

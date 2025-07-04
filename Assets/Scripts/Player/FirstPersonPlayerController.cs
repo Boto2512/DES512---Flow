@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
@@ -7,7 +8,11 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(PlayerMovementController))]
 [RequireComponent(typeof(PlayerAttackController))]
 [RequireComponent(typeof(BBThrowController))]
-public class FirstPersonPlayerController : MonoBehaviour, ITargetable {
+[RequireComponent(typeof(FirstPersonPhysicalAnimationController))]
+public class FirstPersonPlayerController : MonoBehaviour, ITargetable, IHasSpeedThresholds {
+
+    [SerializeField] private PlayerControllerConfig Config;
+    public SpeedStageThreshold CurrentThreshold { get; private set; } = null;
 
     #region Facets of Character
 
@@ -16,6 +21,7 @@ public class FirstPersonPlayerController : MonoBehaviour, ITargetable {
     private PlayerMovementController movementController;
     private PlayerAttackController attackController;
     private BBThrowController throwController;
+    private FirstPersonPhysicalAnimationController animationController;
 
     [SerializeField] private GameObject model;
 
@@ -39,6 +45,7 @@ public class FirstPersonPlayerController : MonoBehaviour, ITargetable {
         movementController = this.GetComponent<PlayerMovementController>();
         attackController = this.GetComponent<PlayerAttackController>();
         throwController = this.GetComponent<BBThrowController>();
+        animationController = this.GetComponent<FirstPersonPhysicalAnimationController>();
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -51,6 +58,28 @@ public class FirstPersonPlayerController : MonoBehaviour, ITargetable {
 
     }
 
+    private void FixedUpdate() {
+        FindCurrentThreshold();
+    }
+
+    #region Thresholds
+
+    private void FindCurrentThreshold() {
+        if (!Config.Thresholds.Any())
+            return;
+
+        for (int i = 1; i < Config.Thresholds.Count; ++i) {
+            if (rb.linearVelocity.magnitude < Config.Thresholds[i].SpeedThreshold) {
+                CurrentThreshold = Config.Thresholds[i - 1];
+                return;
+            }
+        }
+
+        CurrentThreshold = Config.Thresholds.First();
+    }
+
+    #endregion Thresholds
+
     #region Input
 
     public void MoveInput(InputAction.CallbackContext context) {
@@ -58,7 +87,7 @@ public class FirstPersonPlayerController : MonoBehaviour, ITargetable {
     }
 
     public void LookInput(InputAction.CallbackContext context) {
-        // do nothing
+        animationController.MouseInput(context.ReadValue<Vector2>());
     }
 
     public void AttackInput(InputAction.CallbackContext context) {
