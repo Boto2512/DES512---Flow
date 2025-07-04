@@ -23,7 +23,7 @@ public class SpeedrunTester : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.transform.parent.CompareTag(tag_player))
+        if (other.transform.CompareTag(tag_player))
         {
             Debug.LogError($"Arrived at the destination.\nTime:{DateTime.Now.Subtract(startTime).TotalSeconds}\nKilled Enemy:{spawner.SpawnedEnemy-spawner.LeftEnemy}/{spawner.SpawnedEnemy}");
         }
