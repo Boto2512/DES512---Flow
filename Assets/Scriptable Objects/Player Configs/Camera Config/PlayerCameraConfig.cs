@@ -9,5 +9,6 @@ public class PlayerCameraConfig : ScriptableObject {
     [Header("Other")]
     public bool InvertHorizontalInput = false;
     public bool InvertVerticalInput = false;
+    public float fovChangeSpeed;
 
 }

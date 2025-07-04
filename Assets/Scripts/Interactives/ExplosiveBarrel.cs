@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.VFX;
 
 public class ExplosiveBarrel : MonoBehaviour, IDamageable
 {
@@ -6,24 +7,29 @@ public class ExplosiveBarrel : MonoBehaviour, IDamageable
     [SerializeField] private float force;
     [SerializeField] private float explosiveRange;
     [SerializeField] private LayerMask explosiveMask;
-    private float health = 1;
+    [SerializeField] private Transform ground;
 
+    [SerializeField] private VisualEffect explosion;
+    private float health = 1;
+    void Awake()
+    {
+        explosion.Stop();
+    }
     private void Explode() {
-        Debug.Log("EXPLODE¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬");
         Collider[] explosionHits = Physics.OverlapSphere(transform.position, explosiveRange, explosiveMask);
-        Debug.Log($"in array {explosionHits.Length} raycasts");
+        explosion.Play();
 
         foreach (Collider entity in explosionHits) {
-            Debug.Log(entity.transform.name);
             if (entity.transform == this.transform) { return; }
 
             Transform parent = entity.attachedRigidbody.transform;
             if (parent.transform.TryGetComponent<IDamageable>(out IDamageable iDamage)) {
-            iDamage.TakeDamage(damage); 
+                iDamage.TakeDamage(damage); 
             }
             if (parent.transform.TryGetComponent<IMomentumModifiable>(out IMomentumModifiable iMomentum)) {
-            Vector3 directionForce = (iMomentum.GetPosition() - transform.forward).normalized * force;
-            iMomentum.SetMomentum(directionForce); 
+                Vector3 directionForce = (iMomentum.GetPosition() - ground.position).normalized * force;
+                Debug.Log($"{parent.name}: {directionForce}");
+                iMomentum.SetMomentum(directionForce); 
             }
         }
     }
@@ -39,7 +45,6 @@ public class ExplosiveBarrel : MonoBehaviour, IDamageable
     }
 
     public void TakeDamage(float value) {
-        Debug.Log("Damage-----------------------------------");
         health -= value;
         bool once = false;
         if (health <=0 && !once) { Kill(); once = true; }
@@ -47,7 +52,9 @@ public class ExplosiveBarrel : MonoBehaviour, IDamageable
 
     public void Kill() {
         Explode();
-        //Destroy(gameObject);
+        explosion.GetComponent<VFXCleanUp>().StartTimer();
+        explosion.transform.SetParent(null);
+        Destroy(gameObject);
     }
 
     public void Heal(float value) {
