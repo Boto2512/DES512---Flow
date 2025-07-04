@@ -32,7 +32,6 @@ public class FirstPersonCameraController : MonoBehaviour {
         UpdateSensitivity();
 
         currentFOV = currentThreshold.FieldOfView;
-        Debug.LogWarning($"currentFOV {currentFOV}");
     }
 
     // Update is called once per frame
@@ -54,7 +53,6 @@ public class FirstPersonCameraController : MonoBehaviour {
 
         float targetFOV = currentThreshold.FieldOfView;
         currentFOV = Mathf.MoveTowards(currentFOV, targetFOV, Config.fovChangeSpeed * Time.deltaTime);
-        Debug.Log($"targetFOV {targetFOV}\n currentFOV {currentFOV}");
         cinemachineCamera.Lens.FieldOfView = currentFOV;
     }
 }
