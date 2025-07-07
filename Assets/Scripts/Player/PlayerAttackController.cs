@@ -1,5 +1,4 @@
 using System.Linq;
-using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
@@ -17,7 +16,6 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
     [Header("Animations")]
     [SerializeField] private Animator attackAnimator;
     [SerializeField] private Animator cameraAnimator;
-    [SerializeField] private CinemachineImpulseSource cameraImpulseSource;
 
     private Rigidbody rb;
     private IHasSpeedThresholds thresholdHolder;
@@ -45,7 +43,6 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
 
         attackAnimator.SetTrigger("hasAttacked");
         cameraAnimator.SetTrigger("hasAttacked");
-        cameraImpulseSource.GenerateImpulse();
 
         // TODO: change it so attack range scales with speed too
 
