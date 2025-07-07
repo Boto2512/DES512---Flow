@@ -466,7 +466,7 @@ MonoBehaviour:
       Enabled: 1
       Input:
         InputAction: {fileID: -6547441687521043312, guid: bb81ff71908a41342adf5f5fe49eb6aa, type: 3}
-        Gain: 0.8
+        Gain: 0.6
         LegacyInput: 
         LegacyGain: 1
         CancelDeltaTime: 1
@@ -479,7 +479,7 @@ MonoBehaviour:
       Enabled: 1
       Input:
         InputAction: {fileID: -6547441687521043312, guid: bb81ff71908a41342adf5f5fe49eb6aa, type: 3}
-        Gain: -0.8
+        Gain: -0.6
         LegacyInput: 
         LegacyGain: 1
         CancelDeltaTime: 1
@@ -2026,6 +2026,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Config: {fileID: 11400000, guid: ec70776f062a7384d9c19b1a195cbe30, type: 2}
+  CameraConfig: {fileID: 11400000, guid: 63225e5c90d9cfc48a6fea707b75472d, type: 2}
   attack: 10
   attackRange: 5
   attackMask:
@@ -2116,7 +2117,8 @@ MonoBehaviour:
   Config: {fileID: 11400000, guid: 7fdc2d6ca81193e4099e27b61b64e25d, type: 2}
   momentousEntity:
     _underlyingValue: {fileID: 3568903721289402929}
-  throwTransform: {fileID: 7279243878063980943}
+  throwPosition: {fileID: 7279243878063980943}
+  throwOrientation: {fileID: 7279243878063980943}
 --- !u!114 &8774114941628539334
 MonoBehaviour:
   m_ObjectHideFlags: 0

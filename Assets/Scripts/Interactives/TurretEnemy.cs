@@ -21,6 +21,8 @@ public class TurretEnemy : MonoBehaviour, IDamageable
     [SerializeField] private float attackDelay;
     [SerializeField] private LayerMask canHitMask;
 
+    [SerializeField] private GameObject healthDrop;
+
     [SerializeField] private VisualEffect attackVFX;
     [SerializeField] private Transform orb;
     private Transform player;
@@ -100,22 +102,26 @@ public class TurretEnemy : MonoBehaviour, IDamageable
     #region ========================= IDamageable Interface =========================
     public float GetHealth()
     {
-        throw new System.NotImplementedException();
+        return health;
     }
 
     public void Heal(float value)
     {
         throw new System.NotImplementedException();
     }
+    public void TakeDamage(float value)
+    {
+        health -= value;
+        if (health < 0) { 
+            Kill();
+        }
+    }
 
     public void Kill()
     {
-        throw new System.NotImplementedException();
+        Instantiate(healthDrop);
+        Destroy(this);
     }
 
-    public void TakeDamage(float value)
-    {
-        throw new System.NotImplementedException();
-    }
     #endregion ========================= IDamageable Interface =========================
 }
