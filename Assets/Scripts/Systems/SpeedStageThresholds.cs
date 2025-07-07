@@ -2,12 +2,23 @@ using UnityEngine;
 
 [System.Serializable]
 public class SpeedStageThreshold {
-    [Tooltip("If speed is greater or equal to this value, apply the corresponding damage multiplier")]
+    [Tooltip("If speed is greater or equal to this value, apply the rest of the valid options")]
     [SerializeField] private float speedThreshold;
     [SerializeField] private float damageMultiplier;
     [SerializeField] private float fieldOfView;
 
-    public float SpeedThreshold { get { return speedThreshold; } }
-    public float DamageMultiplier { get { return damageMultiplier; } }
-    public float FieldOfView { get { return fieldOfView; } }
+    [Header("Speedlines VFX")]
+    [SerializeField] private bool hasSpeedlines;
+    [SerializeField] private Vector2 speedRangeOfLines;
+    [SerializeField] private float speedlineSpawnRate;
+
+
+    public float SpeedThreshold => speedThreshold;
+    public float DamageMultiplier => damageMultiplier;
+    public float FieldOfView => fieldOfView;
+
+    // speedlines
+    public bool HasSpeedLines => hasSpeedlines;
+    public Vector2 SpeedRangeOfLines => speedRangeOfLines;
+    public float SpeedlineSpawnRate => speedlineSpawnRate;
 }
