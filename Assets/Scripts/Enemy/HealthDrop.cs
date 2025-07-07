@@ -34,8 +34,9 @@ public class HealthDrop : MonoBehaviour
         Debug.Log(other.gameObject.name);
         if (other.gameObject.CompareTag("Player"))
         { 
-
             other.GetComponentInParent<IDamageable>().Heal(healAmount);
+            floatTween.Kill();
+            rotateTween.Kill();
             Destroy(parent.gameObject);
         }
     }

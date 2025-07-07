@@ -93,6 +93,10 @@ public class BounceBomb : MonoBehaviour {
                 allColliders.Add((imm, outHit.distance <= Config.StrongBlastRadius));
                 continue;
             }
+
+            if (collider.gameObject.CompareTag("ExplosiveBarrel")) {
+                collider.transform.GetComponent<IDamageable>().TakeDamage(1);
+            }
         }
 
         return allColliders.ToList();

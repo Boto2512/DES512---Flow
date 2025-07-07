@@ -150,4 +150,22 @@ public bool IsCurrentStep(int stepIndex)
         isTutorialRunning = false;
         ToasterManager.Instance.ShowToaster("Tutorial complete! Good luck!");
     }
+
+    public void ResetTutorial()
+{
+    if (isTutorialRunning && currentStepIndex < tutorialSteps.Count)
+    {
+        tutorialSteps[currentStepIndex].OnStepComplete(); 
+    }
+
+    StopAllCoroutines(); 
+    // Reset state
+    currentStepIndex = 0;
+    stepCompleted = false;
+    isTutorialRunning = false;
+
+    
+    InitializeTutorialSteps();
+    StartTutorial();
+}
 }

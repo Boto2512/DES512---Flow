@@ -21,5 +21,6 @@ public class MainMenu : MonoBehaviour
 
     public void PlayLevel(string levelName) {
         SceneManager.LoadScene(levelName); 
+        TutorialManager.Instance.ResetTutorial();
     }
 }

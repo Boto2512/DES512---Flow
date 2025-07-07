@@ -193,7 +193,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.5
-  m_Speed: 10
+  m_Speed: 0
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 120
@@ -219,6 +219,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   health: 100
   healthBar: {fileID: 7811187444397578015}
+  healthDrop: {fileID: 3115757056857685540, guid: 934867da60cf84e4e99262740faa65cb, type: 3}
   takeDamage:
     m_PersistentCalls:
       m_Calls:

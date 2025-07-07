@@ -1,5 +1,5 @@
-using static Globals;
 using UnityEngine;
+using static Globals;
 
 public static class Utility {
     #region LayerMask Logic
@@ -15,6 +15,11 @@ public static class Utility {
 
     public static Vector3 Horizontal(this Vector3 v) => new(v.x, 0f, v.z);
     public static Vector3 Vertical(this Vector3 v) => new(0f, v.y, 0f);
+
+    public static float HorizontalSqrMagnitude(this Vector3 v) => v.x * v.x + v.z * v.z;
+    public static float HorizontalMagnitude(this Vector3 v) => Mathf.Sqrt(HorizontalSqrMagnitude(v));
+
+    public static Vector2 Flattened(this Vector3 v) => new(v.x, v.z);
 
     #endregion Vector Logic
 }

@@ -15,7 +15,7 @@ public class PlayerVariablesConfig : ScriptableObject
     //[Tooltip("Currently not in use")]
     //public float deceleration;
 
-    //public float startSpeed;
+    public float startSpeed;
     [Tooltip("The max movementspeed for running")]
     public float defaultMaxMovementSpeed;
     [Tooltip("the amount the player's max speed increases when in air")]
@@ -82,6 +82,7 @@ public class PlayerVariablesConfig : ScriptableObject
     public float attackRange;
     public float attackDamage;
     public float attackCooldown;
+    public float attackKnockback;
 
     [Space(10)]
     [Header("Speed Stages")]
