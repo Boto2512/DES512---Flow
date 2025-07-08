@@ -6,9 +6,16 @@ using UnityEngine.UI;
 public class PlayerAttackController : MonoBehaviour, IDamageable {
     [SerializeField] private PlayerDamageConfig Config;
 
-    private float health;
+    [Header("Health")]
     [SerializeField] private Slider healthBar;
+    private float health;
+
+    [Header("Orientation")]
     [SerializeField] private Transform orientation;
+
+    [Header("Animations")]
+    [SerializeField] private Animator attackAnimator;
+    [SerializeField] private Animator cameraAnimator;
 
     private Rigidbody rb;
     private IHasSpeedThresholds thresholdHolder;
@@ -21,6 +28,8 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
 
         healthBar.maxValue = Config.MaxHealth;
         healthBar.value = health;
+
+        //cameraImpulseSource.ImpulseDefinition.
     }
 
     private void Update() {
@@ -31,6 +40,9 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
 
     public void Attack() {
         float damage = CalculateDamage();
+
+        attackAnimator.SetTrigger("hasAttacked");
+        cameraAnimator.SetTrigger("hasAttacked");
 
         // TODO: change it so attack range scales with speed too
 
@@ -51,7 +63,8 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
         // TODO: change this to a rotation sweep capsule cast
 
         Vector3 halfAttackForward = Config.AttackRange * orientation.forward / 2f;
-        return Physics.OverlapBox(this.transform.position + halfAttackForward, new Vector3(Config.AttackRange, Config.AttackRange, Config.AttackRange) / 2f, orientation.transform.rotation, Config.AttackMask, QueryTriggerInteraction.Collide)
+        return Physics.OverlapBox(this.transform.position + halfAttackForward,
+                new Vector3(Config.AttackRange, Config.AttackRange, Config.AttackRange) / 2f, orientation.transform.rotation, Config.AttackMask, QueryTriggerInteraction.Collide)
             .Where(collider => Utility.DoesMaskContainLayer(Config.AttackMask, collider.gameObject.layer)
                 && collider.attachedRigidbody != null
                 && collider.attachedRigidbody.GetComponent<IDamageable>() != null)

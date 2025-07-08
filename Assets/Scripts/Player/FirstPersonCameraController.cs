@@ -21,7 +21,7 @@ public class FirstPersonCameraController : MonoBehaviour {
 
     #endregion Cinemachine Game Object
 
-    [SerializeField] private VisualEffect runningLines;
+    [SerializeField] private VisualEffect speedlines;
 
     public Transform Orientation => cinemachineCamera.transform;
 
@@ -43,6 +43,7 @@ public class FirstPersonCameraController : MonoBehaviour {
     // Update is called once per frame
     void Update() {
         FovChanges();
+        SpeedlineChanges();
     }
 
     private void UpdateSensitivity() {
@@ -55,19 +56,37 @@ public class FirstPersonCameraController : MonoBehaviour {
     }
 
     #region Visual Effects
+#if DEBUG
+    private SpeedStageThreshold prevThreshold = null;
+#endif
+    private void SpeedlineChanges() {
+        if (speedlines == null)
+            return;
+
+        UpdateSpeedlineIntensity(currentThreshold.HasSpeedLines, currentThreshold.SpeedRangeOfLines, currentThreshold.SpeedlineSpawnRate);
+
+#if DEBUG
+        if (prevThreshold != null &&
+                currentThreshold != prevThreshold) {
+            Debug.Log($"Going from speed threshold {prevThreshold.SpeedThreshold} " +
+                $"to speed threshold {currentThreshold.SpeedThreshold}");
+        }
+        prevThreshold = currentThreshold;
+#endif
+    }
 
     /// <summary>
     /// Controls the intensity of the running lines visual effect
     /// </summary>
     /// <param name="speedOfLines"> how fast the speedlines will go </param>
     /// <param name="spawnRate"> how fast speed lines will spawn </param>
-    private void RunningLinesIntensity(Vector2 speedOfLines, float spawnRate) {
-        runningLines.enabled = true;
-        if (runningLines.HasVector2("SpeedOfLines")) {
-            runningLines.SetVector2("SpeedOfLines", speedOfLines);
+    private void UpdateSpeedlineIntensity(bool hasSpeedlines, Vector2 speedOfLines, float spawnRate) {
+        speedlines.enabled = hasSpeedlines;
+        if (speedlines.HasVector2("SpeedOfLines")) {
+            speedlines.SetVector2("SpeedOfLines", speedOfLines);
         }
-        if (runningLines.HasFloat("SpawnRate")) {
-            runningLines.SetFloat("SpawnRate", spawnRate);
+        if (speedlines.HasFloat("SpawnRate")) {
+            speedlines.SetFloat("SpawnRate", spawnRate);
         }
     }
 
