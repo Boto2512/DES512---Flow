@@ -393,11 +393,8 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
         groundCheckEnabled = false;
 
         rb.AddForce(value, ForceMode.VelocityChange);
-        //this.InvokeOverwrite("bombBounced", () => bombBounced = true, 0.1f);
-    }
-
-    public void BeenBombBounced() {
         bombBounced = true;
+        //this.InvokeOverwrite("bombBounced", () => bombBounced = true, 0.1f);
     }
 
     #endregion Momentum Modifiable Interface
