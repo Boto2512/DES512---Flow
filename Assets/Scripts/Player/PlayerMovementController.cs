@@ -113,7 +113,6 @@ public class PlayerMovementController : MonoBehaviour, IMomentumModifiable {
 
     private Rigidbody rb;
     private IHasSpeedThresholds thresholdHolder;
-    private System.Collections.Generic.List<SpeedStageThreshold> thresholds => thresholdHolder.Thresholds;
 
     #region MonoBehaviour Functions
 

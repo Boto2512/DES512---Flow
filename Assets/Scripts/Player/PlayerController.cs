@@ -3,7 +3,7 @@ using DG.Tweening;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.Splines.ExtrusionShapes;
+using UnityEngine.Splines;
 using UnityEngine.UI;
 using UnityEngine.VFX
     ;
@@ -38,6 +38,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
     [SerializeField] private Transform orientation;
     private float accelerationSpeed;
     private float accelerationProgress = 0;
+    private float minAccelerationProgress;
     private float reduceMaxSpeedProgress = 0;
 
     private Rigidbody playerRigidBody;
@@ -58,7 +59,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
 
     private RaycastHit slopeHit;
     private bool exitSlope;
-
+    private Vector3 inverseSlope;
 
 
     private float coyoteTimeCounter;
@@ -114,6 +115,10 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
     [Space(10)]
     [Header("Target")]
     [SerializeField] private Transform target;
+
+    [Space(10)]
+    [Header("Camera")]
+    [SerializeField] private Camera playerCamera;
     #endregion  ========================= Variables =========================
 
     void Awake() {
@@ -122,6 +127,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
 
     void Start() {
         playerRigidBody = GetComponent<Rigidbody>();
+        playerCamera = Camera.main;
 
         currentMaxMovementSpeed = config.defaultMaxMovementSpeed;
         maxSpeedStorage = currentMaxMovementSpeed;
@@ -135,6 +141,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
 
         velocityDecayRate = config.defaultVelocityDecayRate;
         accelerationSpeed = config.defaultAccelertionSpeed;
+        MinAccelerationProgress();
 
         ValidateBounceBomb();
         EventSecondaryClick.AddListener(SpawnBounceBomb);
@@ -146,10 +153,11 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
             velocityTween.Pause();
         }
         groundCheckEnabled = true;
+
+        gameOver.SetActive(false);
     }
 
     void Update() {
-        Debug.Log($"SlopeCheck {SlopeCheck()}");
         DeathCheck();
         GroundCheck();
 
@@ -240,19 +248,15 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
         if (!hasReportedMovement && (horizontalInput != 0 || verticalInput != 0)) {
             hasReportedMovement = true;
             TutorialEvents.OnPlayerMoved?.Invoke();
-
         }
 
         moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
         CounterForce();
 
-
         if (SlopeCheck() && !exitSlope) {
             playerRigidBody.AddForce(GetSlopeMovementDiretion() * movementSpeed * 10f, ForceMode.Force);
-
-            if (horizontalInput != 0 || verticalInput != 0 && playerRigidBody.linearVelocity.y < 0) {
-                playerRigidBody.AddForce(Vector3.down * config.downwardsForce, ForceMode.Force);
-            }
+            playerRigidBody.AddForce(inverseSlope * config.downwardsForce, ForceMode.Force);
+            
         }
         else if (isGrounded) {
             playerRigidBody.AddForce(moveDirection.normalized * movementSpeed * 10, ForceMode.Force);
@@ -273,15 +277,21 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
     /// </summary>
     private void Acceleration() {
         if (horizontalInput != 0 || verticalInput != 0) {
+
             //movementSpeed = Mathf.SmoothDamp(movementSpeed, currentMaxMovementSpeed, ref accelerationSpeed, config.accelerationTime);
             movementSpeed = Mathf.Lerp(0, config.defaultMaxMovementSpeed, accelerationProgress);
             accelerationProgress += Time.deltaTime * (config.defaultAccelertionSpeed * 0.1f);
             accelerationProgress = Mathf.Clamp(accelerationProgress, 0, 1);
         }
         else if (playerRigidBody.linearVelocity.magnitude < 0.2f){
-            accelerationProgress = 0;
+            accelerationProgress = minAccelerationProgress;
+            movementSpeed = 0;
         }
+    }
 
+    private void MinAccelerationProgress() {
+        minAccelerationProgress = config.startSpeed / config.defaultMaxMovementSpeed;
+        accelerationProgress = minAccelerationProgress;
     }
 
     private void CounterForce() {
@@ -333,7 +343,8 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
                 playerRigidBody.linearVelocity = playerRigidBody.linearVelocity.normalized * currentMaxMovementSpeed;
             };
         }
-        else if (velocity.magnitude > currentMaxMovementSpeed) {
+
+        if (velocity.magnitude > currentMaxMovementSpeed) {
             Vector3 velocityNormalized = velocity.normalized * currentMaxMovementSpeed;
             playerRigidBody.linearVelocity = new Vector3(velocityNormalized.x, playerRigidBody.linearVelocity.y, velocityNormalized.z);
         }
@@ -411,9 +422,6 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
         veloctiyStorage = playerRigidBody.linearVelocity;
         storeVelocity = true;
     }
-
-
-
     #endregion ========================= Movement =========================
 
     #region     ========================= Jump =========================
@@ -509,15 +517,16 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
     private bool SlopeCheck() {
         if (Physics.Raycast(groundCheckPosition.position, Vector3.down, out slopeHit, config.groundCheckRange)) {
             float angle = Vector3.Angle(Vector3.up, slopeHit.normal);
-            Debug.DrawRay(slopeHit.point, slopeHit.normal, Color.green, 5f);
-
+            inverseSlope = -slopeHit.normal;
             return angle < config.maxSlopeAngle && angle > config.minSlopeAngle;
         }
         return false;
     }
 
     private Vector3 GetSlopeMovementDiretion() {
-        return Vector3.ProjectOnPlane(moveDirection, slopeHit.normal).normalized;
+        Vector3 temp = Vector3.ProjectOnPlane(moveDirection, slopeHit.normal).normalized;
+        Debug.DrawRay(transform.position, temp, Color.green, 5f);
+        return temp;
     }
     #endregion  ========================= Ground Check =========================
 
@@ -585,6 +594,10 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
             return;
         }
     }
+
+    private void ChangeFOV() {
+        
+    }
     #endregion ========================= Speed Stages =========================
 
     #region ========================= Attack =========================
@@ -616,7 +629,8 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
 
         if (enemies.Length != 0) {
             foreach (RaycastHit enemy in enemies) {
-                IDamageable damage = enemy.transform.GetComponent<IDamageable>();
+                enemy.transform.TryGetComponent<IDamageable>(out IDamageable damage);
+                enemy.transform.TryGetComponent<IMomentumModifiable>(out IMomentumModifiable knockback);
                 if (damage != null) {
                     if (currentStage >= 2) {
                         damage.Kill();
@@ -628,8 +642,18 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
                         TutorialEvents.OnEnemyKilled?.Invoke();
                     }
                 }
+                if (knockback != null)
+                {
+                    knockback.SetMomentum(Knockback(knockback.GetPosition()));
+                }
+                
             }
         }
+    }
+    private Vector3 Knockback(Vector3 enemy){
+        Vector3 direction = (enemy - groundCheckPosition.position).normalized * config.attackKnockback;
+        Debug.DrawRay(groundCheckPosition.position, direction, Color.yellow, 10f);
+        return direction;
     }
 
     /// <summary>

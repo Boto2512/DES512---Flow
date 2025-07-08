@@ -15,7 +15,7 @@ public class Deadzone : MonoBehaviour
         if (collision.transform.CompareTag(playerTag))
         {
            
-            //SetToZero(collision.transform.GetComponent<PlayerController>());
+            SetToZero(collision.transform.GetComponent<IMomentumModifiable>());
             collision.transform.position = destination.position;
         }else if (collision.transform.CompareTag(enemyTag))
         {

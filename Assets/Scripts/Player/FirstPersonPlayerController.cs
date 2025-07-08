@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
@@ -11,7 +12,7 @@ using UnityEngine.InputSystem;
 public class FirstPersonPlayerController : MonoBehaviour, ITargetable, IHasSpeedThresholds {
 
     [SerializeField] private PlayerControllerConfig Config;
-    public System.Collections.Generic.List<SpeedStageThreshold> Thresholds => Config.Thresholds;
+    public SpeedStageThreshold CurrentThreshold { get; private set; }
 
     #region Facets of Character
 
@@ -45,17 +46,41 @@ public class FirstPersonPlayerController : MonoBehaviour, ITargetable, IHasSpeed
         attackController = this.GetComponent<PlayerAttackController>();
         throwController = this.GetComponent<BBThrowController>();
         animationController = this.GetComponent<FirstPersonPhysicalAnimationController>();
+        CurrentThreshold = Config.Thresholds.First();
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start() {
         Globals.PLAYER = this;
+
     }
 
     // Update is called once per frame
     void Update() {
 
     }
+
+    private void FixedUpdate() {
+        FindCurrentThreshold();
+    }
+
+    #region Thresholds
+
+    private void FindCurrentThreshold() {
+        if (!Config.Thresholds.Any())
+            return;
+
+        for (int i = 1; i < Config.Thresholds.Count; ++i) {
+            if (rb.linearVelocity.magnitude < Config.Thresholds[i].SpeedThreshold) {
+                CurrentThreshold = Config.Thresholds[i - 1];
+                return;
+            }
+        }
+
+        CurrentThreshold = Config.Thresholds.First();
+    }
+
+    #endregion Thresholds
 
     #region Input
 
