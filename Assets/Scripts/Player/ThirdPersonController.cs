@@ -1,10 +1,13 @@
-using System.Collections;
-using DG.Tweening;
-using TMPro;
 using UnityEngine;
+using DG.Tweening;
 using UnityEngine.Events;
+using System.Collections;
+using UnityEngine.VFX;
 using UnityEngine.UI;
-public class ThirdPersonController : MonoBehaviour, IMomentumModifiable, IDamageable, ITargetable {
+using TMPro;
+using static UnityEngine.Rendering.DebugUI;
+public class ThirdPersonController : MonoBehaviour, IMomentumModifiable, IDamageable, ITargetable
+{
     #region     ========================= Variables =========================
 
     [SerializeField] private TextMeshProUGUI speedText;
@@ -206,11 +209,13 @@ public class ThirdPersonController : MonoBehaviour, IMomentumModifiable, IDamage
     }
 
     #region ========================= Inputs =========================
-    private void MovementInput() {
+    private void MovementInput()
+    {
         horizontalInput = Input.GetAxisRaw("Horizontal");
         verticalInput = Input.GetAxisRaw("Vertical");
 
-        if (Input.GetButton("Jump")) {
+        if (Input.GetButton("Jump"))
+        {
             if (canJump && coyoteTimeCounter > 0) {
                 Jump();
                 Debug.Log("Jump");
@@ -218,13 +223,13 @@ public class ThirdPersonController : MonoBehaviour, IMomentumModifiable, IDamage
                 jumpReleased = false;
                 exitSlope = true;
 
-                this.InvokeExclusive("Reset Jump", ResetJump, jumpCooldown);
+                this.InvokeExclusive("Reset Jump",ResetJump, jumpCooldown);
             }
-
+            
         }
         if (Input.GetButtonUp("Jump")) {
-            jumpReleased = true;
-        }
+                jumpReleased = true;
+            }
 
         if (Input.GetButtonDown("Jump") && !isGrounded) {
             Vector3 wallHit;
@@ -260,7 +265,7 @@ public class ThirdPersonController : MonoBehaviour, IMomentumModifiable, IDamage
         if (SlopeCheck() && !exitSlope) {
             playerRigidBody.AddForce(GetSlopeMovementDiretion() * movementSpeed * 20f, ForceMode.Force);
 
-            if (horizontalInput != 0 || verticalInput != 0 && playerRigidBody.linearVelocity.y < 0) {
+            if (horizontalInput != 0 || verticalInput != 0 && playerRigidBody.linearVelocity.y <0) {
                 playerRigidBody.AddForce(Vector3.down * downwardsForce, ForceMode.Force);
             }
         }
@@ -274,11 +279,11 @@ public class ThirdPersonController : MonoBehaviour, IMomentumModifiable, IDamage
         }
 
         playerRigidBody.useGravity = !SlopeCheck();
-        // PlayerDrag();
+       // PlayerDrag();
     }
 
-    private Vector3 GetDirection() {
-        Vector3 direction = new Vector3(horizontalInput, 0, verticalInput).normalized;
+    private  Vector3 GetDirection() {
+        Vector3 direction = new Vector3(horizontalInput, 0,verticalInput).normalized;
         float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + cameraPos.eulerAngles.y;
         float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, turnSmoothTime);
         transform.rotation = Quaternion.Euler(0f, angle, 0f);
@@ -291,9 +296,9 @@ public class ThirdPersonController : MonoBehaviour, IMomentumModifiable, IDamage
     private void PlayerDrag() {
         //if in air 0
         //if moving
-        // if above max speed increase drag
-        // if below decrease drag
-        if (!isGrounded) {
+            // if above max speed increase drag
+            // if below decrease drag
+        if (!isGrounded) { 
             playerRigidBody.linearDamping = 0;
             dragTimer = 0;
         }/*
@@ -303,11 +308,11 @@ public class ThirdPersonController : MonoBehaviour, IMomentumModifiable, IDamage
             playerRigidBody.linearDamping = Mathf.MoveTowards(dragValue, groundDrag, .5f * dragTimer);
             playerRigidBody.linearDamping = dragValue;
         }*/
-        else if (horizontalInput != 0 || verticalInput != 0 && playerRigidBody.linearVelocity.magnitude < maxMovementSpeed) {
-            playerRigidBody.linearDamping = 0;
+        else if (horizontalInput != 0 || verticalInput != 0 && playerRigidBody.linearVelocity.magnitude < maxMovementSpeed) { 
+            playerRigidBody.linearDamping = 0; 
         }
-        else {
-            playerRigidBody.linearDamping = groundDrag;
+        else { 
+            playerRigidBody.linearDamping = groundDrag; 
             dragTimer = 0;
         }
     }
@@ -345,7 +350,7 @@ public class ThirdPersonController : MonoBehaviour, IMomentumModifiable, IDamage
         Vector3 maxVelocity = velocity.normalized * maxMovementSpeed;
         Vector3 combinedVelocity = new Vector3(maxVelocity.x, playerRigidBody.linearVelocity.y, maxVelocity.z);
 
-        if (SlopeCheck() && !exitSlope) {
+        if (SlopeCheck() && !exitSlope){
             ClampVelocity(velocity);
             Debug.Log("SlopeCheck");
         }
@@ -354,17 +359,17 @@ public class ThirdPersonController : MonoBehaviour, IMomentumModifiable, IDamage
             MaxFallSpeed();
         }
     }
-    private void ClampVelocity(Vector3 velocity) {
-        if (velocity.magnitude > maxMovementSpeed) {
+    private void ClampVelocity(Vector3 velocity) {        
+        if (velocity.magnitude > maxMovementSpeed) { 
             Vector3 velocityNormalized = velocity.normalized * maxMovementSpeed;
             playerRigidBody.linearVelocity = new Vector3(velocityNormalized.x, playerRigidBody.linearVelocity.y, velocityNormalized.z);
             Debug.Log("Clamping velocity");
         }
 
-        if (maxMovementSpeed > maxSpeedStorage) {
+        if (maxMovementSpeed > maxSpeedStorage ) {
             maxMovementSpeed = Mathf.MoveTowards(maxMovementSpeed, maxSpeedStorage, velocityDecayRate * Time.deltaTime);
             acceleration = Mathf.MoveTowards(acceleration, accelerationStorage, velocityDecayRate * Time.deltaTime);
-        }
+        } 
         else if (horizontalInput == 0 && verticalInput == 0 && velocity == Vector3.zero) {
             maxMovementSpeed = maxSpeedStorage;
             acceleration = accelerationStorage;
@@ -372,7 +377,7 @@ public class ThirdPersonController : MonoBehaviour, IMomentumModifiable, IDamage
     }
     private void MaxFallSpeed() {
         float yVelocity = playerRigidBody.linearVelocity.y;
-        if (yVelocity <= maxFallSpeed) {
+        if (yVelocity <= maxFallSpeed ) {
             playerRigidBody.linearVelocity = new Vector3(playerRigidBody.linearVelocity.x, maxFallSpeed, playerRigidBody.linearVelocity.z);
             Debug.Log("MaxFalling");
         }
@@ -396,13 +401,14 @@ public class ThirdPersonController : MonoBehaviour, IMomentumModifiable, IDamage
     /// <summary>
     /// If the player is on a slope they will be able to move faster
     /// </summary>
-    private void SlopeSpeedIncrease() {
-        if (SlopeCheck()) {
+    private void SlopeSpeedIncrease()
+    {
+        if(SlopeCheck()) {
             if (playerRigidBody.linearVelocity.y < 0) {
                 maxMovementSpeed = maxSpeedStorage + slopeSpeedImpact;
                 acceleration = accelerationStorage + slopeSpeedImpact;
             }
-        }
+        } 
     }
     /// <summary>
     /// Uses the last stored air velocity and replaces the player's velocity with it
@@ -416,7 +422,7 @@ public class ThirdPersonController : MonoBehaviour, IMomentumModifiable, IDamage
         }
     }
     private void GetLastAirVelocity() {
-        lastAirVelocity = playerRigidBody.linearVelocity;
+            lastAirVelocity = playerRigidBody.linearVelocity;
     }
 
     private IEnumerator GetVelocity() {
@@ -430,7 +436,7 @@ public class ThirdPersonController : MonoBehaviour, IMomentumModifiable, IDamage
     #region     ========================= Jump =========================
     private void Jump() {
         exitSlope = true;
-        playerRigidBody.linearVelocity = new Vector3(playerRigidBody.linearVelocity.x, 0, playerRigidBody.linearVelocity.z);
+        playerRigidBody.linearVelocity = new Vector3(playerRigidBody.linearVelocity.x, 0, playerRigidBody.linearVelocity.z) ;
         playerRigidBody.AddForce(transform.up * jumpForce, ForceMode.Impulse);
     }
 
@@ -438,7 +444,8 @@ public class ThirdPersonController : MonoBehaviour, IMomentumModifiable, IDamage
     /// Applies a force to the player after the player has released the jump button to make it reach the apex of the jump earlier
     /// Applies a force when the player is falling to make them fall faster
     /// </summary>
-    private void VariableJump() {
+    private void VariableJump()
+    {
         //Debug.Log($"Variable Jump: jumpReleased: ${jumpReleased},Y Velocity: ${playerRigidBody.linearVelocity.y} ");
         if (jumpReleased && !isGrounded && playerRigidBody.linearVelocity.y > 0) {
             playerRigidBody.AddForce(Vector3.down * maxJumpMultiplier, ForceMode.Force);
@@ -457,15 +464,15 @@ public class ThirdPersonController : MonoBehaviour, IMomentumModifiable, IDamage
     #endregion  ========================= Jump =========================
 
     #region  ========================= Wall Kick =========================
-    /// <summary>
-    /// checks if there is a wall to kick off of
-    /// </summary>
-    /// <param name="wallNormal"> Returns the wall's normal </param>
-    /// <returns> Returns a boolean value depending on if a wall was hit</returns>
+  /// <summary>
+  /// checks if there is a wall to kick off of
+  /// </summary>
+  /// <param name="wallNormal"> Returns the wall's normal </param>
+  /// <returns> Returns a boolean value depending on if a wall was hit</returns>
     private bool WallCheck(out Vector3 wallNormal) {
-        if (Time.time >= timeOfLastKick + wallKickCooldown && !isGrounded) {
+        if(Time.time >= timeOfLastKick + wallKickCooldown && !isGrounded) {
 
-            timeOfLastKick = Time.time;
+            timeOfLastKick = Time.time; 
             RaycastHit wallHit;
             bool isWall = Physics.Raycast(groundCheckPosition.position, orientation.forward, out wallHit, wallKickRange, groundMask);
             Debug.DrawRay(groundCheckPosition.position, orientation.forward * wallKickRange, Color.blueViolet, 10);
@@ -473,9 +480,9 @@ public class ThirdPersonController : MonoBehaviour, IMomentumModifiable, IDamage
             wallNormal = wallHit.normal;
             return isWall;
         }
-        else {
+        else { 
             wallNormal = Vector3.zero;
-            return false;
+            return false; 
         }
     }
     /// <summary>
@@ -500,7 +507,7 @@ public class ThirdPersonController : MonoBehaviour, IMomentumModifiable, IDamage
     /// Casts a ray to find the angle the ground is at to detect if its a slope
     /// </summary>
     /// <returns> Returns a boolean value based on the angle the ground is at </returns>
-    private bool SlopeCheck() {
+    private bool SlopeCheck(){
         if (Physics.Raycast(groundCheckPosition.position, Vector3.down, out slopeHit, groundCheckRange)) {
             float angle = Vector3.Angle(Vector3.up, slopeHit.normal);
             return angle < maxSlopeAngle && angle > minSlopeAngle;
@@ -508,7 +515,7 @@ public class ThirdPersonController : MonoBehaviour, IMomentumModifiable, IDamage
         return false;
     }
     private Vector3 GetSlopeMovementDiretion() {
-        return Vector3.ProjectOnPlane(moveDirection, slopeHit.normal).normalized;
+        return Vector3.ProjectOnPlane(moveDirection,slopeHit.normal).normalized;
     }
     #endregion  ========================= Ground Check =========================
 
@@ -564,7 +571,7 @@ public class ThirdPersonController : MonoBehaviour, IMomentumModifiable, IDamage
             //RunningLinesIntensity(minSpeedOfLines, maxSpawnRate);
             return;
         }
-        else {
+        else { 
             // Checks if player is in stage 1
             currentStage = 1;
             //runningLines.enabled = false;
@@ -587,9 +594,9 @@ public class ThirdPersonController : MonoBehaviour, IMomentumModifiable, IDamage
             // larger aoe && oneshot && vfx
             //VFX GOES HERE
             Vector3 largerScale = attackScale * 2;
-            enemies = AttackCheck(largerScale, attackRange + 2, Color.red);
+            enemies = AttackCheck(largerScale, attackRange +2, Color.red);
         }
-        else if (currentStage == 2) {
+        else if (currentStage == 2)  {
             //one shot & VFX
             //VFX GOES HERE
             enemies = AttackCheck(attackScale, attackRange, Color.yellow);
@@ -603,11 +610,10 @@ public class ThirdPersonController : MonoBehaviour, IMomentumModifiable, IDamage
             foreach (RaycastHit enemy in enemies) {
                 IDamageable damage = enemy.transform.GetComponent<IDamageable>();
                 if (damage != null) {
-                    if (currentStage >= 2) {
-                        damage.Kill();
-                    }
+                    if (currentStage >= 2) { damage.Kill(); 
+                    } 
                     else {
-                        damage.TakeDamage(attackDamage);
+                        damage.TakeDamage(attackDamage); 
                     }
                 }
             }
@@ -656,10 +662,6 @@ public class ThirdPersonController : MonoBehaviour, IMomentumModifiable, IDamage
     public void SetMomentum(Vector3 value) {
         playerRigidBody.AddForce(value, ForceMode.VelocityChange);
     }
-
-    public void BeenBombBounced() {
-        // do nothing
-    }
     #endregion  ========================= Momentum Interface  =========================
 
     #region  ========================= Damage Interface  =========================
@@ -676,11 +678,14 @@ public class ThirdPersonController : MonoBehaviour, IMomentumModifiable, IDamage
         throw new System.NotImplementedException();
     }
 
-    public void Heal(float value) {
-        if (health + value <= healthBar.maxValue) {
+    public void Heal(float value)
+    {
+        if (health + value <= healthBar.maxValue)
+        {
             health += value;
         }
-        else {
+        else
+        {
             health = healthBar.maxValue;
         }
     }

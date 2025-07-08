@@ -706,10 +706,6 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
         rb.linearVelocity = newMomentum;
     }
 
-    public void BeenBombBounced() {
-        // do nothing
-    }
-
     #endregion IMomentumModifiable
 
     #region IDamageable
