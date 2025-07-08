@@ -71,7 +71,7 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
     public void TakeDamage(float amount) {
         health -= amount;
         healthBar.value = health;
-        Debug.Log($"Damage Amount: {amount}, Current Health: {health}");
+        //Debug.Log($"Damage Amount: {amount}, Current Health: {health}");
     }
 
     public void Kill() {

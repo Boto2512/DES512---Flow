@@ -125,7 +125,7 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
     }
 
     public void TakeDamage(float value) {
-        Debug.Log($"Taken {value} damage");
+        //Debug.Log($"Taken {value} damage");
         health -= value;
         healthBar.value = health;
 
@@ -135,10 +135,10 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
     }
 
     public void Kill() {
-        Debug.Log("Enemy Oneshotted - due to speed");
+        //Debug.Log("Enemy Oneshotted - due to speed");
         healthBar.value = 0;
+        Instantiate(healthDrop, transform.position, transform.rotation);
         Destroy(this.gameObject);
-        Instantiate(healthDrop);
     }
 
     public void Heal(float value) {
@@ -323,51 +323,51 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
         agent.enabled = true;
         rb.isKinematic = true;
 
-        Debug.Log("Idle -> Pursue");
+        //Debug.Log("Idle -> Pursue");
     }
 
     private void IdleToAttackCallback() {
         agent.enabled = true;
         rb.isKinematic = true;
 
-        Debug.Log("Idle -> Attack");
+        //Debug.Log("Idle -> Attack");
     }
 
     private void AttackToIdleCallback() {
-        Debug.Log("Attack -> Idle");
+        //Debug.Log("Attack -> Idle");
     }
 
     private void PursueToIdleCallback() {
         ResetAgentPath();
-        Debug.Log("Pursue -> Idle");
+        //Debug.Log("Pursue -> Idle");
     }
 
     private void PursueToAttackCallback() {
         ResetAgentPath();
-        Debug.Log("Pursue -> Attack");
+       //Debug.Log("Pursue -> Attack");
     }
 
     private void PursueToRepositionCallback() {
         ResetAgentPath();
-        Debug.Log("Pursue -> Reposition");
+        //Debug.Log("Pursue -> Reposition");
     }
 
     private void AttackToPursueCallback() {
-        Debug.Log("Attack -> Pursue");
+        //Debug.Log("Attack -> Pursue");
     }
 
     private void AttackToRepositionCallback() {
-        Debug.Log("Attack -> Reposition");
+        //Debug.Log("Attack -> Reposition");
     }
 
     private void RepositionToAttackCallback() {
         ResetAgentPath();
-        Debug.Log("Reposition -> Attack");
+        //Debug.Log("Reposition -> Attack");
     }
 
     private void RepositionToPursueCallback() {
         ResetAgentPath();
-        Debug.Log("Reposition -> Pursue");
+        //Debug.Log("Reposition -> Pursue");
     }
 
     #endregion State Machine Callbacks

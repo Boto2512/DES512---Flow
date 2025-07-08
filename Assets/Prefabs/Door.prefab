@@ -248,7 +248,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 1e2f39c5a93064f44b8a09063641aec5, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -109.1491
+      value: -109.14
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1e2f39c5a93064f44b8a09063641aec5, type: 3}
       propertyPath: m_LocalPosition.y
@@ -286,9 +286,13 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 1e2f39c5a93064f44b8a09063641aec5, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 1e2f39c5a93064f44b8a09063641aec5, type: 3}
       propertyPath: m_Name
-      value: BDoor
+      value: Door
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -296,10 +300,33 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 1e2f39c5a93064f44b8a09063641aec5, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1407358180046719387}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 1e2f39c5a93064f44b8a09063641aec5, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 9204426316653916334}
   m_SourcePrefab: {fileID: 100100000, guid: 1e2f39c5a93064f44b8a09063641aec5, type: 3}
 --- !u!4 &2782608825518924362 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 1e2f39c5a93064f44b8a09063641aec5, type: 3}
   m_PrefabInstance: {fileID: 2384504848286565793}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &3302861837315111152 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 1e2f39c5a93064f44b8a09063641aec5, type: 3}
+  m_PrefabInstance: {fileID: 2384504848286565793}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &9204426316653916334
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3302861837315111152}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 785449966734d7a489cba158264832e3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemyCounterText: {fileID: 8788344460826880832}
+  currentSectionParent: {fileID: 0}
+  nextSectionParent: {fileID: 0}
