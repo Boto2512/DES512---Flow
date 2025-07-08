@@ -1,4 +1,5 @@
 using Unity.Cinemachine;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.VFX;
 
@@ -9,6 +10,8 @@ public class FirstPersonCameraController : MonoBehaviour {
     private IMomentumModifiable momentumHolder;
     private SpeedStageThreshold currentThreshold => thresholdHolder.CurrentThreshold;
     private float currentFOV;
+    private float previousTargetFOV;
+    private float fovProgress;
 
 
     #region Cinemachine Game Objects
@@ -34,7 +37,7 @@ public class FirstPersonCameraController : MonoBehaviour {
         UpdateSensitivity();
 
         currentFOV = currentThreshold.FieldOfView;
-        Debug.LogWarning($"currentFOV {currentFOV}");
+        previousTargetFOV = currentFOV;
     }
 
     // Update is called once per frame
@@ -71,11 +74,20 @@ public class FirstPersonCameraController : MonoBehaviour {
     #endregion Visual Effects
 
     private void FovChanges() {
-        float speed = momentumHolder.GetMomentum().magnitude;
 
         float targetFOV = currentThreshold.FieldOfView;
-        currentFOV = Mathf.MoveTowards(currentFOV, targetFOV, Config.fovChangeSpeed * Time.deltaTime);
-        Debug.Log($"targetFOV {targetFOV}\n currentFOV {currentFOV}");
+        if (targetFOV != previousTargetFOV) { fovProgress = 0; }
+
+        if (currentFOV != targetFOV) {
+
+            currentFOV = Mathf.Lerp(currentFOV, targetFOV, fovProgress);
+            fovProgress += Config.fovChangeSpeed * Time.deltaTime;
+        } 
+        else if ( fovProgress == 1)
+        { 
+            fovProgress = 0.0f;
+        }
         cinemachineCamera.Lens.FieldOfView = currentFOV;
+        previousTargetFOV = targetFOV;
     }
 }

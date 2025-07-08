@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.VFX;
 
-public class ExplosiveBarrel : MonoBehaviour, IDamageable
+public class ExplosiveBarrel : MonoBehaviour, IDamageable, IMomentumModifiable
 {
     [SerializeField] private float damage;
     [SerializeField] private float force;
@@ -59,6 +59,20 @@ public class ExplosiveBarrel : MonoBehaviour, IDamageable
 
     public void Heal(float value) {
         throw new System.NotImplementedException();
+    }
+
+    public Vector3 GetPosition()
+    {
+        return transform.position;
+    }
+
+    public Vector3 GetMomentum()
+    {
+        return Vector3.zero;
+    }
+
+    public void SetMomentum(Vector3 value)
+    {
     }
 
     #endregion ========================= IDamageable Interface =========================

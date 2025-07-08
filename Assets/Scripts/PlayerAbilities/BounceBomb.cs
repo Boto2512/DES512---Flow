@@ -73,6 +73,12 @@ public class BounceBomb : MonoBehaviour {
         var allColliders = new List<(IMomentumModifiable, bool)>();
 
         foreach (var collider in Physics.OverlapSphere(blastOrigin, Config.WeakBlastRadius)) {
+            if (collider.gameObject.CompareTag("ExplosiveBarrel")) {
+                Debug.Log("ExplosiveBarrel!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                collider.transform.GetComponent<IDamageable>().TakeDamage(1);
+            }
+            else { Debug.Log("NO Barrel"); }
+            
             Rigidbody rb = collider.attachedRigidbody;
             if (rb == null) {
                 continue;
@@ -94,9 +100,7 @@ public class BounceBomb : MonoBehaviour {
                 continue;
             }
 
-            if (collider.gameObject.CompareTag("ExplosiveBarrel")) {
-                collider.transform.GetComponent<IDamageable>().TakeDamage(1);
-            }
+            
         }
 
         return allColliders.ToList();
