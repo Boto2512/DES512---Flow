@@ -131,6 +131,7 @@ public class BounceBomb : MonoBehaviour {
         //Vector3 newMomentum = new(directionFromBlast.x * newHorizontalSpeed, newVerticalSpeed, directionFromBlast.z * newHorizontalSpeed);
         Debug.Log($"Old: {entity.GetMomentum()}; New: {newMomentum}; InStrongBlast: {inStrongBlast}; Old Horizontal Momentum: {momentum.Horizontal().magnitude}; New Horizontal Momentum: {newHorizontalSpeed}");
         entity.SetMomentum(newMomentum);
+        entity.BeenBombBounced();
     }
 
     private void ExplosionVFX() {

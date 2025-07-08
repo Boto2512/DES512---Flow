@@ -13,5 +13,6 @@ public class BBThrowConfig : ScriptableObject {
     [Header("Charges")]
     [Min(0)] public int MaxCharges = 3;
     [Min(0f)] public float ChargeRegenTime = 2f;
+    [Tooltip("Caps the charge to the current level during addition. E.g., when true: 1.8 charges + 0.5 = 2 charges, when false: 1.8 charges + 0.5 = 2.3 charges")]
     public bool CapChargeIncreaseByLevel = false;
 }

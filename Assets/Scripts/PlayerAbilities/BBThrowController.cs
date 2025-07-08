@@ -93,7 +93,7 @@ public class BBThrowController : MonoBehaviour {
         chargeCounter += Time.deltaTime / Config.ChargeRegenTime;
     }
 
-    public void AddChargeRegenAmount(float amount, ModifierType modType) {
+    public void AddChargeRegenAmount(float amount) {
         float currentChargeCap = Mathf.Floor(Config.CapChargeIncreaseByLevel ? chargeCounter + 1 : (float)Config.MaxCharges);
 
         chargeCounter = Mathf.Min(chargeCounter + amount, currentChargeCap);
@@ -101,6 +101,10 @@ public class BBThrowController : MonoBehaviour {
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int ChargeCount() => (int)chargeCounter;
+
+    public void BombBounceEnded() {
+        AddChargeRegenAmount(1f);
+    }
 
     #endregion Charges
 }

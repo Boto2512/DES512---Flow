@@ -4446,6 +4446,21 @@ MonoBehaviour:
   groundCheckTransform: {fileID: 888584771713122257}
   momentumPosition: {fileID: 7380681604456692523}
   movementDirectionTransform: {fileID: 6706220494377980649}
+  BombBounceEndedEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 8653225047312777506}
+        m_TargetAssemblyTypeName: BBThrowController, Assembly-CSharp
+        m_MethodName: BombBounceEnded
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   debugSpeedText: {fileID: 8764786093597603237}
 --- !u!114 &3094980553843940466
 MonoBehaviour:
