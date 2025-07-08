@@ -25,14 +25,14 @@ public static class Globals {
 
     #endregion
 
-    private static MonoBehaviour player;
+    private static MonoBehaviour _player;
     /// <summary>
     /// Invokes EVENT_PLAYER_MODIFIED when PLAYER is set
     /// </summary>
     public static MonoBehaviour PLAYER {
-        get { return player; }
+        get { return _player; }
         set {
-            player = value;
+            _player = value;
             PLAYER_TARGET = value as ITargetable;
             EVENT_PLAYER_MODIFIED.Invoke();
         }
