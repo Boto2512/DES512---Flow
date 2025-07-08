@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(Rigidbody))]
@@ -41,7 +42,22 @@ public class PlayerMovementController : MonoBehaviour, IMomentumModifiable {
     //}
 
     #endregion Momentum Storage
-    private bool slideEnded = true;
+    private bool _slideEnded;
+    private bool slideEnded {
+        get => _slideEnded;
+        set {
+            if (_slideEnded != value) {                         // different value 
+                _slideEnded = value;
+                if (value && hasBeenBounceBombed && !inAir) {   // it become true
+                    BombBounceEndedEvent?.Invoke();
+                }
+            }
+            else {
+                _slideEnded = value;
+            }
+        }
+    }
+    private bool hasBeenBounceBombed = false;
 
     #region Movement Variables
 
@@ -102,6 +118,12 @@ public class PlayerMovementController : MonoBehaviour, IMomentumModifiable {
     [SerializeField] private Transform movementDirectionTransform;
 
     #endregion Misc Child Objects
+
+    #region Events
+
+    public UnityEvent BombBounceEndedEvent = new();
+
+    #endregion Events
 
     #region Debug Objects
 
@@ -437,6 +459,11 @@ public class PlayerMovementController : MonoBehaviour, IMomentumModifiable {
                 timeSpentGrounded = 0f;
 
                 enableGroundedStateCheck = false;
+
+                if (slideEnded) {
+                    hasBeenBounceBombed = false;
+                }
+
                 this.InvokeCancel("End Slide");
                 slideEnded = true;
                 break;
@@ -540,6 +567,10 @@ public class PlayerMovementController : MonoBehaviour, IMomentumModifiable {
 
     public void SetMomentum(Vector3 newMomentum) {
         rb.linearVelocity = newMomentum;
+    }
+
+    public void BeenBombBounced() {
+        hasBeenBounceBombed = true;
     }
 
     #endregion IMomentumModifiable
