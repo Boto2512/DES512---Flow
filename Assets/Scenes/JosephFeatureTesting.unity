@@ -1543,21 +1543,9 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 423522601284883221, guid: 49f05c96e5fb8394bb3a3c152445b449, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 423522601284883221, guid: 49f05c96e5fb8394bb3a3c152445b449, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 3447609577201543841, guid: 49f05c96e5fb8394bb3a3c152445b449, type: 3}
       propertyPath: m_Name
       value: Enemy
-      objectReference: {fileID: 0}
-    - target: {fileID: 6760355342224231089, guid: 49f05c96e5fb8394bb3a3c152445b449, type: 3}
-      propertyPath: health
-      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 7563705215823000105, guid: 49f05c96e5fb8394bb3a3c152445b449, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1597,6 +1585,14 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7563705215823000105, guid: 49f05c96e5fb8394bb3a3c152445b449, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8318610824884318522, guid: 49f05c96e5fb8394bb3a3c152445b449, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8318610824884318522, guid: 49f05c96e5fb8394bb3a3c152445b449, type: 3}
+      propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

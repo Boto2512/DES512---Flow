@@ -344,7 +344,7 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
 
     private void PursueToAttackCallback() {
         ResetAgentPath();
-       //Debug.Log("Pursue -> Attack");
+        //Debug.Log("Pursue -> Attack");
     }
 
     private void PursueToRepositionCallback() {
@@ -393,8 +393,11 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
         groundCheckEnabled = false;
 
         rb.AddForce(value, ForceMode.VelocityChange);
-        bombBounced = true;
         //this.InvokeOverwrite("bombBounced", () => bombBounced = true, 0.1f);
+    }
+
+    public void BeenBombBounced() {
+        bombBounced = true;
     }
 
     #endregion Momentum Modifiable Interface

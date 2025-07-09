@@ -3,7 +3,6 @@ using DG.Tweening;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.Splines;
 using UnityEngine.UI;
 using UnityEngine.VFX
     ;
@@ -256,7 +255,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
         if (SlopeCheck() && !exitSlope) {
             playerRigidBody.AddForce(GetSlopeMovementDiretion() * movementSpeed * 10f, ForceMode.Force);
             playerRigidBody.AddForce(inverseSlope * config.downwardsForce, ForceMode.Force);
-            
+
         }
         else if (isGrounded) {
             playerRigidBody.AddForce(moveDirection.normalized * movementSpeed * 10, ForceMode.Force);
@@ -283,7 +282,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
             accelerationProgress += Time.deltaTime * (config.defaultAccelertionSpeed * 0.1f);
             accelerationProgress = Mathf.Clamp(accelerationProgress, 0, 1);
         }
-        else if (playerRigidBody.linearVelocity.magnitude < 0.2f){
+        else if (playerRigidBody.linearVelocity.magnitude < 0.2f) {
             accelerationProgress = minAccelerationProgress;
             movementSpeed = 0;
         }
@@ -374,7 +373,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
         //}
         //else if 
         if (horizontalInput != 0 || verticalInput != 0 && currentMaxMovementSpeed != config.defaultMaxMovementSpeed) {
-                ReduceMaxSpeed();
+            ReduceMaxSpeed();
         }
         else {
             currentMaxMovementSpeed = config.defaultMaxMovementSpeed;
@@ -596,7 +595,7 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
     }
 
     private void ChangeFOV() {
-        
+
     }
     #endregion ========================= Speed Stages =========================
 
@@ -642,15 +641,14 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
                         TutorialEvents.OnEnemyKilled?.Invoke();
                     }
                 }
-                if (knockback != null)
-                {
+                if (knockback != null) {
                     knockback.SetMomentum(Knockback(knockback.GetPosition()));
                 }
-                
+
             }
         }
     }
-    private Vector3 Knockback(Vector3 enemy){
+    private Vector3 Knockback(Vector3 enemy) {
         Vector3 direction = (enemy - groundCheckPosition.position).normalized * config.attackKnockback;
         Debug.DrawRay(groundCheckPosition.position, direction, Color.yellow, 10f);
         return direction;
@@ -707,12 +705,16 @@ public class PlayerController : MonoBehaviour, IMomentumModifiable, IDamageable,
             addedSpeed = config.boostedMaxMovementSpeed;
         }
         if (CheckIfSpeedIncreases(addedSpeed)) {
-            currentMaxMovementSpeed =  addedSpeed;
+            currentMaxMovementSpeed = addedSpeed;
         }//config.defaultMaxMovementSpeed +
 
         hasBombBounced = true;
         groundCheckEnabled = false;
         this.InvokeExclusive("EnableGroundCheck", EnableGroundCheck, 0.1f);
+    }
+
+    public void BeenBombBounced() {
+        // do nothing
     }
     #endregion  ========================= Momentum Interface  =========================
 
