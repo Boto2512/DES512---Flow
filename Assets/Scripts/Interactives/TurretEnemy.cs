@@ -1,12 +1,14 @@
 using System.Collections;
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.VFX;
 
 public class TurretEnemy : MonoBehaviour, IDamageable
 {
     [Header("Health")]
     [SerializeField] private float health;
+    [SerializeField] private Slider healthBar;
 
     [Header("Attack")]    
     [SerializeField] private float attackDamage;
@@ -26,6 +28,8 @@ public class TurretEnemy : MonoBehaviour, IDamageable
     private Transform player;
     private void Start() {
         player = Globals.PLAYER.transform;
+        healthBar.maxValue = health;
+        healthBar.value = health;   
 
         if (attackVFX.HasFloat("Duration"))
         {
@@ -51,9 +55,14 @@ public class TurretEnemy : MonoBehaviour, IDamageable
         }
         else  {
             Physics.Raycast(start, direction, out RaycastHit hit, attackRange, canHitMask);
-            if (hit.transform.CompareTag("Player")) {
-                orb.LookAt(player);
-                return true;
+            
+            if(hit.transform != null) {
+                
+                if (hit.transform.CompareTag("Player")) { 
+                    orb.LookAt(player);
+                    return true;
+                }
+                else { return false; }
             }
             else { return false; }
         }
@@ -110,6 +119,7 @@ public class TurretEnemy : MonoBehaviour, IDamageable
     public void TakeDamage(float value)
     {
         health -= value;
+        healthBar.value = health;
         if (health < 0) { 
             Kill();
         }
@@ -117,8 +127,8 @@ public class TurretEnemy : MonoBehaviour, IDamageable
 
     public void Kill()
     {
-        Instantiate(healthDrop);
-        Destroy(this);
+        Instantiate(healthDrop, transform.position, transform.rotation);
+        Destroy(gameObject);
     }
 
     #endregion ========================= IDamageable Interface =========================

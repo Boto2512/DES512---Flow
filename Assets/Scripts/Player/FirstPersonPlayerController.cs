@@ -77,7 +77,7 @@ public class FirstPersonPlayerController : MonoBehaviour, ITargetable, IHasSpeed
             }
         }
 
-        CurrentThreshold = Config.Thresholds.First();
+        CurrentThreshold = Config.Thresholds.Last();
     }
 
     #endregion Thresholds
