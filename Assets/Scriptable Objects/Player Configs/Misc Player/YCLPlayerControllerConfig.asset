@@ -16,12 +16,24 @@ MonoBehaviour:
   - speedThreshold: 0
     damageMultiplier: 10
     fieldOfView: 60
+    hasSpeedlines: 0
+    speedRangeOfLines: {x: 0, y: 0}
+    speedlineSpawnRate: 0
   - speedThreshold: 5
     damageMultiplier: 10
     fieldOfView: 60
+    hasSpeedlines: 1
+    speedRangeOfLines: {x: 1, y: 4}
+    speedlineSpawnRate: 12
   - speedThreshold: 15
     damageMultiplier: 20
     fieldOfView: 60
+    hasSpeedlines: 1
+    speedRangeOfLines: {x: 2, y: 8}
+    speedlineSpawnRate: 30
   - speedThreshold: 24
     damageMultiplier: 30
     fieldOfView: 60
+    hasSpeedlines: 0
+    speedRangeOfLines: {x: 0, y: 0}
+    speedlineSpawnRate: 0
