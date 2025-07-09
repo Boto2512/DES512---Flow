@@ -106,7 +106,8 @@ public class PlayerMovementController : MonoBehaviour, IMomentumModifiable {
 
     private Vector2 movementInput;
     private bool jumpActivated;
-
+    private bool prevJumpActivated;
+    private bool jumpOnlyJustActivated => !prevJumpActivated && jumpActivated;
     private bool hasInput => movementInput.x != 0 || movementInput.y != 0;
 
     #endregion Input Variables
@@ -134,13 +135,11 @@ public class PlayerMovementController : MonoBehaviour, IMomentumModifiable {
 
 
     private Rigidbody rb;
-    private IHasSpeedThresholds thresholdHolder;
 
     #region MonoBehaviour Functions
 
     private void Awake() {
         rb = this.GetComponent<Rigidbody>();
-        thresholdHolder = this.GetComponent<IHasSpeedThresholds>();
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -156,6 +155,7 @@ public class PlayerMovementController : MonoBehaviour, IMomentumModifiable {
         GroundedStateUpdates();
 
         prevGroundedState = groundedState;
+        prevJumpActivated = jumpActivated;
 
         debugSpeedText.text = $"Horizontal: {rb.linearVelocity.Horizontal().magnitude:0.####}\n" +
             $"Up: {Vector3.Dot(rb.linearVelocity, Vector3.up):0.####}\n" +
@@ -521,6 +521,12 @@ public class PlayerMovementController : MonoBehaviour, IMomentumModifiable {
 
     #endregion Ground & Slopes
 
+    #region Wall Kick
+
+    //private void 
+
+    #endregion Wall Kick
+
     #region Input
 
     // in case direct input is required
@@ -551,6 +557,10 @@ public class PlayerMovementController : MonoBehaviour, IMomentumModifiable {
 
     public void JumpInput(bool activated) {
         jumpActivated = activated;
+
+        if (jumpOnlyJustActivated) {
+
+        }
     }
 
     #endregion Input
