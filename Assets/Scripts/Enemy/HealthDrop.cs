@@ -36,7 +36,7 @@ public class HealthDrop : MonoBehaviour
             other.GetComponentInParent<IDamageable>().Heal(healAmount);
             floatTween.Kill();
             rotateTween.Kill();
-            Destroy(parent.gameObject);
+            Destroy(parent.gameObject, 0.5f);
         }
     }
 }
