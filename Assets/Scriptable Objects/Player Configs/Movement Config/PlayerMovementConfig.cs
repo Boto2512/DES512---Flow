@@ -46,8 +46,8 @@ public class PlayerMovementConfig : ScriptableObject {
     [Range(0f, 20f)] public float WallKickDistance = 2f;
     [Tooltip("Determines whether falling wall kicks continue downwards or force the player to change vertical direction and go upwards")]
     public bool AlwaysWallKickUpwards = true;
-    public bool UseWallKickFixedVerticalGain = true;
-    [Min(0f)] public float WallKickFixedVerticalGain = 8f;
+    public bool UseWallKickFixedVerticalSpeed = true;
+    [Min(0f)] public float WallKickFixedVerticalSpeed = 8f;
     public float MinWallKickAngle = 0f;
     public float MaxWallKickAngle = 30f;
 

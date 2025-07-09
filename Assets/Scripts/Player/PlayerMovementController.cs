@@ -542,7 +542,7 @@ public class PlayerMovementController : MonoBehaviour, IMomentumModifiable {
         Vector3 newHorizontalDirection = Vector3.Reflect(rb.linearVelocity.Horizontal(), hitInfo.normal).normalized;
         float horizontalSpeed = rb.linearVelocity.Horizontal().magnitude;
 
-        float verticalSpeed = Config.UseWallKickFixedVerticalGain ? rb.linearVelocity.y : Config.WallKickFixedVerticalGain;
+        float verticalSpeed = Config.UseWallKickFixedVerticalSpeed ? rb.linearVelocity.y : Config.WallKickFixedVerticalSpeed;
         verticalSpeed = Config.AlwaysWallKickUpwards ? Mathf.Abs(verticalSpeed) : verticalSpeed;
 
         Vector3 newMomentum = new(newHorizontalDirection.x * horizontalSpeed, verticalSpeed, newHorizontalDirection.z * horizontalSpeed);
