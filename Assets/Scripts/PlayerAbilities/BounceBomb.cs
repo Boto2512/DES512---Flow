@@ -73,6 +73,11 @@ public class BounceBomb : MonoBehaviour {
         var allColliders = new List<(IMomentumModifiable, bool)>();
 
         foreach (var collider in Physics.OverlapSphere(blastOrigin, Config.WeakBlastRadius)) {
+            if (collider.gameObject.CompareTag("ExplosiveBarrel")) {
+                collider.transform.GetComponent<IDamageable>().TakeDamage(1);
+            }
+            else { }
+            
             Rigidbody rb = collider.attachedRigidbody;
             if (rb == null) {
                 continue;
@@ -94,9 +99,7 @@ public class BounceBomb : MonoBehaviour {
                 continue;
             }
 
-            if (collider.gameObject.CompareTag("ExplosiveBarrel")) {
-                collider.transform.GetComponent<IDamageable>().TakeDamage(1);
-            }
+            
         }
 
         return allColliders.ToList();
@@ -129,7 +132,7 @@ public class BounceBomb : MonoBehaviour {
         }
 
         //Vector3 newMomentum = new(directionFromBlast.x * newHorizontalSpeed, newVerticalSpeed, directionFromBlast.z * newHorizontalSpeed);
-        Debug.Log($"Old: {entity.GetMomentum()}; New: {newMomentum}; InStrongBlast: {inStrongBlast}; Old Horizontal Momentum: {momentum.Horizontal().magnitude}; New Horizontal Momentum: {newHorizontalSpeed}");
+        //Debug.Log($"Old: {entity.GetMomentum()}; New: {newMomentum}; InStrongBlast: {inStrongBlast}; Old Horizontal Momentum: {momentum.Horizontal().magnitude}; New Horizontal Momentum: {newHorizontalSpeed}");
         entity.SetMomentum(newMomentum);
     }
 
