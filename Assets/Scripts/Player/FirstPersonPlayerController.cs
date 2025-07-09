@@ -47,11 +47,11 @@ public class FirstPersonPlayerController : MonoBehaviour, ITargetable, IHasSpeed
         throwController = this.GetComponent<BBThrowController>();
         animationController = this.GetComponent<FirstPersonPhysicalAnimationController>();
         CurrentThreshold = Config.Thresholds.First();
+        Globals.PLAYER = this;
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start() {
-        Globals.PLAYER = this;
 
     }
 
@@ -77,7 +77,7 @@ public class FirstPersonPlayerController : MonoBehaviour, ITargetable, IHasSpeed
             }
         }
 
-        CurrentThreshold = Config.Thresholds.First();
+        CurrentThreshold = Config.Thresholds.Last();
     }
 
     #endregion Thresholds
