@@ -14,10 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Thresholds:
   - speedThreshold: 0
-    damageMultiplier: 1
-  - speedThreshold: 8.5
-    damageMultiplier: 3
+    damageMultiplier: 10
+    fieldOfView: 60
+  - speedThreshold: 5
+    damageMultiplier: 10
+    fieldOfView: 60
   - speedThreshold: 15
     damageMultiplier: 20
+    fieldOfView: 60
   - speedThreshold: 24
     damageMultiplier: 30
+    fieldOfView: 60
