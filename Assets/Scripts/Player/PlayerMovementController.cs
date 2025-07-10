@@ -117,6 +117,7 @@ public class PlayerMovementController : MonoBehaviour, IMomentumModifiable {
     [Header("Misc Child Objects")]
     [SerializeField] private Transform momentumPosition;
     [SerializeField] private Transform movementDirectionTransform;
+    [SerializeField] private Transform wallKickPosition;
 
     #endregion Misc Child Objects
 
@@ -523,7 +524,30 @@ public class PlayerMovementController : MonoBehaviour, IMomentumModifiable {
 
     #region Wall Kick
 
-    //private void 
+    private void WallKickCheck() {
+        if (!inAir || DefaultGroundCheck())
+            return;
+
+        // TODO: add momentum storage tech
+        if (Physics.Raycast(wallKickPosition.position, rb.linearVelocity.Horizontal().normalized, out var hitInfo, Config.WallKickDistance, Globals.OBSTACLE_MASK, QueryTriggerInteraction.Collide)) {
+            // subtracting from 90 to go from 'up' to horizontal
+            float angleFromHorizontal = 90f - Vector3.Angle(hitInfo.normal, Vector3.up);
+            if (angleFromHorizontal >= Config.MinWallKickAngle && angleFromHorizontal <= Config.MaxWallKickAngle) {
+                WallKick(in hitInfo);
+            }
+        }
+    }
+
+    private void WallKick(in RaycastHit hitInfo) {
+        Vector3 newHorizontalDirection = Vector3.Reflect(rb.linearVelocity.Horizontal(), hitInfo.normal).normalized;
+        float horizontalSpeed = rb.linearVelocity.Horizontal().magnitude;
+
+        float verticalSpeed = Config.UseWallKickFixedVerticalSpeed ? rb.linearVelocity.y : Config.WallKickFixedVerticalSpeed;
+        verticalSpeed = Config.AlwaysWallKickUpwards ? Mathf.Abs(verticalSpeed) : verticalSpeed;
+
+        Vector3 newMomentum = new(newHorizontalDirection.x * horizontalSpeed, verticalSpeed, newHorizontalDirection.z * horizontalSpeed);
+        this.SetMomentum(newMomentum);
+    }
 
     #endregion Wall Kick
 
@@ -559,7 +583,7 @@ public class PlayerMovementController : MonoBehaviour, IMomentumModifiable {
         jumpActivated = activated;
 
         if (jumpOnlyJustActivated) {
-
+            WallKickCheck();
         }
     }
 
