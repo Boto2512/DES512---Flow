@@ -11,6 +11,8 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(FirstPersonPhysicalAnimationController))]
 public class FirstPersonPlayerController : MonoBehaviour, ITargetable, IHasSpeedThresholds {
 
+    private static FirstPersonPlayerController instance;
+
     [SerializeField] private PlayerControllerConfig Config;
     public SpeedStageThreshold CurrentThreshold { get; private set; }
 
@@ -40,6 +42,15 @@ public class FirstPersonPlayerController : MonoBehaviour, ITargetable, IHasSpeed
     public Transform Target => targetPosition;
 
     private void Awake() {
+        if (instance == null) {
+            instance = this;
+            DontDestroyOnLoad(this.gameObject);
+        }
+        else if (instance != this) {
+            Debug.LogWarning("Persistent player already exists, destroying this one", this);
+            Destroy(this.gameObject);
+        }
+
         rb = this.GetComponent<Rigidbody>();
         cameraController = this.GetComponent<FirstPersonCameraController>();
         movementController = this.GetComponent<PlayerMovementController>();

@@ -4,6 +4,8 @@ using UnityEngine.Events;
 
 public static class Globals {
 
+    public static LevelSceneManager LevelSceneManager => LevelSceneManager.Instance;
+
     #region Layers
 
     public static readonly LayerMask PLAYER_MASK = Utility.LayerToLayerMask(LayerMask.NameToLayer("Player"));

@@ -1,25 +1,30 @@
-using System.Threading.Tasks;
+using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class LevelManager : MonoBehaviour {
-    public static LevelManager Instance { get; private set; }
+    [Header("Spawn")]
+    [SerializeField] private bool spawnPlayerWithCustomRotation = false;
+    [SerializeField] private Transform playerSpawn;
+    [SerializeField] private Vector3 playerSpawnVelocity;
 
-    [SerializeField] private string tutorialSceneName = "Tutorial";
-    [SerializeField] private string transitionSceneName = "Transition";
+    // player stuff
+    private GameObject player;
 
-    [SerializeField] private float minimumTransitionTime = 5f;
-    private bool transitionLock = false;
-
-    private Scene transitionScene;
+    [Header("Level Comlpetion")]
+    [SerializeField] private List<string> nextPossibleLevels;
 
     private void Awake() {
-        DontDestroyOnLoad(this.gameObject);
+
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start() {
-        transitionScene = LoadTransition();
+        player = GameObject.FindWithTag("Player");
+        player.transform.position = playerSpawn.position;
+        if (spawnPlayerWithCustomRotation) {
+            Camera.main.gameObject.transform.rotation = playerSpawn.rotation;
+        }
+        player.GetComponent<IMomentumModifiable>().SetMomentum(playerSpawnVelocity);
     }
 
     // Update is called once per frame
@@ -27,45 +32,25 @@ public class LevelManager : MonoBehaviour {
 
     }
 
-    public async void ChangeLevel(string newLevelName) {
-        Scene oldScene = SceneManager.GetActiveScene();
+    private void OnDrawGizmos() {
+        // spawn position and starting velocity
+        Gizmos.color = Color.red;
+        Gizmos.DrawLine(playerSpawn.position, playerSpawn.position + playerSpawnVelocity);
+        Gizmos.DrawSphere(playerSpawn.position, 0.5f);
+    }
 
-        await EnterTransition();
-        SceneManager.SetActiveScene(transitionScene);
-        _ = SceneManager.UnloadSceneAsync(oldScene);
-
-        var loadOperation = StartLoadingScene(newLevelName);
-        Task waitForMinimumTime = Task.Delay((int)(minimumTransitionTime * 1000));
-
-        // makes sure that at least 'waitForMinimumTime' has passed
-        await Task.WhenAll(waitForMinimumTime, WaitForSceneLoad(loadOperation));
-
+    private void EnterLevel() {
 
     }
 
-    private async Task WaitForSceneLoad(AsyncOperation asyncOp) {
-        while (!asyncOp.isDone && asyncOp.progress < 0.9f) {
-            await Task.Yield();
-        }
-    }
-
-    public void LoadTutorial() {
+    private void ExitLevel() {
+        string newLevel = SelectRandomLevel();
+        Globals.LevelSceneManager.ChangeLevel(newLevel);
 
     }
 
-    private Scene LoadTransition() {
-        return SceneManager.LoadScene(transitionSceneName, new LoadSceneParameters(LoadSceneMode.Additive, LocalPhysicsMode.Physics3D));
-    }
-
-    private AsyncOperation StartLoadingScene(string sceneName) {
-        return SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
-    }
-
-    private async Task EnterTransition() {
-
-    }
-
-    private void ExitTransition() {
-
+    private string SelectRandomLevel() {
+        int index = Random.Range(0, nextPossibleLevels.Count);
+        return nextPossibleLevels[index];
     }
 }
