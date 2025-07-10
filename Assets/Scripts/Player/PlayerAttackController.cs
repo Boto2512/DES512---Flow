@@ -81,13 +81,16 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
         return health;
     }
 
-    public void TakeDamage(float amount) {
+    public void TakeDamage(float amount)
+    {
         health -= amount;
         healthBar.value = health;
+        TutorialEvents.OnEnemyKilled?.Invoke();
         //Debug.Log($"Damage Amount: {amount}, Current Health: {health}");
     }
 
-    public void Kill() {
+    public void Kill()
+    {
         throw new System.NotImplementedException();
     }
 

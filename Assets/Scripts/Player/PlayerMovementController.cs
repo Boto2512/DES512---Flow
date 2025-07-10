@@ -403,7 +403,7 @@ public class PlayerMovementController : MonoBehaviour, IMomentumModifiable {
     #region Ground & Slopes
 
     private bool DefaultGroundCheck(out RaycastHit hitInfo) {
-        return Physics.Raycast(groundCheckPosition, Vector3.down, out hitInfo, groundCheckRange, groundMask, QueryTriggerInteraction.Collide);
+        return Physics.Raycast(groundCheckPosition, Vector3.down, out hitInfo, groundCheckRange, groundMask, QueryTriggerInteraction.Ignore);
     }
 
     private bool DefaultGroundCheck() {
@@ -528,7 +528,7 @@ public class PlayerMovementController : MonoBehaviour, IMomentumModifiable {
             return;
 
         // TODO: add momentum storage tech
-        if (Physics.Raycast(wallKickPosition.position, rb.linearVelocity.Horizontal().normalized, out var hitInfo, Config.WallKickDistance, Globals.OBSTACLE_MASK, QueryTriggerInteraction.Collide)) {
+        if (Physics.Raycast(wallKickPosition.position, rb.linearVelocity.Horizontal().normalized, out var hitInfo, Config.WallKickDistance, Globals.OBSTACLE_MASK, QueryTriggerInteraction.Ignore)) {
             // subtracting from 90 to go from 'up' to horizontal
             float angleFromHorizontal = 90f - Vector3.Angle(hitInfo.normal, Vector3.up);
             if (angleFromHorizontal >= Config.MinWallKickAngle && angleFromHorizontal <= Config.MaxWallKickAngle) {
