@@ -593,6 +593,10 @@ public class PlayerMovementController : MonoBehaviour, IMomentumModifiable {
     public void BeenBombBounced() {
         hasBeenBounceBombed = true;
     }
+    public void AddMomentum(Vector3 value)
+    {
+        SetMomentum(value);
+    }
 
     #endregion IMomentumModifiable
 }
