@@ -134,11 +134,13 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
         }
     }
 
-    public void Kill() {
+    public void Kill()
+    {
         //Debug.Log("Enemy Oneshotted - due to speed");
         healthBar.value = 0;
         Instantiate(healthDrop, transform.position, transform.rotation);
         Destroy(this.gameObject);
+        TutorialEvents.enemyKilledVeryFast?.Invoke();
     }
 
     public void Heal(float value) {
