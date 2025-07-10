@@ -197,7 +197,6 @@ public class PlayerMovementController : MonoBehaviour, IMomentumModifiable {
             TutorialEvents.OnPlayerMoved?.Invoke();
         }
 
-        // need to normalise movement since MoveInput() accumulates inputs
         movementInput = movementInput.normalized;
 
         VerticalMovement();
@@ -564,19 +563,7 @@ public class PlayerMovementController : MonoBehaviour, IMomentumModifiable {
     }
 
     public void MoveInput(Vector2 input) {
-        if (input.x == 0) {
-            movementInput.x = 0;
-        }
-        else {
-            movementInput.x += input.x;
-        }
-
-        if (input.y == 0) {
-            movementInput.y = 0;
-        }
-        else {
-            movementInput.y += input.y;
-        }
+        movementInput = input;
     }
 
     public void JumpInput(bool activated) {
