@@ -12,19 +12,23 @@ public class LevelLaunchPad : MonoBehaviour
 
     [SerializeField] Transform[] sections;
     private bool unlocked;
+    [SerializeField] bool bypassEnemies;
     private void Start()
     {
 
     }
 
     private void Update() {
-        foreach (Transform section in sections) {
-            if(section.childCount != 0) {
-                unlocked = false;
-                break;
-            } else
-            {
-                unlocked = true;
+        if(bypassEnemies) { unlocked = true; }
+        else { 
+            foreach (Transform section in sections) {
+                if(section.childCount != 0) {
+                    unlocked = false;
+                    break;
+                } 
+                else {
+                    unlocked = true;
+                }
             }
         }
     }
