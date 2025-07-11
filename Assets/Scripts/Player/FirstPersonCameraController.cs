@@ -46,7 +46,7 @@ public class FirstPersonCameraController : MonoBehaviour {
         SpeedlineChanges();
     }
 
-    private void UpdateSensitivity() {
+    public void UpdateSensitivity() {
         var pan = inputAxisController.Controllers[0].Input;
         var tilt = inputAxisController.Controllers[1].Input;
 
