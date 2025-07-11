@@ -68,8 +68,8 @@ public class FirstPersonCameraController : MonoBehaviour {
 #if DEBUG
         if (prevThreshold != null &&
                 currentThreshold != prevThreshold) {
-            Debug.Log($"Going from speed threshold {prevThreshold.SpeedThreshold} " +
-                $"to speed threshold {currentThreshold.SpeedThreshold}");
+            //Debug.Log($"Going from speed threshold {prevThreshold.SpeedThreshold} " +
+                //$"to speed threshold {currentThreshold.SpeedThreshold}");
         }
         prevThreshold = currentThreshold;
 #endif

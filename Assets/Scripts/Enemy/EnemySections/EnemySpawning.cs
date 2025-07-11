@@ -16,12 +16,12 @@ public class EnemySpawning : MonoBehaviour {
             if (child.GetComponent<TurretEnemy>())
             {
                 child.GetComponent<TurretEnemy>().enabled = true;
-                Debug.Log("activating turret");
+                //Debug.Log("activating turret");
             }
             else if (child.GetComponent<EnemyController>())
             {
                 child.GetComponent<EnemyController>().enabled = true;
-                Debug.Log("activating enemys");
+                //Debug.Log("activating enemys");
             }
         }
     }
@@ -34,11 +34,11 @@ public class EnemySpawning : MonoBehaviour {
                 }
                 else if (enemyData.characterType == CharacterType.Ranged) {
                     Instantiate(rangedObject, enemyData.spawnPoint, enemyData.spawnRotation, sectionParents[currentSection]);
-                    Debug.Log("Spawning a ranged enemy");
+                    //Debug.Log("Spawning a ranged enemy");
                 }
                 else if (enemyData.characterType == CharacterType.Static) {
                     Instantiate(turretObject, enemyData.spawnPoint, enemyData.spawnRotation, sectionParents[currentSection]);
-                    Debug.Log("Spawning a turret enemy");
+                    //Debug.Log("Spawning a turret enemy");
                 }
             }
             currentSection++;

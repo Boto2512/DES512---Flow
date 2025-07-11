@@ -1,7 +1,7 @@
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class BoostPad : MonoBehaviour
+public class BoostPadVertical : MonoBehaviour
 {
     [SerializeField] private float force;
 
@@ -13,12 +13,12 @@ public class BoostPad : MonoBehaviour
         cylinder.localScale = new Vector3(2, height, 2);
     }
 
-    private void OnTriggerStay(Collider other)
+    private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
         {
             IMomentumModifiable momentum = other.attachedRigidbody.GetComponent<IMomentumModifiable>();
-            momentum.SetMomentum(Vector3.up * force);
+            momentum.AddMomentum(transform.up * force);
         }
     }
 }
