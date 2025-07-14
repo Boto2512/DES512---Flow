@@ -1,11 +1,16 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.InputSystem;
+using UnityEngine.EventSystems;
 
 public class Pause : MonoBehaviour
 {
     [SerializeField] private GameObject pauseMenu;
     [SerializeField] private GameObject optionsMenu;
     public static bool isPaused;
+
+    [SerializeField] private GameObject firstSelectedPause;
+    [SerializeField] private GameObject firstSelectedSettings;
 
     private void Start()
     {
@@ -20,6 +25,20 @@ public class Pause : MonoBehaviour
         }
     }
 
+    public void OnPause(InputAction.CallbackContext pauseContext)
+    {
+        if (pauseContext.started)
+        {
+            PauseGame(!isPaused);
+            EventSystem.current.SetSelectedGameObject(firstSelectedPause);
+        }
+    }
+
+    public void ToSettings()
+    {
+        optionsMenu.SetActive(true);
+        EventSystem.current.SetSelectedGameObject(firstSelectedSettings);
+    }
     public void ToMainMenu() {
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
@@ -41,7 +60,7 @@ public class Pause : MonoBehaviour
     {
         if (pause) {
             isPaused = true;
-
+            
             Time.timeScale = 0;
 
             Cursor.visible = true;
@@ -50,8 +69,8 @@ public class Pause : MonoBehaviour
         }
         else {
             isPaused = false;
-                Cursor.lockState = CursorLockMode.Locked;
-                Cursor.visible = false;
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
 
             if (SceneManager.GetActiveScene().name == "MainMenu") {
                 Cursor.visible = true;

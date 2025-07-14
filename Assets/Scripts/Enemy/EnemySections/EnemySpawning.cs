@@ -2,7 +2,8 @@ using UnityEngine;
 
 public class EnemySpawning : MonoBehaviour {
     [SerializeField] private SectionDatabase sectionDatabase;
-    [SerializeField] private GameObject rangedObject;
+    [SerializeField] private GameObject defaultRangedEnemy;
+    [SerializeField] private GameObject homingRangedEnemy;
     [SerializeField] private GameObject turretObject;
     [SerializeField] private Transform[] sectionParents;
 
@@ -30,10 +31,11 @@ public class EnemySpawning : MonoBehaviour {
         foreach(SectionData section in sectionDatabase.sections) {
             foreach (SpawnData enemyData in section.enemySpawnData) {
                 if (enemyData.characterType == CharacterType.Default) {
-                    Debug.Log("Attempted to spawn an default enemy. Dont do that");
+                    Instantiate(defaultRangedEnemy, enemyData.spawnPoint, enemyData.spawnRotation, sectionParents[currentSection]);
                 }
-                else if (enemyData.characterType == CharacterType.Ranged) {
-                    Instantiate(rangedObject, enemyData.spawnPoint, enemyData.spawnRotation, sectionParents[currentSection]);
+                else if (enemyData.characterType == CharacterType.Ranged)
+                {
+                    Instantiate(homingRangedEnemy, enemyData.spawnPoint, enemyData.spawnRotation, sectionParents[currentSection]);
                     //Debug.Log("Spawning a ranged enemy");
                 }
                 else if (enemyData.characterType == CharacterType.Static) {
