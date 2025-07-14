@@ -1,4 +1,4 @@
-using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -11,6 +11,7 @@ public class PersistentSceneManager : MonoBehaviour {
     [SerializeField] private float minimumTransitionTime = 5f;
 
     private Scene transitionScene;
+    public LevelManager CurrentLevelManager;
 
     private void Awake() {
         DontDestroyOnLoad(this.gameObject);
@@ -24,25 +25,29 @@ public class PersistentSceneManager : MonoBehaviour {
 
     public async void ChangeLevel(string newLevelName) {
         Scene oldScene = SceneManager.GetActiveScene();
+        Scene newScene = SceneManager.GetSceneByName(newLevelName);
 
         await EnterTransition();
+
         SceneManager.SetActiveScene(transitionScene);
         _ = SceneManager.UnloadSceneAsync(oldScene);
+        MoveScene(transitionScene, Globals.PLAYER.transform);
 
         var loadOperation = StartLoadingScene(newLevelName);
         loadOperation.allowSceneActivation = false;
-        Task waitForMinimumTime = Task.Delay((int)(minimumTransitionTime * 1000));
+        UniTask waitForMinimumTime = UniTask.Delay((int)(minimumTransitionTime * 1000));
 
         // makes sure that at least 'waitForMinimumTime' has passed
-        await Task.WhenAll(waitForMinimumTime, WaitForSceneLoad(loadOperation));
+        await UniTask.WhenAll(waitForMinimumTime, WaitForSceneLoad(loadOperation));
 
         await ExitTransition();
         loadOperation.allowSceneActivation = true;
+        await loadOperation.ToUniTask();
     }
 
-    private async Task WaitForSceneLoad(AsyncOperation asyncOp) {
+    private async UniTask WaitForSceneLoad(AsyncOperation asyncOp) {
         while (!asyncOp.isDone && asyncOp.progress < 0.9f) {
-            await Task.Yield();
+            await UniTask.Yield();
         }
     }
 
@@ -58,11 +63,22 @@ public class PersistentSceneManager : MonoBehaviour {
         return SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
     }
 
-    private async Task EnterTransition() {
-        await Task.Yield();
+    private async UniTask EnterTransition() {
+        await UniTask.Yield();
     }
 
-    private async Task ExitTransition() {
-        await Task.Yield();
+    private async UniTask ExitTransition() {
+        await UniTask.Yield();
+    }
+
+    private void MoveScene(Scene scene, Transform newPlace) {
+        GameObject newRoot = new GameObject();
+        GameObject[] roots = scene.GetRootGameObjects();
+
+        foreach (var root in roots) {
+            root.transform.SetParent(newRoot.transform);
+        }
+
+        newRoot.transform.SetPositionAndRotation(newPlace.position, newPlace.rotation);
     }
 }

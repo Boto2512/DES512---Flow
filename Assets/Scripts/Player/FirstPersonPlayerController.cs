@@ -37,6 +37,8 @@ public class FirstPersonPlayerController : MonoBehaviour, ITargetable, IHasSpeed
 
     #endregion Events
 
+    private bool allowMovementAdjacentInput = false;
+
     [Header("Target")]
     [SerializeField] private Transform targetPosition;
     public Transform Target => targetPosition;
@@ -96,6 +98,8 @@ public class FirstPersonPlayerController : MonoBehaviour, ITargetable, IHasSpeed
     #region Input
 
     public void MoveInput(InputAction.CallbackContext context) {
+        if (!allowMovementAdjacentInput)
+            return;
         movementController.MoveInput(context.ReadValue<Vector2>());
     }
 
@@ -112,6 +116,9 @@ public class FirstPersonPlayerController : MonoBehaviour, ITargetable, IHasSpeed
     }
 
     public void ThrowInput(InputAction.CallbackContext context) {
+        if (!allowMovementAdjacentInput)
+            return;
+
         if (context.performed) {
             SecondaryAction.Invoke();
         }
@@ -120,8 +127,19 @@ public class FirstPersonPlayerController : MonoBehaviour, ITargetable, IHasSpeed
     }
 
     public void JumpInput(InputAction.CallbackContext context) {
+        if (!allowMovementAdjacentInput)
+            return;
+
         movementController.JumpInput(context.ReadValueAsButton());
     }
 
     #endregion Input
+
+    public void DisableMovement() {
+        allowMovementAdjacentInput = false;
+    }
+
+    public void EnableMovement() {
+        allowMovementAdjacentInput = true;
+    }
 }

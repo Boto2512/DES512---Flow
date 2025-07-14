@@ -227,6 +227,67 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 53.578, z: 0}
+--- !u!1001 &449498008
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 5586452117014544014, guid: af43fcbb260d3034e9663abcd9ed2276, type: 3}
+      propertyPath: bypassEnemies
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6982140647706465070, guid: af43fcbb260d3034e9663abcd9ed2276, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -14.01479
+      objectReference: {fileID: 0}
+    - target: {fileID: 6982140647706465070, guid: af43fcbb260d3034e9663abcd9ed2276, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6982140647706465070, guid: af43fcbb260d3034e9663abcd9ed2276, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 24.152723
+      objectReference: {fileID: 0}
+    - target: {fileID: 6982140647706465070, guid: af43fcbb260d3034e9663abcd9ed2276, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6982140647706465070, guid: af43fcbb260d3034e9663abcd9ed2276, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6982140647706465070, guid: af43fcbb260d3034e9663abcd9ed2276, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6982140647706465070, guid: af43fcbb260d3034e9663abcd9ed2276, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6982140647706465070, guid: af43fcbb260d3034e9663abcd9ed2276, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6982140647706465070, guid: af43fcbb260d3034e9663abcd9ed2276, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6982140647706465070, guid: af43fcbb260d3034e9663abcd9ed2276, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7759239545101240724, guid: af43fcbb260d3034e9663abcd9ed2276, type: 3}
+      propertyPath: m_Name
+      value: LaunchPad
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: af43fcbb260d3034e9663abcd9ed2276, type: 3}
 --- !u!1 &468408143
 GameObject:
   m_ObjectHideFlags: 0
@@ -446,6 +507,7 @@ MonoBehaviour:
   tutorialSceneName: Tutorial
   transitionSceneName: Transition
   minimumTransitionTime: 5
+  CurrentLevelManager: {fileID: 0}
 --- !u!1 &771483642
 GameObject:
   m_ObjectHideFlags: 0
@@ -834,6 +896,9 @@ MonoBehaviour:
   playerSpawn: {fileID: 934138248}
   playerSpawnVelocity: {x: 0, y: 0, z: 0}
   nextPossibleLevels: []
+  TrampleSteamUsed:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!4 &1257034057
 Transform:
   m_ObjectHideFlags: 0
@@ -1748,3 +1813,4 @@ SceneRoots:
   - {fileID: 1675132347}
   - {fileID: 589431159}
   - {fileID: 1257034057}
+  - {fileID: 449498008}

@@ -2,8 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class LevelLaunchPad : MonoBehaviour
-{
+public class LevelLaunchPad : MonoBehaviour {
     [SerializeField] float launchForce;
     [SerializeField] string loadScene;
     [SerializeField] float wait;
@@ -13,19 +12,21 @@ public class LevelLaunchPad : MonoBehaviour
     [SerializeField] Transform[] sections;
     private bool unlocked;
     [SerializeField] bool bypassEnemies;
-    private void Start()
-    {
 
+    private LevelManager levelManager;
+
+    private void Start() {
+        levelManager = GameObject.FindAnyObjectByType<LevelManager>();
     }
 
     private void Update() {
-        if(bypassEnemies) { unlocked = true; }
-        else { 
+        if (bypassEnemies) { unlocked = true; }
+        else {
             foreach (Transform section in sections) {
-                if(section.childCount != 0) {
+                if (section.childCount != 0) {
                     unlocked = false;
                     break;
-                } 
+                }
                 else {
                     unlocked = true;
                 }
@@ -35,7 +36,8 @@ public class LevelLaunchPad : MonoBehaviour
     private void OnTriggerEnter(Collider other) {
         if (other.gameObject.CompareTag("Player") && unlocked) {
             other.attachedRigidbody.GetComponent<IMomentumModifiable>().SetMomentum(Vector3.up * launchForce);
-            StartCoroutine(LoadNextLevel());
+            //StartCoroutine(LoadNextLevel());
+            levelManager.TrampleSteamUsed.Invoke();
         }
     }
 

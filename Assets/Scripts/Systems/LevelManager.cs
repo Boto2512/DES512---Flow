@@ -12,6 +12,9 @@ public class LevelManager : MonoBehaviour {
 
     [Header("Level Comlpetion")]
     [SerializeField] private List<string> nextPossibleLevels;
+    public UnityEngine.Events.UnityEvent TrampleSteamUsed;
+
+    private PersistentSceneManager persistentSceneManager;
 
     private void Awake() {
 
