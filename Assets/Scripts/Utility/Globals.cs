@@ -4,7 +4,7 @@ using UnityEngine.Events;
 
 public static class Globals {
 
-    public static LevelSceneManager LevelSceneManager => LevelSceneManager.Instance;
+    public static PersistentSceneManager PersistentSceneManager => PersistentSceneManager.Instance;
 
     #region Layers
 

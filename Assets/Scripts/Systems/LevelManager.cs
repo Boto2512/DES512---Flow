@@ -45,7 +45,7 @@ public class LevelManager : MonoBehaviour {
 
     private void ExitLevel() {
         string newLevel = SelectRandomLevel();
-        Globals.LevelSceneManager.ChangeLevel(newLevel);
+        Globals.PersistentSceneManager.ChangeLevel(newLevel);
 
     }
 

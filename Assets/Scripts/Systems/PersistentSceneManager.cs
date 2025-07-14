@@ -2,8 +2,8 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class LevelSceneManager : MonoBehaviour {
-    public static LevelSceneManager Instance { get; private set; }
+public class PersistentSceneManager : MonoBehaviour {
+    public static PersistentSceneManager Instance { get; private set; }
 
     [SerializeField] private string tutorialSceneName = "Tutorial";
     [SerializeField] private string transitionSceneName = "Transition";
