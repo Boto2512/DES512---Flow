@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8174356013178880162}
   - component: {fileID: 99051193424128824}
   - component: {fileID: 7367105391848203559}
-  - component: {fileID: 4715242417858171521}
+  - component: {fileID: 4564208040530845734}
   m_Layer: 0
   m_Name: Cylinder
   m_TagString: Untagged
@@ -29,7 +29,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 2, y: 1, z: 2}
+  m_LocalScale: {x: 2, y: 10, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2344345543099136048}
@@ -64,7 +64,7 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: -2432090755550338912, guid: 3a4eb311b4ad6f8499754c48b4dde7fe, type: 3}
---- !u!114 &4715242417858171521
+--- !u!114 &4564208040530845734
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -73,12 +73,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1139958994292429320}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 40e3bc9d724455944981d633ebeb739c, type: 3}
+  m_Script: {fileID: 11500000, guid: b027a36d0efeab1459ee34b232debf8c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  force: 5
+  force: 10
   height: 10
-  cylinder: {fileID: 8174356013178880162}
 --- !u!1 &1989162332251687335
 GameObject:
   m_ObjectHideFlags: 0
@@ -89,7 +88,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2344345543099136048}
   m_Layer: 0
-  m_Name: VerticalJumpPad
+  m_Name: JumpPad
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -103,7 +102,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1989162332251687335}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0.71892023, w: 0.6950926}
+  m_LocalRotation: {x: 0, y: 0, z: -0.7189214, w: 0.6950914}
   m_LocalPosition: {x: 1.13, y: 4.6, z: 0}
   m_LocalScale: {x: 3, y: 1, z: 3}
   m_ConstrainProportionsScale: 0
