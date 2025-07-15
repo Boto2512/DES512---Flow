@@ -11,6 +11,10 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
     [SerializeField] Slider healthBar;
     [SerializeField] GameObject healthDrop;
 
+    [Header("Drops")]
+    [Min(0f)] public float BombRegenAmount { get; private set; } = 0.5f;
+    [Min(0f)] private float droppedHealth;
+
     [Header("Debug Events")]
     [SerializeField] private UnityEvent takeDamage = new();
     #endregion Damage Variables
@@ -134,8 +138,7 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
         }
     }
 
-    public void Kill()
-    {
+    public void Kill() {
         //Debug.Log("Enemy Oneshotted - due to speed");
         healthBar.value = 0;
         Instantiate(healthDrop, transform.position, transform.rotation);

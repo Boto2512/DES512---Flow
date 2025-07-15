@@ -714,6 +714,8 @@ public class ThirdPersonTestController : MonoBehaviour, IMomentumModifiable, ITa
 
     #region IDamageable
 
+    public float BombRegenAmount { get; } = 0f;
+
     public float GetHealth() {
         return health;
     }
