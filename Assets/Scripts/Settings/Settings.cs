@@ -2,6 +2,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 public class Settings : MonoBehaviour
 {
@@ -14,7 +15,8 @@ public class Settings : MonoBehaviour
     [SerializeField] private Slider verticalSensitivity;
     [SerializeField] private Toggle invertHorizontal;
     [SerializeField] private Toggle invertVertical;
-
+    [Space]
+    [SerializeField] private GameObject firstSelectedClose;
 
     public void Awake() {
         horizontalSensitivity.value = cameraConfig.HorizontalSensitivity;
@@ -71,6 +73,7 @@ public class Settings : MonoBehaviour
     
     public void Close()
     {
+        EventSystem.current.SetSelectedGameObject(firstSelectedClose);
         gameObject.SetActive(false);
     }
 
