@@ -93,7 +93,7 @@ public class FirstPersonPlayerController : MonoBehaviour, ITargetable, IHasSpeed
     }
 
     public void AttackInput(InputAction.CallbackContext context) {
-        if (context.started) {
+        if (context.performed) {
             PrimaryAction.Invoke();
         }
         else if (context.canceled) {
@@ -101,7 +101,7 @@ public class FirstPersonPlayerController : MonoBehaviour, ITargetable, IHasSpeed
     }
 
     public void ThrowInput(InputAction.CallbackContext context) {
-        if (context.started) {
+        if (context.performed) {
             SecondaryAction.Invoke();
         }
         else if (context.canceled) {
