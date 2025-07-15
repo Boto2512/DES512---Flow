@@ -72,7 +72,8 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
         HitStop.Slow(0.02f, 0.1f).Forget();
         //HitStop.Stop(0.33f).Forget();
 
-        Debug.Log(collider.attachedRigidbody.gameObject.name);
+        // TODO: add hit effect to the following code
+        // collider.ClosestPoint(hurtbox.transform.position);
     }
 
     private float CalculateDamage() {
