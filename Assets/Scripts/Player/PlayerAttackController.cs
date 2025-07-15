@@ -18,6 +18,9 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
     [SerializeField] private Animator cameraAnimator;
     private bool attacking = false;
 
+    [Header("Hurtbox")]
+    [SerializeField] private PlayerHurtbox hurtbox;
+
     private Rigidbody rb;
     private IHasSpeedThresholds thresholdHolder;
 
@@ -29,6 +32,8 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
 
         healthBar.maxValue = Config.MaxHealth;
         healthBar.value = health;
+
+        hurtbox.gameObject.SetActive(false);
 
         //cameraImpulseSource.ImpulseDefinition.
     }
@@ -43,20 +48,28 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
         if (attacking)
             return;
 
-        float damage = CalculateDamage();
-
         attackAnimator.SetTrigger("hasAttacked");
         cameraAnimator.SetTrigger("hasAttacked");
 
         // TODO: change it so attack range scales with speed too
 
-        IDamageable[] damageables = GetEnemiesInAttackBox();
-        foreach (var damageable in damageables) {
-            damageable.TakeDamage(damage);
-        }
+        //float damage = CalculateDamage();
+        //IDamageable[] damageables = GetEnemiesInAttackBox();
+        //foreach (var damageable in damageables) {
+        //    damageable.TakeDamage(damage);
+        //    HitStop.Slow(0.1f, 0.1f).Forget();
+        //}
 
         attacking = true;
+        hurtbox.gameObject.SetActive(true);
         this.InvokeOverwrite("attack animation playing", () => attacking = false, Config.AttackCooldown);
+    }
+
+    public void DamageableHit(IDamageable damageable, Collider collider) {
+        float damage = CalculateDamage();
+        damageable.TakeDamage(damage);
+
+        HitStop.Slow(0.1f, 0.5f).Forget();
     }
 
     private float CalculateDamage() {
