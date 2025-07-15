@@ -69,7 +69,10 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
         float damage = CalculateDamage();
         damageable.TakeDamage(damage);
 
-        HitStop.Slow(0.1f, 0.5f).Forget();
+        HitStop.Slow(0.02f, 0.1f).Forget();
+        //HitStop.Stop(0.33f).Forget();
+
+        Debug.Log(collider.attachedRigidbody.gameObject.name);
     }
 
     private float CalculateDamage() {

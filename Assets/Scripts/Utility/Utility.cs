@@ -1,3 +1,5 @@
+using System;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using static Globals;
 
@@ -22,4 +24,13 @@ public static class Utility {
     public static Vector2 Flattened(this Vector3 v) => new(v.x, v.z);
 
     #endregion Vector Logic
+
+    #region UniTask Logic
+
+    public static async UniTaskVoid RunNextFrame(Action lambda) {
+        await UniTask.NextFrame();
+        lambda?.Invoke();
+    }
+
+    #endregion UniTask Logic
 }

@@ -30,8 +30,8 @@ public class PlayerHurtbox : MonoBehaviour {
     }
 
     private void OnEnable() {
-        startingRotation = cameraRotation.rotation * Quaternion.Euler(0f, startingAngle, 0f);
-        endingRotation = cameraRotation.rotation * Quaternion.Euler(0f, endingAngle, 0f);
+        startingRotation = Quaternion.Euler(0f, startingAngle, 0f);
+        endingRotation = Quaternion.Euler(0f, endingAngle, 0f);
 
         rb.rotation = startingRotation;
         rb.position = sweepOrigin.position;
@@ -41,22 +41,20 @@ public class PlayerHurtbox : MonoBehaviour {
     // Update is called once per frame
     void Update() {
         if (swingTimer > swingTime) {
-            this.gameObject.SetActive(false);
+            Utility.RunNextFrame(() => this.gameObject.SetActive(false)).Forget();
         }
 
-        swingTimer += Time.unscaledDeltaTime;
+        swingTimer += Time.deltaTime;
         float t = Mathf.Clamp01(swingTimer / swingTime);
 
-        rb.MoveRotation(Quaternion.Slerp(startingRotation, endingRotation, t));
+        rb.MoveRotation(cameraRotation.rotation * Quaternion.Slerp(startingRotation, endingRotation, t));
         rb.MovePosition(sweepOrigin.position);
-        Debug.Log($"move position {sweepOrigin.position}");
     }
 
     private void OnTriggerEnter(Collider other) {
-        if (!other.TryGetComponent<Rigidbody>(out var rb))
+        Rigidbody rb = other.attachedRigidbody;
+        if (rb == null)
             return;
-
-        Debug.Log(rb.gameObject.name);
 
         if (!rb.gameObject.TryGetComponent<IDamageable>(out var damageable))
             return;
