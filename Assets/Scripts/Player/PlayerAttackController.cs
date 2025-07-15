@@ -49,6 +49,7 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
         IDamageable[] damageables = GetEnemiesInAttackBox();
         foreach (var damageable in damageables) {
             damageable.TakeDamage(damage);
+            TutorialEvents.OnEnemyKilled.Invoke();
         }
     }
 
