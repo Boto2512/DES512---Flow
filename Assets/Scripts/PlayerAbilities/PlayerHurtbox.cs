@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
@@ -14,8 +15,10 @@ public class PlayerHurtbox : MonoBehaviour {
     [SerializeField] private Transform sweepOrigin;
     [SerializeField] private Transform cameraRotation;
     [SerializeField] private Transform HurtboxTip;
+
     private Rigidbody rb;
     private CapsuleCollider capCollider;
+    private HashSet<int> enemiesHit = new();
 
     private void Awake() {
         rb = this.GetComponent<Rigidbody>();
@@ -37,7 +40,9 @@ public class PlayerHurtbox : MonoBehaviour {
 
         capCollider.height = attackController.Config.HurtboxLengthConstant + attackController.Config.HurtboxLengthMomentumMultiplier * player.GetComponent<Rigidbody>().linearVelocity.magnitude;
         capCollider.center = new(capCollider.center.x, capCollider.center.y, capCollider.height / 2f);
-        HurtboxTip.position = new(0f, 0f, capCollider.height);
+        HurtboxTip.localPosition = new(0f, 0f, capCollider.height);
+
+        enemiesHit.Clear();
     }
 
     // Update is called once per frame
@@ -58,9 +63,13 @@ public class PlayerHurtbox : MonoBehaviour {
         if (rb == null)
             return;
 
+        if (enemiesHit.Contains(rb.gameObject.GetInstanceID()))
+            return;
+
         if (!rb.gameObject.TryGetComponent<IDamageable>(out var damageable))
             return;
 
+        enemiesHit.Add(rb.gameObject.GetInstanceID());
         attackController.DamageableHit(damageable, other);
     }
 
