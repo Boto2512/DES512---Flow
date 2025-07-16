@@ -4703,9 +4703,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b3d0d15781f3fe4ab6234e6e3207f4d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startingAngle: 90
-  endingAngle: -90
-  swingTime: 0.1
   player: {fileID: 9012737342808474076}
   attackController: {fileID: 3094980553843940466}
   sweepOrigin: {fileID: 1459563309049920356}
@@ -8670,6 +8667,7 @@ MonoBehaviour:
   attackAnimator: {fileID: 9216034013748838109}
   cameraAnimator: {fileID: 1183422617126722662}
   hurtbox: {fileID: 8150597279738958521}
+  hitVFX: {fileID: 8243828500977350044, guid: 8c4409982c7a4c64599ed39463c28b3f, type: 3}
 --- !u!114 &8653225047312777506
 MonoBehaviour:
   m_ObjectHideFlags: 0
