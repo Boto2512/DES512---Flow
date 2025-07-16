@@ -135,6 +135,8 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
 
         if (health <= 0) {
             Kill();
+            TutorialEvents.OnEnemyKilled.Invoke();
+            TutorialEvents.enemyKilledVeryFast.Invoke();
         }
     }
 
@@ -143,7 +145,7 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
         healthBar.value = 0;
         Instantiate(healthDrop, transform.position, transform.rotation);
         Destroy(this.gameObject);
-        TutorialEvents.enemyKilledVeryFast?.Invoke();
+        
     }
 
     public void Heal(float value) {
