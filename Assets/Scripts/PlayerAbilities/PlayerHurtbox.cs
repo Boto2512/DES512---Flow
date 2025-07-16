@@ -4,18 +4,16 @@ using UnityEngine;
 [RequireComponent(typeof(CapsuleCollider))]
 public class PlayerHurtbox : MonoBehaviour {
 
-    [Header("Swing")]
-    [SerializeField] private float startingAngle;
-    [SerializeField] private float endingAngle;
-    [SerializeField] private float swingTime = 0.03f;
     private float swingTimer = 0f;
     private Quaternion startRotation;
     private Quaternion endRotation;
 
+    [Header("Relations")]
     [SerializeField] private GameObject player;
     [SerializeField] private PlayerAttackController attackController;
     [SerializeField] private Transform sweepOrigin;
     [SerializeField] private Transform cameraRotation;
+    [SerializeField] private Transform HurtboxTip;
     private Rigidbody rb;
     private CapsuleCollider capCollider;
 
@@ -38,16 +36,18 @@ public class PlayerHurtbox : MonoBehaviour {
         swingTimer = 0f;
 
         capCollider.height = attackController.Config.HurtboxLengthConstant + attackController.Config.HurtboxLengthMomentumMultiplier * player.GetComponent<Rigidbody>().linearVelocity.magnitude;
+        capCollider.center = new(capCollider.center.x, capCollider.center.y, capCollider.height / 2f);
+        HurtboxTip.position = new(0f, 0f, capCollider.height);
     }
 
     // Update is called once per frame
     void Update() {
-        if (swingTimer > swingTime) {
+        if (swingTimer > attackController.Config.SwingTime) {
             Utility.RunNextFrame(() => this.gameObject.SetActive(false)).Forget();
         }
 
-        swingTimer += Time.deltaTime;
-        float t = Mathf.Clamp01(swingTimer / swingTime);
+        swingTimer += Time.deltaTime;       // unscaled by timeScale in case of HitStop
+        float t = Mathf.Clamp01(swingTimer / attackController.Config.SwingTime);
 
         rb.MoveRotation(cameraRotation.rotation * Quaternion.Slerp(startRotation, endRotation, t));
         rb.MovePosition(sweepOrigin.position);

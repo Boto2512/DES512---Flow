@@ -792,6 +792,37 @@ Transform:
   - {fileID: 7798054956960607237}
   m_Father: {fileID: 1830909174642264349}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2235379199616276098
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3917161430750306311}
+  m_Layer: 10
+  m_Name: Hurtbox Tip
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3917161430750306311
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2235379199616276098}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 3}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6687440028608447434}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2340647452660028512
 GameObject:
   m_ObjectHideFlags: 0
@@ -2443,7 +2474,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 3917161430750306311}
   m_Father: {fileID: 4836390072344657585}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!54 &4981896860893462809
@@ -2495,7 +2527,7 @@ CapsuleCollider:
   m_Radius: 0.75
   m_Height: 3
   m_Direction: 2
-  m_Center: {x: 0, y: 0, z: 1}
+  m_Center: {x: 0, y: 0, z: 1.5}
 --- !u!114 &8150597279738958521
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2515,6 +2547,7 @@ MonoBehaviour:
   attackController: {fileID: 3094980553843940466}
   sweepOrigin: {fileID: 1459563309049920356}
   cameraRotation: {fileID: 6706220494377980649}
+  HurtboxTip: {fileID: 3917161430750306311}
 --- !u!1 &4424541116577020812
 GameObject:
   m_ObjectHideFlags: 0
