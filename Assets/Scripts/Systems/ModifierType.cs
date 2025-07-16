@@ -1,5 +1,7 @@
 public enum ModifierType {
+    Flat,
     Additive,
+    Subtractive,
     Multiplicative,
     PercentageIncrease,
     PercentageDecrease
