@@ -37,6 +37,8 @@ public class ExplosiveBarrel : MonoBehaviour, IDamageable, IMomentumModifiable {
         Gizmos.DrawWireSphere(transform.position, explosiveRange);
     }
     #region ========================= IDamageable Interface =========================
+    public float BombRegenAmount { get; } = 0f;
+
     public float GetHealth() {
         throw new System.NotImplementedException();
     }

@@ -16,6 +16,7 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
     [Header("Animations")]
     [SerializeField] private Animator attackAnimator;
     [SerializeField] private Animator cameraAnimator;
+    private bool attacking = false;
 
     private Rigidbody rb;
     private IHasSpeedThresholds thresholdHolder;
@@ -39,6 +40,9 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
     #region Attack
 
     public void Attack() {
+        if (attacking)
+            return;
+
         float damage = CalculateDamage();
 
         attackAnimator.SetTrigger("hasAttacked");
@@ -50,6 +54,9 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
         foreach (var damageable in damageables) {
             damageable.TakeDamage(damage);
         }
+
+        attacking = true;
+        this.InvokeOverwrite("attack animation playing", () => attacking = false, Config.AttackCooldown);
     }
 
     private float CalculateDamage() {
@@ -77,20 +84,20 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
 
     #region IDamageable
 
+    public float BombRegenAmount { get; } = 0f;
+
     public float GetHealth() {
         return health;
     }
 
-    public void TakeDamage(float amount)
-    {
+    public void TakeDamage(float amount) {
         health -= amount;
         healthBar.value = health;
         TutorialEvents.OnEnemyKilled?.Invoke();
         //Debug.Log($"Damage Amount: {amount}, Current Health: {health}");
     }
 
-    public void Kill()
-    {
+    public void Kill() {
         throw new System.NotImplementedException();
     }
 

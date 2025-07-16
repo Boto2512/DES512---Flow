@@ -1,5 +1,3 @@
-using UnityEngine;
-
 public interface IDamageable {
     /// <summary>
     /// Returns the health of the entity attached to the interface
@@ -20,4 +18,6 @@ public interface IDamageable {
     public void Kill();
 
     public void Heal(float value);
+
+    public float BombRegenAmount { get; }
 }
