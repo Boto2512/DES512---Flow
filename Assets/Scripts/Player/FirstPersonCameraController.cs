@@ -1,5 +1,4 @@
 using Unity.Cinemachine;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.VFX;
 
@@ -13,6 +12,7 @@ public class FirstPersonCameraController : MonoBehaviour {
     private float previousTargetFOV;
     private float fovProgress;
 
+    private SpeedStageThreshold prevThreshold;
 
     #region Cinemachine Game Objects
 
@@ -38,6 +38,8 @@ public class FirstPersonCameraController : MonoBehaviour {
 
         currentFOV = currentThreshold.FieldOfView;
         previousTargetFOV = currentFOV;
+
+        prevThreshold = thresholdHolder.CurrentThreshold;
     }
 
     // Update is called once per frame
@@ -46,7 +48,7 @@ public class FirstPersonCameraController : MonoBehaviour {
         SpeedlineChanges();
     }
 
-    private void UpdateSensitivity() {
+    public void UpdateSensitivity() {
         var pan = inputAxisController.Controllers[0].Input;
         var tilt = inputAxisController.Controllers[1].Input;
 
@@ -56,23 +58,20 @@ public class FirstPersonCameraController : MonoBehaviour {
     }
 
     #region Visual Effects
-#if DEBUG
-    private SpeedStageThreshold prevThreshold = null;
-#endif
+
     private void SpeedlineChanges() {
         if (speedlines == null)
             return;
 
-        UpdateSpeedlineIntensity(currentThreshold.HasSpeedLines, currentThreshold.SpeedRangeOfLines, currentThreshold.SpeedlineSpawnRate);
 
+        if (currentThreshold != prevThreshold) {
+            UpdateSpeedlineIntensity(currentThreshold.HasSpeedLines, currentThreshold.SpeedRangeOfLines, currentThreshold.SpeedlineSpawnRate);
 #if DEBUG
-        if (prevThreshold != null &&
-                currentThreshold != prevThreshold) {
-            Debug.Log($"Going from speed threshold {prevThreshold.SpeedThreshold} " +
-                $"to speed threshold {currentThreshold.SpeedThreshold}");
+            Debug.Log($"Going from speed threshold {prevThreshold.SpeedThreshold}, speedlines: {prevThreshold.HasSpeedLines}\n" +
+                $"to speed threshold {currentThreshold.SpeedThreshold}, speedlines: {currentThreshold.HasSpeedLines}");
+#endif
         }
         prevThreshold = currentThreshold;
-#endif
     }
 
     /// <summary>
@@ -101,9 +100,8 @@ public class FirstPersonCameraController : MonoBehaviour {
 
             currentFOV = Mathf.Lerp(currentFOV, targetFOV, fovProgress);
             fovProgress += Config.fovChangeSpeed * Time.deltaTime;
-        } 
-        else if ( fovProgress == 1)
-        { 
+        }
+        else if (fovProgress == 1) {
             fovProgress = 0.0f;
         }
         cinemachineCamera.Lens.FieldOfView = currentFOV;
