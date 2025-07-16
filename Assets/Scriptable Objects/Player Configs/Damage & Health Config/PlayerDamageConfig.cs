@@ -7,6 +7,8 @@ public class PlayerDamageConfig : ScriptableObject {
     [Min(0f)] public float AttackRange = 5f;
     [Min(0f)] public float AttackCooldown = 0.5f;
     public LayerMask AttackMask;
+    public float KnockbackDealt = 8f;
+    public float KnockbackHeight = 2f;
 
     [Header("Hurtbox Swing")]
     public float StartAngle = 90f;
