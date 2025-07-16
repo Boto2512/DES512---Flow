@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
 public class PlayerAttackController : MonoBehaviour, IDamageable {
-    [SerializeField] private PlayerDamageConfig Config;
+    [SerializeField] public PlayerDamageConfig Config;
 
     [Header("GameOver")]
     [SerializeField] private GameObject gameOver;
@@ -22,6 +22,10 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
     [Header("Animations")]
     [SerializeField] private Animator attackAnimator;
     [SerializeField] private Animator cameraAnimator;
+    private bool attacking = false;
+
+    [Header("Hurtbox")]
+    [SerializeField] private PlayerHurtbox hurtbox;
 
     private Rigidbody rb;
     private IHasSpeedThresholds thresholdHolder;
@@ -34,6 +38,8 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
 
         healthBar.maxValue = Config.MaxHealth;
         healthBar.value = health;
+
+        hurtbox.gameObject.SetActive(false);
         gameOver.SetActive(false);
         //cameraImpulseSource.ImpulseDefinition.
     }
@@ -45,17 +51,36 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
     #region Attack
 
     public void Attack() {
-        float damage = CalculateDamage();
+        if (attacking)
+            return;
 
         attackAnimator.SetTrigger("hasAttacked");
         cameraAnimator.SetTrigger("hasAttacked");
 
         // TODO: change it so attack range scales with speed too
 
-        IDamageable[] damageables = GetEnemiesInAttackBox();
-        foreach (var damageable in damageables) {
-            damageable.TakeDamage(damage);
-        }
+        //float damage = CalculateDamage();
+        //IDamageable[] damageables = GetEnemiesInAttackBox();
+        //foreach (var damageable in damageables) {
+        //    damageable.TakeDamage(damage);
+        //    HitStop.Slow(0.1f, 0.1f).Forget();
+        //}
+
+        attacking = true;
+        hurtbox.gameObject.SetActive(true);
+        this.InvokeOverwrite("attack animation playing", () => attacking = false, Config.AttackCooldown);
+    }
+
+    public void DamageableHit(IDamageable damageable, Collider collider) {
+        float damage = CalculateDamage();
+        damageable.TakeDamage(damage);
+
+        if (Config.UseHitStop)
+            HitStop.Slow(Config.HitStopTimeScale, Config.HitStopDuration).Forget();
+        //HitStop.Stop(0.33f).Forget();
+
+        // TODO: add hit effect to the following code
+        // collider.ClosestPoint(hurtbox.transform.position);
     }
 
     private float CalculateDamage() {
@@ -83,12 +108,13 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
 
     #region IDamageable
 
+    public float BombRegenAmount { get; } = 0f;
+
     public float GetHealth() {
         return health;
     }
 
-    public void TakeDamage(float amount)
-    {
+    public void TakeDamage(float amount) {
         health -= amount;
         healthBar.value = health;
         TutorialEvents.OnEnemyKilled?.Invoke();
