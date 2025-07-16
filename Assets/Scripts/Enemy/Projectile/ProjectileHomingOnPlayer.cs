@@ -71,9 +71,12 @@ public class ProjectileHomingOnPlayer : MonoBehaviour
             IDamageable damageable = other.attachedRigidbody.gameObject.GetComponent<IDamageable>();
             damageable.TakeDamage(damage);
             Destroy(gameObject);
+        }else if (other.CompareTag("Enemy"))
+        {
+            return;
         }
         else { 
-            Destroy(other.gameObject);
+            //Destroy(other.gameObject);
             Destroy(gameObject);
         }
     }
