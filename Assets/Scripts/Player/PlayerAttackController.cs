@@ -4,7 +4,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 public class PlayerAttackController : MonoBehaviour, IDamageable {
-    [SerializeField] private PlayerDamageConfig Config;
+    [SerializeField] public PlayerDamageConfig Config;
 
     [Header("Health")]
     [SerializeField] private Slider healthBar;
@@ -69,7 +69,8 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
         float damage = CalculateDamage();
         damageable.TakeDamage(damage);
 
-        HitStop.Slow(0.02f, 0.1f).Forget();
+        if (Config.UseHitStop)
+            HitStop.Slow(Config.HitStopTimeScale, Config.HitStopDuration).Forget();
         //HitStop.Stop(0.33f).Forget();
 
         // TODO: add hit effect to the following code
