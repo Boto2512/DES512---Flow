@@ -1,17 +1,16 @@
-using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.Events;
 using System.Collections;
+using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.UI;
 
-public class DamageDebug : MonoBehaviour, IDamageable
-{
+public class DamageDebug : MonoBehaviour, IDamageable {
     [Header("Health")]
     [SerializeField] float health;
     [SerializeField] Slider healthBar;
 
     [Header("Debug Events")]
     [SerializeField] private UnityEvent takeDamage = new();
-   
+
 
     void Start() {
         healthBar.maxValue = health;
@@ -24,13 +23,12 @@ public class DamageDebug : MonoBehaviour, IDamageable
 
         }
 
-        if (health <=0 ) {
+        if (health <= 0) {
             StartCoroutine(HealDummy());
         }
     }
 
-    private IEnumerator HealDummy()
-    {
+    private IEnumerator HealDummy() {
         yield return new WaitForSeconds(1);
 
         healthBar.value = healthBar.maxValue;
@@ -39,6 +37,8 @@ public class DamageDebug : MonoBehaviour, IDamageable
     }
 
     #region  ========================= Damage Interface =========================
+    public float BombRegenAmount { get; } = 0f;
+
     public float GetHealth() {
         return health;
     }
@@ -49,8 +49,7 @@ public class DamageDebug : MonoBehaviour, IDamageable
         healthBar.value = health;
     }
 
-    public void Kill()
-    {
+    public void Kill() {
         Debug.Log("Enemy Oneshotted - due to speed");
         healthBar.value = 0;
     }

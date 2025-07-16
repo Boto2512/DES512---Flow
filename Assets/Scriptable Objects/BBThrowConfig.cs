@@ -9,6 +9,8 @@ public class BBThrowConfig : ScriptableObject {
     [Header("Throw Logic")]
     [Min(0f)] public float ThrowPower = 10f;
     [Min(0f)] public float FuseTime = 0.15f;
+    [Min(0f)] public float ThrowCooldown = 0.15f;
+    [Min(0f)] public float DetonationCooldown = 0.15f;
 
     [Header("Charges")]
     [Min(0)] public int MaxCharges = 3;
