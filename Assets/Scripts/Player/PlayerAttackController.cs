@@ -20,7 +20,7 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
     [Header("Hurtbox")]
     [SerializeField] private PlayerHurtbox hurtbox;
 
-    [Header("Hit VFX Prefab")]
+    [Header("VFX Prefabs")]
     [SerializeField] private GameObject hitVFX;
 
     private Rigidbody rb;

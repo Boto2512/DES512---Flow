@@ -15,6 +15,10 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
     [Min(0f)] public float BombRegenAmount { get; private set; } = 0.5f;
     [Min(0f)] private float droppedHealth;
 
+    [Header("VFX Prefabs")]
+    [SerializeField] private GameObject oilHitVFX;
+    [SerializeField] private GameObject oilDieVFX;
+
     [Header("Debug Events")]
     [SerializeField] private UnityEvent takeDamage = new();
     #endregion Damage Variables
@@ -134,7 +138,11 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
         healthBar.value = health;
 
         if (health <= 0) {
+            Instantiate(oilDieVFX, attackTransform.position, Quaternion.Euler(Vector3.up));
             Kill();
+        }
+        else {
+            Instantiate(oilHitVFX, attackTransform.position, Quaternion.Euler(Vector3.up));
         }
     }
 

@@ -10,7 +10,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1156700633810890355, guid: bdb70adec8b4506409e24e56d837c5d4, type: 3}
       propertyPath: m_Name
-      value: Self-ending VFX Variant
+      value: HitEffect
       objectReference: {fileID: 0}
     - target: {fileID: 1465548809446921156, guid: bdb70adec8b4506409e24e56d837c5d4, type: 3}
       propertyPath: m_LocalPosition.x
@@ -56,6 +56,66 @@ PrefabInstance:
       propertyPath: m_Asset
       value: 
       objectReference: {fileID: 8926484042661614526, guid: 3d70422d77232584a917bec1d9e0103c, type: 3}
+    - target: {fileID: 7460847176538328462, guid: bdb70adec8b4506409e24e56d837c5d4, type: 3}
+      propertyPath: m_PropertySheet.m_Float.m_Array.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7460847176538328462, guid: bdb70adec8b4506409e24e56d837c5d4, type: 3}
+      propertyPath: m_PropertySheet.m_Vector4f.m_Array.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7460847176538328462, guid: bdb70adec8b4506409e24e56d837c5d4, type: 3}
+      propertyPath: m_PropertySheet.m_Float.m_Array.Array.data[0].m_Name
+      value: SizeRandom
+      objectReference: {fileID: 0}
+    - target: {fileID: 7460847176538328462, guid: bdb70adec8b4506409e24e56d837c5d4, type: 3}
+      propertyPath: m_PropertySheet.m_Float.m_Array.Array.data[0].m_Value
+      value: 0.135
+      objectReference: {fileID: 0}
+    - target: {fileID: 7460847176538328462, guid: bdb70adec8b4506409e24e56d837c5d4, type: 3}
+      propertyPath: m_PropertySheet.m_Vector4f.m_Array.Array.data[0].m_Name
+      value: ParticalColours
+      objectReference: {fileID: 0}
+    - target: {fileID: 7460847176538328462, guid: bdb70adec8b4506409e24e56d837c5d4, type: 3}
+      propertyPath: m_PropertySheet.m_Vector4f.m_Array.Array.data[1].m_Name
+      value: HitColour
+      objectReference: {fileID: 0}
+    - target: {fileID: 7460847176538328462, guid: bdb70adec8b4506409e24e56d837c5d4, type: 3}
+      propertyPath: m_PropertySheet.m_Float.m_Array.Array.data[0].m_Overridden
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7460847176538328462, guid: bdb70adec8b4506409e24e56d837c5d4, type: 3}
+      propertyPath: m_PropertySheet.m_Vector4f.m_Array.Array.data[0].m_Value.x
+      value: 192
+      objectReference: {fileID: 0}
+    - target: {fileID: 7460847176538328462, guid: bdb70adec8b4506409e24e56d837c5d4, type: 3}
+      propertyPath: m_PropertySheet.m_Vector4f.m_Array.Array.data[0].m_Value.y
+      value: 44.800003
+      objectReference: {fileID: 0}
+    - target: {fileID: 7460847176538328462, guid: bdb70adec8b4506409e24e56d837c5d4, type: 3}
+      propertyPath: m_PropertySheet.m_Vector4f.m_Array.Array.data[0].m_Value.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7460847176538328462, guid: bdb70adec8b4506409e24e56d837c5d4, type: 3}
+      propertyPath: m_PropertySheet.m_Vector4f.m_Array.Array.data[1].m_Value.x
+      value: 5.992157
+      objectReference: {fileID: 0}
+    - target: {fileID: 7460847176538328462, guid: bdb70adec8b4506409e24e56d837c5d4, type: 3}
+      propertyPath: m_PropertySheet.m_Vector4f.m_Array.Array.data[1].m_Value.y
+      value: 3.0260396
+      objectReference: {fileID: 0}
+    - target: {fileID: 7460847176538328462, guid: bdb70adec8b4506409e24e56d837c5d4, type: 3}
+      propertyPath: m_PropertySheet.m_Vector4f.m_Array.Array.data[1].m_Value.z
+      value: 0.5992159
+      objectReference: {fileID: 0}
+    - target: {fileID: 7460847176538328462, guid: bdb70adec8b4506409e24e56d837c5d4, type: 3}
+      propertyPath: m_PropertySheet.m_Vector4f.m_Array.Array.data[0].m_Overridden
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7460847176538328462, guid: bdb70adec8b4506409e24e56d837c5d4, type: 3}
+      propertyPath: m_PropertySheet.m_Vector4f.m_Array.Array.data[1].m_Overridden
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
