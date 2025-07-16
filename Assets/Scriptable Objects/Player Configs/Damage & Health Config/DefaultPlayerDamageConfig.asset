@@ -14,17 +14,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Attack: 10
   AttackRange: 5
+  AttackCooldown: 0.5
   AttackMask:
     serializedVersion: 2
-    m_Bits: 768
-  DamageThresholds:
-  - speedThreshold: 0
-    damageMultiplier: 0.7
-  - speedThreshold: 7
-    damageMultiplier: 1
-  - speedThreshold: 14
-    damageMultiplier: 2
-  - speedThreshold: 20
-    damageMultiplier: 3
+    m_Bits: 256
+  KnockbackDealt: 10
+  KnockbackHeight: 3
+  StartAngle: 90
+  EndAngle: -90
+  SwingTime: 0.5
+  HurtboxLengthConstant: 3
+  HurtboxLengthMomentumMultiplier: 0.2
+  ParryCheckDistance: 50
+  ParryMaxAngle: 30
+  ParriedProjectileSpeedMultiplier: 2
+  ParriedProjectileMinimumSpeed: 10
+  ParriedProjectileDefaultDamage: 10
+  UseHitStop: 1
+  HitStopTimeScale: 0.02
+  HitStopDuration: 0.1
   MaxHealth: 100
   StartingHealth: 100
