@@ -13,15 +13,27 @@ MonoBehaviour:
   m_Name: DefaultPlayerControllerConfig
   m_EditorClassIdentifier: 
   Thresholds:
-  - speedThreshold: 0
-    damageMultiplier: 0.7
-    fieldOfView: 60
   - speedThreshold: 5
     damageMultiplier: 1
     fieldOfView: 65
-  - speedThreshold: 15
+    hasSpeedlines: 0
+    speedRangeOfLines: {x: 0, y: 0}
+    speedlineSpawnRate: 0
+  - speedThreshold: 8
     damageMultiplier: 2
     fieldOfView: 70
+    hasSpeedlines: 0
+    speedRangeOfLines: {x: 0, y: 0}
+    speedlineSpawnRate: 0
+  - speedThreshold: 14
+    damageMultiplier: 4
+    fieldOfView: 75
+    hasSpeedlines: 1
+    speedRangeOfLines: {x: 1, y: 4}
+    speedlineSpawnRate: 12
   - speedThreshold: 24
-    damageMultiplier: 3
+    damageMultiplier: 10
     fieldOfView: 80
+    hasSpeedlines: 1
+    speedRangeOfLines: {x: 2, y: 8}
+    speedlineSpawnRate: 30

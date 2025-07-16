@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(Rigidbody))]
@@ -41,7 +42,22 @@ public class PlayerMovementController : MonoBehaviour, IMomentumModifiable {
     //}
 
     #endregion Momentum Storage
-    private bool slideEnded = true;
+    private bool _slideEnded;
+    private bool slideEnded {
+        get => _slideEnded;
+        set {
+            if (_slideEnded != value) {                         // different value 
+                _slideEnded = value;
+                if (value && hasBeenBounceBombed && !inAir) {   // it become true
+                    BombBounceEndedEvent?.Invoke();
+                }
+            }
+            else {
+                _slideEnded = value;
+            }
+        }
+    }
+    private bool hasBeenBounceBombed = false;
 
     #region Movement Variables
 
@@ -90,7 +106,8 @@ public class PlayerMovementController : MonoBehaviour, IMomentumModifiable {
 
     private Vector2 movementInput;
     private bool jumpActivated;
-
+    private bool prevJumpActivated;
+    private bool jumpOnlyJustActivated => !prevJumpActivated && jumpActivated;
     private bool hasInput => movementInput.x != 0 || movementInput.y != 0;
 
     #endregion Input Variables
@@ -100,8 +117,15 @@ public class PlayerMovementController : MonoBehaviour, IMomentumModifiable {
     [Header("Misc Child Objects")]
     [SerializeField] private Transform momentumPosition;
     [SerializeField] private Transform movementDirectionTransform;
+    [SerializeField] private Transform wallKickPosition;
 
     #endregion Misc Child Objects
+
+    #region Events
+
+    public UnityEvent BombBounceEndedEvent = new();
+
+    #endregion Events
 
     #region Debug Objects
 
@@ -112,13 +136,11 @@ public class PlayerMovementController : MonoBehaviour, IMomentumModifiable {
 
 
     private Rigidbody rb;
-    private IHasSpeedThresholds thresholdHolder;
 
     #region MonoBehaviour Functions
 
     private void Awake() {
         rb = this.GetComponent<Rigidbody>();
-        thresholdHolder = this.GetComponent<IHasSpeedThresholds>();
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -134,6 +156,7 @@ public class PlayerMovementController : MonoBehaviour, IMomentumModifiable {
         GroundedStateUpdates();
 
         prevGroundedState = groundedState;
+        prevJumpActivated = jumpActivated;
 
         debugSpeedText.text = $"Horizontal: {rb.linearVelocity.Horizontal().magnitude:0.####}\n" +
             $"Up: {Vector3.Dot(rb.linearVelocity, Vector3.up):0.####}\n" +
@@ -174,7 +197,6 @@ public class PlayerMovementController : MonoBehaviour, IMomentumModifiable {
             TutorialEvents.OnPlayerMoved?.Invoke();
         }
 
-        // need to normalise movement since MoveInput() accumulates inputs
         movementInput = movementInput.normalized;
 
         VerticalMovement();
@@ -381,7 +403,7 @@ public class PlayerMovementController : MonoBehaviour, IMomentumModifiable {
     #region Ground & Slopes
 
     private bool DefaultGroundCheck(out RaycastHit hitInfo) {
-        return Physics.Raycast(groundCheckPosition, Vector3.down, out hitInfo, groundCheckRange, groundMask, QueryTriggerInteraction.Collide);
+        return Physics.Raycast(groundCheckPosition, Vector3.down, out hitInfo, groundCheckRange, groundMask, QueryTriggerInteraction.Ignore);
     }
 
     private bool DefaultGroundCheck() {
@@ -437,6 +459,11 @@ public class PlayerMovementController : MonoBehaviour, IMomentumModifiable {
                 timeSpentGrounded = 0f;
 
                 enableGroundedStateCheck = false;
+
+                if (slideEnded) {
+                    hasBeenBounceBombed = false;
+                }
+
                 this.InvokeCancel("End Slide");
                 slideEnded = true;
                 break;
@@ -494,6 +521,35 @@ public class PlayerMovementController : MonoBehaviour, IMomentumModifiable {
 
     #endregion Ground & Slopes
 
+    #region Wall Kick
+
+    private void WallKickCheck() {
+        if (!inAir || DefaultGroundCheck())
+            return;
+
+        // TODO: add momentum storage tech
+        if (Physics.Raycast(wallKickPosition.position, rb.linearVelocity.Horizontal().normalized, out var hitInfo, Config.WallKickDistance, Globals.OBSTACLE_MASK, QueryTriggerInteraction.Ignore)) {
+            // subtracting from 90 to go from 'up' to horizontal
+            float angleFromHorizontal = 90f - Vector3.Angle(hitInfo.normal, Vector3.up);
+            if (angleFromHorizontal >= Config.MinWallKickAngle && angleFromHorizontal <= Config.MaxWallKickAngle) {
+                WallKick(in hitInfo);
+            }
+        }
+    }
+
+    private void WallKick(in RaycastHit hitInfo) {
+        Vector3 newHorizontalDirection = Vector3.Reflect(rb.linearVelocity.Horizontal(), hitInfo.normal).normalized;
+        float horizontalSpeed = rb.linearVelocity.Horizontal().magnitude;
+
+        float verticalSpeed = Config.UseWallKickFixedVerticalSpeed ? rb.linearVelocity.y : Config.WallKickFixedVerticalSpeed;
+        verticalSpeed = Config.AlwaysWallKickUpwards ? Mathf.Abs(verticalSpeed) : verticalSpeed;
+
+        Vector3 newMomentum = new(newHorizontalDirection.x * horizontalSpeed, verticalSpeed, newHorizontalDirection.z * horizontalSpeed);
+        this.SetMomentum(newMomentum);
+    }
+
+    #endregion Wall Kick
+
     #region Input
 
     // in case direct input is required
@@ -507,23 +563,15 @@ public class PlayerMovementController : MonoBehaviour, IMomentumModifiable {
     }
 
     public void MoveInput(Vector2 input) {
-        if (input.x == 0) {
-            movementInput.x = 0;
-        }
-        else {
-            movementInput.x += input.x;
-        }
-
-        if (input.y == 0) {
-            movementInput.y = 0;
-        }
-        else {
-            movementInput.y += input.y;
-        }
+        movementInput = input;
     }
 
     public void JumpInput(bool activated) {
         jumpActivated = activated;
+
+        if (jumpOnlyJustActivated) {
+            WallKickCheck();
+        }
     }
 
     #endregion Input
@@ -540,6 +588,28 @@ public class PlayerMovementController : MonoBehaviour, IMomentumModifiable {
 
     public void SetMomentum(Vector3 newMomentum) {
         rb.linearVelocity = newMomentum;
+    }
+
+    public void BeenBombBounced() {
+        hasBeenBounceBombed = true;
+    }
+
+    public void AddMomentum(Vector3 value)
+    {
+        //if (value.y != 0)
+        //{
+        //    rb.linearVelocity = new Vector3(rb.linearVelocity.x, value.y, rb.linearVelocity.z);
+        //}
+        //else
+        //{
+        //    rb.linearVelocity = new Vector3(rb.linearVelocity.x + value.x, rb.linearVelocity.y, rb.linearVelocity.z + value.z);
+        //}
+
+        rb.linearVelocity += value;
+
+        //rb.AddForce(value, ForceMode.Impulse);
+
+
     }
 
     #endregion IMomentumModifiable
