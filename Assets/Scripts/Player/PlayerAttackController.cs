@@ -1,9 +1,15 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 public class PlayerAttackController : MonoBehaviour, IDamageable {
     [SerializeField] public PlayerDamageConfig Config;
+
+    [Header("GameOver")]
+    [SerializeField] private GameObject gameOver;
+    [SerializeField] private GameObject firstSelectedObject;
+    [SerializeField] private Animator fade;
 
     [Header("Health")]
     [SerializeField] private Slider healthBar;
@@ -36,7 +42,7 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
         healthBar.value = health;
 
         hurtbox.gameObject.SetActive(false);
-
+        gameOver.SetActive(false);
         //cameraImpulseSource.ImpulseDefinition.
     }
 
@@ -120,11 +126,21 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
         health -= amount;
         healthBar.value = health;
         TutorialEvents.OnEnemyKilled?.Invoke();
-        //Debug.Log($"Damage Amount: {amount}, Current Health: {health}");
+        if(health <= 0 && !gameOver.activeSelf)
+        {
+            Kill();
+        }
     }
 
-    public void Kill() {
-        throw new System.NotImplementedException();
+    public void Kill()
+    {
+
+
+        Time.timeScale = 0;
+        gameOver.SetActive(true);
+        EventSystem.current.SetSelectedGameObject(firstSelectedObject);
+
+
     }
 
     public void Heal(float amount) {
