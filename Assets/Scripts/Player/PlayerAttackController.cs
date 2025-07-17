@@ -2,14 +2,15 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using System.Collections;
 
 public class PlayerAttackController : MonoBehaviour, IDamageable {
     [SerializeField] public PlayerDamageConfig Config;
 
     [Header("GameOver")]
     [SerializeField] private GameObject firstSelectedObject;
-    [SerializeField] private CanvasGroup gameOverCanvas;
-    [SerializeField] private Animator fades;
+    [SerializeField] private GameObject gameOverCanvas;
+    [SerializeField] private bool dead;
 
     [Header("Health")]
     [SerializeField] private Slider healthBar;
@@ -44,11 +45,9 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
         hurtbox.gameObject.SetActive(false);
         //cameraImpulseSource.ImpulseDefinition.
 
-        gameOverCanvas.interactable = false;
     }
 
     private void Update() {
-
     }
 
     #region Attack
@@ -127,7 +126,7 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
         health -= amount;
         healthBar.value = health;
         TutorialEvents.OnEnemyKilled?.Invoke();
-        if(health <= 0 && !gameOverCanvas.interactable)
+        if(health <= 0 && !gameOverCanvas.activeSelf)
         {
             Kill();
         }
@@ -135,19 +134,20 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
 
     public void Kill()
     {
-        fades.SetTrigger("startFade");
-        gameOverCanvas.interactable = true;
-        gameOverCanvas.blocksRaycasts = false;
-        EventSystem.current.SetSelectedGameObject(firstSelectedObject);
+        StartCoroutine(Death());
         
+    }
+
+    private IEnumerator Death()
+    {
+        yield return new WaitForSeconds(.5f);
+        gameOverCanvas.SetActive(true);
+        dead = true;
+        EventSystem.current.SetSelectedGameObject(firstSelectedObject);
+
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
-
-        if (fades.GetCurrentAnimatorStateInfo(0).IsName("FadeIn") && !fades.IsInTransition(0))
-        {
-            Debug.Log("FadesIn");
-            Time.timeScale = 0;
-        }
+        Time.timeScale = 0;
     }
 
     public void Heal(float amount) {
