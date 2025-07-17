@@ -121,11 +121,6 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
         }
     }
 
-    private void OnDrawGizmos() {
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(orientation.position, Config.ParryCheckDistance);
-    }
-
     private float CalculateDamage() {
         if (thresholdHolder.CurrentThreshold == null)
             return Config.Attack;
