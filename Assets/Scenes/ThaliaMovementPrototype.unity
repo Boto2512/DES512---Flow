@@ -119,6 +119,17 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!114 &129872586 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1757365468269294949, guid: dd064e9b8c18c2c45bcf14e79bbdd933, type: 3}
+  m_PrefabInstance: {fileID: 1150374960}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &163353052
 GameObject:
   m_ObjectHideFlags: 0
@@ -1695,6 +1706,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1084077173386290709, guid: dd064e9b8c18c2c45bcf14e79bbdd933, type: 3}
+      propertyPath: m_RaycastTarget
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1276511987639794026, guid: dd064e9b8c18c2c45bcf14e79bbdd933, type: 3}
+      propertyPath: m_RaycastTarget
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1814194948341369058, guid: dd064e9b8c18c2c45bcf14e79bbdd933, type: 3}
+      propertyPath: m_RaycastTarget
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4836390072344657585, guid: dd064e9b8c18c2c45bcf14e79bbdd933, type: 3}
       propertyPath: m_LocalPosition.x
       value: 15.330008
@@ -1733,6 +1756,22 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4836390072344657585, guid: dd064e9b8c18c2c45bcf14e79bbdd933, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5758292690388373498, guid: dd064e9b8c18c2c45bcf14e79bbdd933, type: 3}
+      propertyPath: m_Navigation.m_SelectOnUp
+      value: 
+      objectReference: {fileID: 129872586}
+    - target: {fileID: 5758292690388373498, guid: dd064e9b8c18c2c45bcf14e79bbdd933, type: 3}
+      propertyPath: m_Navigation.m_SelectOnDown
+      value: 
+      objectReference: {fileID: 129872586}
+    - target: {fileID: 7799885353149694940, guid: dd064e9b8c18c2c45bcf14e79bbdd933, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7799885353149694940, guid: dd064e9b8c18c2c45bcf14e79bbdd933, type: 3}
+      propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9012737342808474076, guid: dd064e9b8c18c2c45bcf14e79bbdd933, type: 3}
