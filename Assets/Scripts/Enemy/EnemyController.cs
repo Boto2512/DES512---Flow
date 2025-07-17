@@ -140,8 +140,8 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
         if (health <= 0) {
             Instantiate(oilDieVFX, attackTransform.position, Quaternion.Euler(Vector3.up));
             Kill();
-            TutorialEvents.OnEnemyKilled.Invoke();
-            TutorialEvents.enemyKilledVeryFast.Invoke();
+            TutorialEvents.OnEnemyKilled?.Invoke();
+            TutorialEvents.enemyKilledVeryFast?.Invoke();
         }
         else {
             Instantiate(oilHitVFX, attackTransform.position, Quaternion.Euler(Vector3.up));
