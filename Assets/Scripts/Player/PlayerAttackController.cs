@@ -7,9 +7,9 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
     [SerializeField] public PlayerDamageConfig Config;
 
     [Header("GameOver")]
-    [SerializeField] private GameObject gameOver;
     [SerializeField] private GameObject firstSelectedObject;
-    [SerializeField] private Animator fade;
+    [SerializeField] private CanvasGroup gameOverCanvas;
+    [SerializeField] private Animator fades;
 
     [Header("Health")]
     [SerializeField] private Slider healthBar;
@@ -42,8 +42,9 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
         healthBar.value = health;
 
         hurtbox.gameObject.SetActive(false);
-        gameOver.SetActive(false);
         //cameraImpulseSource.ImpulseDefinition.
+
+        gameOverCanvas.interactable = false;
     }
 
     private void Update() {
@@ -126,7 +127,7 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
         health -= amount;
         healthBar.value = health;
         TutorialEvents.OnEnemyKilled?.Invoke();
-        if(health <= 0 && !gameOver.activeSelf)
+        if(health <= 0 && !gameOverCanvas.interactable)
         {
             Kill();
         }
@@ -134,13 +135,19 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
 
     public void Kill()
     {
-
-
-        Time.timeScale = 0;
-        gameOver.SetActive(true);
+        fades.SetTrigger("startFade");
+        gameOverCanvas.interactable = true;
+        gameOverCanvas.blocksRaycasts = false;
         EventSystem.current.SetSelectedGameObject(firstSelectedObject);
+        
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
 
-
+        if (fades.GetCurrentAnimatorStateInfo(0).IsName("FadeIn") && !fades.IsInTransition(0))
+        {
+            Debug.Log("FadesIn");
+            Time.timeScale = 0;
+        }
     }
 
     public void Heal(float amount) {
