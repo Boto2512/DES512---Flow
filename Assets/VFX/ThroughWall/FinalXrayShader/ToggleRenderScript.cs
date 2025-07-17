@@ -34,6 +34,8 @@ public class ToggleRenderScript : MonoBehaviour
         {
             Debug.LogError($"XRayToggle: Could not find a feature named '{xrayFeatureName}'!");
         }
+
+        ToggleXRay(!xrayFeature.isActive);
     }
 
     void Update()
@@ -44,9 +46,13 @@ public class ToggleRenderScript : MonoBehaviour
         // Toggle with T key
         if (Input.GetKeyDown(KeyCode.T))
         {
-            bool newState = !xrayFeature.isActive;
-            xrayFeature.SetActive(newState);
-            Debug.Log($"XRayToggle: '{xrayFeatureName}' is now {(newState ? "ENABLED" : "DISABLED")}");
+            ToggleXRay(!xrayFeature.isActive);
         }
+    }
+
+    public void ToggleXRay(bool active)
+    {
+            xrayFeature.SetActive(active);
+
     }
 }
