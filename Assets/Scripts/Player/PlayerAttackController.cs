@@ -1,10 +1,15 @@
-using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 public class PlayerAttackController : MonoBehaviour, IDamageable {
     [SerializeField] public PlayerDamageConfig Config;
+
+    [Header("GameOver")]
+    [SerializeField] private GameObject gameOver;
+    [SerializeField] private GameObject firstSelectedObject;
+    [SerializeField] private Animator fade;
 
     [Header("Health")]
     [SerializeField] private Slider healthBar;
@@ -21,6 +26,9 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
     [Header("Hurtbox")]
     [SerializeField] private PlayerHurtbox hurtbox;
 
+    [Header("VFX Prefabs")]
+    [SerializeField] private GameObject hitVFX;
+
     private Rigidbody rb;
     private IHasSpeedThresholds thresholdHolder;
 
@@ -34,7 +42,7 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
         healthBar.value = health;
 
         hurtbox.gameObject.SetActive(false);
-
+        gameOver.SetActive(false);
         //cameraImpulseSource.ImpulseDefinition.
     }
 
@@ -69,12 +77,18 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
         float damage = CalculateDamage();
         damageable.TakeDamage(damage);
 
-        if (Config.UseHitStop)
+        if (collider.attachedRigidbody != null && collider.attachedRigidbody.TryGetComponent<IMomentumModifiable>(out var imm)) {
+            Vector3 knockback = orientation.forward.normalized * Config.KnockbackDealt;
+            knockback.y = Config.KnockbackHeight;
+            imm.AddMomentum(knockback);
+        }
+
+        if (Config.UseHitStop) {
             HitStop.Slow(Config.HitStopTimeScale, Config.HitStopDuration).Forget();
+        }
         //HitStop.Stop(0.33f).Forget();
 
-        // TODO: add hit effect to the following code
-        // collider.ClosestPoint(hurtbox.transform.position);
+        Instantiate(hitVFX, collider.ClosestPoint(hurtbox.transform.position), Quaternion.identity);
     }
 
     private float CalculateDamage() {
@@ -84,19 +98,19 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
         return Config.Attack * thresholdHolder.CurrentThreshold.DamageMultiplier;
     }
 
-    private IDamageable[] GetEnemiesInAttackBox() {
-        // TODO: change this to a rotation sweep capsule cast
+    //private IDamageable[] GetEnemiesInAttackBox() {
+    //    // TODO: change this to a rotation sweep capsule cast
 
-        Vector3 halfAttackForward = Config.AttackRange * orientation.forward / 2f;
-        return Physics.OverlapBox(this.transform.position + halfAttackForward,
-                new Vector3(Config.AttackRange, Config.AttackRange, Config.AttackRange) / 2f, orientation.transform.rotation, Config.AttackMask, QueryTriggerInteraction.Collide)
-            .Where(collider => Utility.DoesMaskContainLayer(Config.AttackMask, collider.gameObject.layer)
-                && collider.attachedRigidbody != null
-                && collider.attachedRigidbody.GetComponent<IDamageable>() != null)
-            .Select(collider => collider.attachedRigidbody.GetComponent<IDamageable>())
-            .Where(damageable => damageable != (IDamageable)this)
-            .ToArray();
-    }
+    //    Vector3 halfAttackForward = Config.AttackRange * orientation.forward / 2f;
+    //    return Physics.OverlapBox(this.transform.position + halfAttackForward,
+    //            new Vector3(Config.AttackRange, Config.AttackRange, Config.AttackRange) / 2f, orientation.transform.rotation, Config.AttackMask, QueryTriggerInteraction.Collide)
+    //        .Where(collider => Utility.DoesMaskContainLayer(Config.AttackMask, collider.gameObject.layer)
+    //            && collider.attachedRigidbody != null
+    //            && collider.attachedRigidbody.GetComponent<IDamageable>() != null)
+    //        .Select(collider => collider.attachedRigidbody.GetComponent<IDamageable>())
+    //        .Where(damageable => damageable != (IDamageable)this)
+    //        .ToArray();
+    //}
 
     #endregion Attack
 
@@ -112,11 +126,21 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
         health -= amount;
         healthBar.value = health;
         TutorialEvents.OnEnemyKilled?.Invoke();
-        //Debug.Log($"Damage Amount: {amount}, Current Health: {health}");
+        if(health <= 0 && !gameOver.activeSelf)
+        {
+            Kill();
+        }
     }
 
-    public void Kill() {
-        throw new System.NotImplementedException();
+    public void Kill()
+    {
+
+
+        Time.timeScale = 0;
+        gameOver.SetActive(true);
+        EventSystem.current.SetSelectedGameObject(firstSelectedObject);
+
+
     }
 
     public void Heal(float amount) {

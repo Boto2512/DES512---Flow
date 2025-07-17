@@ -15,6 +15,10 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
     [Min(0f)] public float BombRegenAmount { get; private set; } = 0.5f;
     [Min(0f)] private float droppedHealth;
 
+    [Header("VFX Prefabs")]
+    [SerializeField] private GameObject oilHitVFX;
+    [SerializeField] private GameObject oilDieVFX;
+
     [Header("Debug Events")]
     [SerializeField] private UnityEvent takeDamage = new();
     #endregion Damage Variables
@@ -134,7 +138,13 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
         healthBar.value = health;
 
         if (health <= 0) {
+            Instantiate(oilDieVFX, attackTransform.position, Quaternion.Euler(Vector3.up));
             Kill();
+            TutorialEvents.OnEnemyKilled.Invoke();
+            TutorialEvents.enemyKilledVeryFast.Invoke();
+        }
+        else {
+            Instantiate(oilHitVFX, attackTransform.position, Quaternion.Euler(Vector3.up));
         }
     }
 
@@ -143,7 +153,7 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
         healthBar.value = 0;
         Instantiate(healthDrop, transform.position, transform.rotation);
         Destroy(this.gameObject);
-        TutorialEvents.enemyKilledVeryFast?.Invoke();
+        
     }
 
     public void Heal(float value) {
@@ -397,8 +407,12 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
         isGrounded = false;
         groundCheckEnabled = false;
 
-        rb.AddForce(value, ForceMode.VelocityChange);
+        rb.linearVelocity = value;
         //this.InvokeOverwrite("bombBounced", () => bombBounced = true, 0.1f);
+    }
+
+    public void AddMomentum(Vector3 value, ForceMode additionType = ForceMode.Impulse) {
+        SetMomentum(GetMomentum() + value);
     }
 
     public void BeenBombBounced() {
