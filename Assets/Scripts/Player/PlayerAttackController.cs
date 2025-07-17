@@ -80,7 +80,7 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
 
     public void DamageableHit(IDamageable damageable, Collider collider) {
         float damage = CalculateDamage();
-        damageable.TakeDamage(damage);
+        damageable.TakeDamage(damage, this.gameObject);
 
         if (collider.attachedRigidbody != null && collider.attachedRigidbody.TryGetComponent<IMomentumModifiable>(out var imm)) {
             Vector3 knockback = orientation.forward.normalized * Config.KnockbackDealt;
