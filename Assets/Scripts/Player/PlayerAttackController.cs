@@ -98,7 +98,7 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
 
     private void Parry() {
         Collider[] firstProjectileArray = new Collider[1];
-        if (Physics.OverlapSphereNonAlloc(orientation.position, Config.ParryCheckDistance, firstProjectileArray, Globals.PROJECTILE_MASK, QueryTriggerInteraction.Ignore) == 0) {
+        if (Physics.OverlapSphereNonAlloc(orientation.position, Config.ParryCheckDistance, firstProjectileArray, Globals.PROJECTILE_MASK, QueryTriggerInteraction.Collide) == 0) {
             return;
         }
 
@@ -109,16 +109,21 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
             parried = true;
 
             float projectileSpeed = Mathf.Max(Config.ParriedProjectileMinimumSpeed, rb.linearVelocity.magnitude * Config.ParriedProjectileSpeedMultiplier);
-            Vector3 momentum = orientation.forward * projectileSpeed;
+            Vector3 momentum = orientation.forward.normalized * projectileSpeed;
 
-            Debug.Log("creating parry projectile");
-
-            ParryProjectile parriedProjectileScript = Instantiate(parryProjectile, orientation.position, orientation.rotation).GetComponent<ParryProjectile>();
+            ParryProjectile parriedProjectileScript = Instantiate(parryProjectile, orientation.position, Quaternion.FromToRotation(Vector3.zero, orientation.forward)).GetComponent<ParryProjectile>();
             parriedProjectileScript.Momentum = momentum;
             parriedProjectileScript.Damage = Config.ParriedProjectileDefaultDamage * thresholdHolder.CurrentThreshold.DamageMultiplier;
 
-            Debug.Log("parry projectile created");
+            Debug.Log("parry projectile created with momentum " + momentum.ToString());
+
+            Destroy(projectile.attachedRigidbody.gameObject);
         }
+    }
+
+    private void OnDrawGizmos() {
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(orientation.position, Config.ParryCheckDistance);
     }
 
     private float CalculateDamage() {
