@@ -12,6 +12,9 @@ public class EnemyCounter : MonoBehaviour
     [Tooltip("The transform of the object for the next section")]
     [SerializeField] private Transform nextSectionParent;
     [SerializeField] private float xRayThreshold;
+
+    [SerializeField] private Vector3 doorEndPos;
+    [SerializeField] private Transform door;
     private List<GameObject> nextEnemies = new List<GameObject>();
     private float enemyCount;
     private float totalCount;
@@ -52,6 +55,7 @@ public class EnemyCounter : MonoBehaviour
                 }
             }
         }
+        else if (enemyCount == totalCount) { toggleXray.ToggleXRay(false); }
         else if ((enemyCount/totalCount) * 100 <= xRayThreshold) 
         {
             toggleXray.ToggleXRay(true);
@@ -69,7 +73,9 @@ public class EnemyCounter : MonoBehaviour
     }
 
     private void OpenDoor()
-    {        
+    {   
+        door.position = Vector3.MoveTowards(door.position,doorEndPos, Time.deltaTime);
         toggleXray.ToggleXRay(false);
     }
+
 }
