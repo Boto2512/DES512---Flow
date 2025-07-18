@@ -17,19 +17,14 @@ MonoBehaviour:
   AttackCooldown: 0.5
   AttackMask:
     serializedVersion: 2
-    m_Bits: 256
-  KnockbackDealt: 10
-  KnockbackHeight: 3
-  StartAngle: 70
-  EndAngle: -70
-  SwingTime: 0.5
+    m_Bits: 768
+  KnockbackDealt: 8
+  KnockbackHeight: 2
+  StartAngle: 90
+  EndAngle: -90
+  SwingTime: 0.1
   HurtboxLengthConstant: 3
   HurtboxLengthMomentumMultiplier: 0.2
-  ParryCheckDistance: 2
-  ParryMaxAngle: 30
-  ParriedProjectileSpeedMultiplier: 2
-  ParriedProjectileMinimumSpeed: 10
-  ParriedProjectileDefaultDamage: 10
   UseHitStop: 1
   HitStopTimeScale: 0.02
   HitStopDuration: 0.1

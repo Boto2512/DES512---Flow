@@ -47,7 +47,6 @@ public class Settings : MonoBehaviour
     }
 
     public void InvertVertical(bool isInverted) {
-        Debug.Log($"Inverting Vertical = {isInverted}");
         if (cameraConfig != null) { 
             cameraConfig.InvertVerticalInput = isInverted;
             if (cameraController != null)
