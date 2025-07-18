@@ -1,3 +1,9 @@
+using System.Collections;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
+using UnityEngine.UI;
+
 public class PlayerAttackController : MonoBehaviour, IDamageable {
     [SerializeField] public PlayerDamageConfig Config;
 
@@ -39,7 +45,7 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
         healthBar.value = health;
 
         hurtbox.gameObject.SetActive(false);
-        gameOver.SetActive(false);
+        gameOverCanvas.SetActive(false);
 
         if (!parryProjectile.TryGetComponent<ParryProjectile>(out _))
             Debug.LogError("Parry Projectile prefab in PlayerAttackController doesn't have the ParryProjectile script component");
@@ -109,8 +115,6 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
             ParryProjectile parriedProjectileScript = Instantiate(parryProjectile, orientation.position, Quaternion.FromToRotation(Vector3.zero, orientation.forward)).GetComponent<ParryProjectile>();
             parriedProjectileScript.Momentum = momentum;
             parriedProjectileScript.Damage = Config.ParriedProjectileDefaultDamage * thresholdHolder.CurrentThreshold.DamageMultiplier;
-
-            Debug.Log("parry projectile created with momentum " + momentum.ToString());
 
             Destroy(projectile.attachedRigidbody.gameObject);
         }
