@@ -23,6 +23,8 @@ public class ProjectileHomingOnPlayer : MonoBehaviour
 
     [Header("Damage")]
     [SerializeField] private float damage;
+
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start() {
         projectileRigidBody = GetComponent<Rigidbody>();
