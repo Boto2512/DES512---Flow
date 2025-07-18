@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1302567250776453592}
   - component: {fileID: 6644834479150302353}
   - component: {fileID: 5668062759680778672}
-  m_Layer: 9
+  m_Layer: 11
   m_Name: Bounce Bomb
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -92,7 +92,7 @@ GameObject:
   - component: {fileID: 2482948776066410961}
   - component: {fileID: 8276930193545607728}
   - component: {fileID: 8909628395941889558}
-  m_Layer: 9
+  m_Layer: 11
   m_Name: Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -200,7 +200,7 @@ GameObject:
   - component: {fileID: 8974327308272768225}
   - component: {fileID: 8683749869430981925}
   - component: {fileID: 552227311742724341}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: ExplosionBombBounceVFX
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -418,7 +418,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f94592684445c9a448abef1e44b1f6f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  vfx: {fileID: 8974327308272768225}
   timerTotal: 1
 --- !u!1 &9131112209767991399
 GameObject:
@@ -429,7 +428,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1572823228597174351}
-  m_Layer: 9
+  m_Layer: 11
   m_Name: Blast Centre
   m_TagString: Untagged
   m_Icon: {fileID: 0}
