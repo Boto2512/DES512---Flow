@@ -1,15 +1,10 @@
-using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.InputSystem;
-using UnityEngine.UI;
-
 public class PlayerAttackController : MonoBehaviour, IDamageable {
     [SerializeField] public PlayerDamageConfig Config;
 
     [Header("GameOver")]
-    [SerializeField] private GameObject gameOver;
     [SerializeField] private GameObject firstSelectedObject;
-    [SerializeField] private Animator fade;
+    [SerializeField] private GameObject gameOverCanvas;
+    [SerializeField] private bool dead;
 
     [Header("Health")]
     [SerializeField] private Slider healthBar;
@@ -156,19 +151,26 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
         health -= amount;
         healthBar.value = health;
         TutorialEvents.OnEnemyKilled?.Invoke();
-        if (health <= 0 && !gameOver.activeSelf) {
+
+        if (health <= 0 && !gameOverCanvas.activeSelf) {
             Kill();
         }
     }
 
     public void Kill() {
+        StartCoroutine(Death());
 
+    }
 
-        Time.timeScale = 0;
-        gameOver.SetActive(true);
+    private IEnumerator Death() {
+        yield return new WaitForSeconds(.5f);
+        gameOverCanvas.SetActive(true);
+        dead = true;
         EventSystem.current.SetSelectedGameObject(firstSelectedObject);
 
-
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+        Time.timeScale = 0;
     }
 
     public void Heal(float amount) {

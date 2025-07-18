@@ -80,9 +80,10 @@ public class TurretEnemy : MonoBehaviour, IDamageable {
 
         Physics.Raycast(start, direction, out RaycastHit hit, attackRange, canHitMask);
         if (hit.collider != null) {
-            Debug.Log($"{hit.transform.name}");
+            //Debug.Log($"{hit.transform.name}");
         }
-        else { Debug.Log("Attack Missed"); }
+        else {// Debug.Log("Attack Missed");
+              }
         Debug.DrawRay(start, direction * attackRange, Color.darkRed, 3f);
 
         if (attackVFX.HasFloat("LaserLength")) { attackVFX.SetFloat("LaserLength", hit.distance); }
