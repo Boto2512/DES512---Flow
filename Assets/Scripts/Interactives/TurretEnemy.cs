@@ -117,6 +117,7 @@ public class TurretEnemy : MonoBehaviour, IDamageable {
         healthBar.value = health;
         if (health < 0) {
             Kill();
+            TutorialEvents.enemyKilledVeryFast?.Invoke();
         }
     }
 
