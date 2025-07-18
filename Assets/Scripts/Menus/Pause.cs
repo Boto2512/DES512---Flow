@@ -29,6 +29,7 @@ public class Pause : MonoBehaviour
         if (pauseContext.started)
         {
             PauseGame(!isPaused);
+            optionsMenu.SetActive(false);
             EventSystem.current.SetSelectedGameObject(firstSelectedPause);
         }
     }

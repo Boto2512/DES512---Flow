@@ -51,6 +51,8 @@ public class Settings : MonoBehaviour
             cameraConfig.InvertVerticalInput = isInverted;
             if (cameraController != null)
             {
+
+                Debug.Log("Updating Settings");
                 cameraController.UpdateSensitivity();
             }
         } 
@@ -60,6 +62,8 @@ public class Settings : MonoBehaviour
             cameraConfig.VerticalSensitivity = sensitivity;
             if (cameraController != null)
             {
+
+                Debug.Log("Updating Settings");
                 cameraController.UpdateSensitivity();
             }
         } 
@@ -71,6 +75,7 @@ public class Settings : MonoBehaviour
             cameraConfig.InvertHorizontalInput = isInverted;
             if (cameraController != null)
             {
+                Debug.Log("Updating Settings");
                 cameraController.UpdateSensitivity();
             }
         }
@@ -78,7 +83,8 @@ public class Settings : MonoBehaviour
     public void SetHorizontalSensititvity(float sensitivity) {
         if (cameraConfig != null) {
             cameraConfig.HorizontalSensitivity = sensitivity;
-            if (cameraController != null) { 
+            if (cameraController != null) {
+                Debug.Log("Updating Settings");
                     cameraController.UpdateSensitivity(); 
             }
         }
