@@ -11,7 +11,7 @@ public class EnemySpawning : MonoBehaviour
     [SerializeField] private ToggleRenderScript toggleXray;
     float xRayThreshold;
     float totalCount;
-    private int currentSection = 1;
+    private int currentSection = 0;
     private List<GameObject> activeEnemies = new List<GameObject>();
 
     private void Start()
@@ -28,15 +28,17 @@ public class EnemySpawning : MonoBehaviour
         }
         else
         {
-
             toggleXray.ToggleXRay(false);
         }
     }
 
     private void SpawnSection(int sectionIndex)
     {
+        Debug.Log("Spawning enemies");
+
         if (sectionIndex >= sectionDatabase.sections.Count) return;
 
+        Debug.Log("section databases");
         SectionData section = sectionDatabase.sections[sectionIndex];
 
         foreach (SpawnData enemyData in section.enemySpawnData)
