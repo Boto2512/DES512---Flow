@@ -14,7 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sections:
   - sectionName: Example 1 - Section
-    enemySpawnData: []
+    enemySpawnData:
+    - spawnPoint: {x: -243.86276, y: 50.00001, z: -33.320797}
+      spawnRotation: {x: 0, y: 0, z: 0, w: 1}
+      characterType: 0
+      tempGameWorldObject: {fileID: 0}
   - sectionName: First Section
     enemySpawnData:
     - spawnPoint: {x: -236.37825, y: 12.251712, z: 39.3304}
@@ -66,10 +70,6 @@ MonoBehaviour:
       characterType: 0
       tempGameWorldObject: {fileID: 0}
     - spawnPoint: {x: -236.6135, y: 22.37291, z: 40.34764}
-      spawnRotation: {x: 0, y: 0, z: 0, w: 1}
-      characterType: 0
-      tempGameWorldObject: {fileID: 0}
-    - spawnPoint: {x: -241.8927, y: 50.00001, z: -33.826443}
       spawnRotation: {x: 0, y: 0, z: 0, w: 1}
       characterType: 0
       tempGameWorldObject: {fileID: 0}
