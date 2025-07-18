@@ -98,25 +98,35 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
     }
 
     private void Parry() {
-        Collider[] firstProjectileArray = new Collider[1];
-        if (Physics.OverlapSphereNonAlloc(orientation.position, Config.ParryCheckDistance, firstProjectileArray, Globals.PROJECTILE_MASK, QueryTriggerInteraction.Collide) == 0) {
+        Collider[] projectiles = new Collider[5];
+        int projectilesLength = Physics.OverlapSphereNonAlloc(orientation.position, Config.ParryCheckDistance, projectiles, Globals.PROJECTILE_MASK, QueryTriggerInteraction.Collide);
+        if (projectilesLength == 0) {
             return;
         }
 
-        Collider projectile = firstProjectileArray[0];
+        for (int i = 0; i < projectilesLength; ++i) {
+            float angle = Vector3.Angle(orientation.forward, projectiles[i].gameObject.transform.position - orientation.position);
+            if (angle <= Config.ParryMaxAngle) {
+                parried = true;
 
-        float angle = Vector3.Angle(orientation.forward, projectile.gameObject.transform.position - orientation.position);
-        if (angle <= Config.ParryMaxAngle) {
-            parried = true;
+                float projectileSpeed = Mathf.Max(Config.ParriedProjectileMinimumSpeed, rb.linearVelocity.magnitude * Config.ParriedProjectileSpeedMultiplier);
+                Vector3 momentum = orientation.forward.normalized * projectileSpeed;
 
-            float projectileSpeed = Mathf.Max(Config.ParriedProjectileMinimumSpeed, rb.linearVelocity.magnitude * Config.ParriedProjectileSpeedMultiplier);
-            Vector3 momentum = orientation.forward.normalized * projectileSpeed;
+                if (projectiles[i].attachedRigidbody != null && projectiles[i].attachedRigidbody.gameObject.TryGetComponent<BounceBomb>(out _)) {
+                    projectiles[i].attachedRigidbody.linearVelocity = momentum;
+                    projectiles[i].attachedRigidbody.useGravity = false;
+                    projectiles[i].attachedRigidbody.linearDamping = 0f;
+                }
+                else {
+                    ParryProjectile parriedProjectileScript = Instantiate(parryProjectile, orientation.position, Quaternion.FromToRotation(Vector3.zero, orientation.forward)).GetComponent<ParryProjectile>();
+                    parriedProjectileScript.Momentum = momentum;
+                    parriedProjectileScript.Damage = Config.ParriedProjectileDefaultDamage * thresholdHolder.CurrentThreshold.DamageMultiplier;
 
-            ParryProjectile parriedProjectileScript = Instantiate(parryProjectile, orientation.position, Quaternion.FromToRotation(Vector3.zero, orientation.forward)).GetComponent<ParryProjectile>();
-            parriedProjectileScript.Momentum = momentum;
-            parriedProjectileScript.Damage = Config.ParriedProjectileDefaultDamage * thresholdHolder.CurrentThreshold.DamageMultiplier;
+                    Destroy(projectiles[i].attachedRigidbody.gameObject);
+                }
 
-            Destroy(projectile.attachedRigidbody.gameObject);
+                break;
+            }
         }
     }
 
