@@ -18,6 +18,7 @@ public class TutorialManager : MonoBehaviour
     [SerializeField] private Sprite EnemyKilledStepGif;
     [SerializeField] private Sprite EnemyFastKillStepGif;
     [SerializeField] private Sprite BarrelExplodedStepGif;
+    [SerializeField] private Sprite ExitLevelGif;
 
     private void Awake()
     {
@@ -79,7 +80,8 @@ private System.Collections.IEnumerator WaitBeforeNextValidation()
             new UsedBounceBombStep(),
             new EnemyKilledStep(),
             new EnemyFastKill(),
-            new BarrelExplodedStep()
+            new BarrelExplodedStep(),
+            new LevelExitStep()
         };
 
         tutorialSteps[0].SetGifSprite(moveStepGif);
@@ -88,6 +90,7 @@ private System.Collections.IEnumerator WaitBeforeNextValidation()
         tutorialSteps[3].SetGifSprite(EnemyKilledStepGif);
         tutorialSteps[4].SetGifSprite(EnemyFastKillStepGif);
         tutorialSteps[5].SetGifSprite(BarrelExplodedStepGif);
+        tutorialSteps[6].SetGifSprite(ExitLevelGif);
     }
 
     public void StartTutorial()

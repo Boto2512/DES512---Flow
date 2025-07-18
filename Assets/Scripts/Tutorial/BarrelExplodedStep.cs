@@ -22,6 +22,7 @@ public class BarrelExplodedStep : ITutorialStep
     private void HandleBarrelExploded()
     {
         barrelExploded = true;
+        TutorialEvents.OnLevelExit?.Invoke();
     }
 
     public bool Validate() => barrelExploded;
