@@ -26,6 +26,8 @@ public class BounceBomb : MonoBehaviour {
         rb = GetComponent<Rigidbody>();
         rb.includeLayers = Globals.STICKY_MASK;
         rb.excludeLayers = ~Globals.STICKY_MASK;
+
+        rb.angularVelocity = new(0f, 50f, 0f);
     }
 
     // Update is called once per frame
@@ -38,7 +40,8 @@ public class BounceBomb : MonoBehaviour {
         rb.detectCollisions = false;
         CheckIfInsideBounceBombTriggerZone();
 
-        blastCentre.position = collision.contacts[0].point;
+        this.transform.SetPositionAndRotation(collision.collider.ClosestPoint(this.transform.position), Quaternion.FromToRotation(Vector3.up, collision.contacts[0].normal));
+        blastCentre.position = collision.GetContact(0).point;
     }
 
     public void Throw() {
@@ -77,7 +80,7 @@ public class BounceBomb : MonoBehaviour {
                 collider.transform.GetComponent<IDamageable>().TakeDamage(1);
             }
             else { }
-            
+
             Rigidbody rb = collider.attachedRigidbody;
             if (rb == null) {
                 continue;
@@ -99,7 +102,7 @@ public class BounceBomb : MonoBehaviour {
                 continue;
             }
 
-            
+
         }
 
         return allColliders.ToList();
