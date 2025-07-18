@@ -167,6 +167,7 @@ MonoBehaviour:
   health: 100
   healthBar: {fileID: 898514468998955983}
   healthDrop: {fileID: 3115757056857685540, guid: 934867da60cf84e4e99262740faa65cb, type: 3}
+  _bombRegenAmount: 0.5
   oilHitVFX: {fileID: 2370709913779561222, guid: f2db99b3f78c1144bb22f73af545860b, type: 3}
   oilDieVFX: {fileID: 8531866185165658167, guid: dc54101e9795e284180480e6e2d88c45, type: 3}
   takeDamage:
@@ -499,7 +500,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4985202855817454732}
-  m_Layer: 7
+  m_Layer: 8
   m_Name: Ground Check Position
   m_TagString: Untagged
   m_Icon: {fileID: 7422848464349959988, guid: 0000000000000000d000000000000000, type: 0}
