@@ -1,8 +1,8 @@
+using System.Collections;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
-using UnityEngine.EventSystems;
-using System.Collections;
 
 public class PlayerAttackController : MonoBehaviour, IDamageable {
     [SerializeField] public PlayerDamageConfig Config;
@@ -27,8 +27,10 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
     [Header("Hurtbox")]
     [SerializeField] private PlayerHurtbox hurtbox;
 
-    [Header("VFX Prefabs")]
+    [Header("Prefabs")]
     [SerializeField] private GameObject hitVFX;
+    [SerializeField] private GameObject parryProjectile;
+    private bool parried = false;
 
     private Rigidbody rb;
     private IHasSpeedThresholds thresholdHolder;
@@ -43,11 +45,15 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
         healthBar.value = health;
 
         hurtbox.gameObject.SetActive(false);
-        //cameraImpulseSource.ImpulseDefinition.
+        gameOverCanvas.SetActive(false);
 
+        if (!parryProjectile.TryGetComponent<ParryProjectile>(out _))
+            Debug.LogError("Parry Projectile prefab in PlayerAttackController doesn't have the ParryProjectile script component");
     }
 
     private void Update() {
+        if (attacking && !parried)
+            Parry();
     }
 
     #region Attack
@@ -70,12 +76,12 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
 
         attacking = true;
         hurtbox.gameObject.SetActive(true);
-        this.InvokeOverwrite("attack animation playing", () => attacking = false, Config.AttackCooldown);
+        this.InvokeOverwrite("attack animation playing", () => { attacking = false; parried = false; }, Config.AttackCooldown);
     }
 
     public void DamageableHit(IDamageable damageable, Collider collider) {
         float damage = CalculateDamage();
-        damageable.TakeDamage(damage);
+        damageable.TakeDamage(damage, this.gameObject);
 
         if (collider.attachedRigidbody != null && collider.attachedRigidbody.TryGetComponent<IMomentumModifiable>(out var imm)) {
             Vector3 knockback = orientation.forward.normalized * Config.KnockbackDealt;
@@ -89,6 +95,39 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
         //HitStop.Stop(0.33f).Forget();
 
         Instantiate(hitVFX, collider.ClosestPoint(hurtbox.transform.position), Quaternion.identity);
+    }
+
+    private void Parry() {
+        Collider[] projectiles = new Collider[5];
+        int projectilesLength = Physics.OverlapSphereNonAlloc(orientation.position, Config.ParryCheckDistance, projectiles, Globals.PROJECTILE_MASK, QueryTriggerInteraction.Collide);
+        if (projectilesLength == 0) {
+            return;
+        }
+
+        for (int i = 0; i < projectilesLength; ++i) {
+            float angle = Vector3.Angle(orientation.forward, projectiles[i].gameObject.transform.position - orientation.position);
+            if (angle <= Config.ParryMaxAngle) {
+                parried = true;
+
+                float projectileSpeed = Mathf.Max(Config.ParriedProjectileMinimumSpeed, rb.linearVelocity.magnitude * Config.ParriedProjectileSpeedMultiplier);
+                Vector3 momentum = orientation.forward.normalized * projectileSpeed;
+
+                if (projectiles[i].attachedRigidbody != null && projectiles[i].attachedRigidbody.gameObject.TryGetComponent<BounceBomb>(out _)) {
+                    projectiles[i].attachedRigidbody.linearVelocity = momentum;
+                    projectiles[i].attachedRigidbody.useGravity = false;
+                    projectiles[i].attachedRigidbody.linearDamping = 0f;
+                }
+                else {
+                    ParryProjectile parriedProjectileScript = Instantiate(parryProjectile, orientation.position, Quaternion.FromToRotation(Vector3.zero, orientation.forward)).GetComponent<ParryProjectile>();
+                    parriedProjectileScript.Momentum = momentum;
+                    parriedProjectileScript.Damage = Config.ParriedProjectileDefaultDamage * thresholdHolder.CurrentThreshold.DamageMultiplier;
+
+                    Destroy(projectiles[i].attachedRigidbody.gameObject);
+                }
+
+                break;
+            }
+        }
     }
 
     private float CalculateDamage() {
@@ -126,20 +165,18 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
         health -= amount;
         healthBar.value = health;
         TutorialEvents.OnEnemyKilled?.Invoke();
-        if(health <= 0 && !gameOverCanvas.activeSelf)
-        {
+
+        if (health <= 0 && !gameOverCanvas.activeSelf) {
             Kill();
         }
     }
 
-    public void Kill()
-    {
+    public void Kill() {
         StartCoroutine(Death());
-        
+
     }
 
-    private IEnumerator Death()
-    {
+    private IEnumerator Death() {
         yield return new WaitForSeconds(.5f);
         gameOverCanvas.SetActive(true);
         dead = true;
