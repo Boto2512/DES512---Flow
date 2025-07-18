@@ -1,16 +1,15 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
-using UnityEngine.EventSystems;
-using System.Collections;
 
 public class PlayerAttackController : MonoBehaviour, IDamageable {
     [SerializeField] public PlayerDamageConfig Config;
 
     [Header("GameOver")]
+    [SerializeField] private GameObject gameOver;
     [SerializeField] private GameObject firstSelectedObject;
-    [SerializeField] private GameObject gameOverCanvas;
-    [SerializeField] private bool dead;
+    [SerializeField] private Animator fade;
 
     [Header("Health")]
     [SerializeField] private Slider healthBar;
@@ -27,8 +26,10 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
     [Header("Hurtbox")]
     [SerializeField] private PlayerHurtbox hurtbox;
 
-    [Header("VFX Prefabs")]
+    [Header("Prefabs")]
     [SerializeField] private GameObject hitVFX;
+    [SerializeField] private GameObject parryProjectile;
+    private bool parried = false;
 
     private Rigidbody rb;
     private IHasSpeedThresholds thresholdHolder;
@@ -43,11 +44,15 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
         healthBar.value = health;
 
         hurtbox.gameObject.SetActive(false);
-        //cameraImpulseSource.ImpulseDefinition.
+        gameOver.SetActive(false);
 
+        if (!parryProjectile.TryGetComponent<ParryProjectile>(out _))
+            Debug.LogError("Parry Projectile prefab in PlayerAttackController doesn't have the ParryProjectile script component");
     }
 
     private void Update() {
+        if (attacking && !parried)
+            Parry();
     }
 
     #region Attack
@@ -70,12 +75,12 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
 
         attacking = true;
         hurtbox.gameObject.SetActive(true);
-        this.InvokeOverwrite("attack animation playing", () => attacking = false, Config.AttackCooldown);
+        this.InvokeOverwrite("attack animation playing", () => { attacking = false; parried = false; }, Config.AttackCooldown);
     }
 
     public void DamageableHit(IDamageable damageable, Collider collider) {
         float damage = CalculateDamage();
-        damageable.TakeDamage(damage);
+        damageable.TakeDamage(damage, this.gameObject);
 
         if (collider.attachedRigidbody != null && collider.attachedRigidbody.TryGetComponent<IMomentumModifiable>(out var imm)) {
             Vector3 knockback = orientation.forward.normalized * Config.KnockbackDealt;
@@ -89,6 +94,31 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
         //HitStop.Stop(0.33f).Forget();
 
         Instantiate(hitVFX, collider.ClosestPoint(hurtbox.transform.position), Quaternion.identity);
+    }
+
+    private void Parry() {
+        Collider[] firstProjectileArray = new Collider[1];
+        if (Physics.OverlapSphereNonAlloc(orientation.position, Config.ParryCheckDistance, firstProjectileArray, Globals.PROJECTILE_MASK, QueryTriggerInteraction.Collide) == 0) {
+            return;
+        }
+
+        Collider projectile = firstProjectileArray[0];
+
+        float angle = Vector3.Angle(orientation.forward, projectile.gameObject.transform.position - orientation.position);
+        if (angle <= Config.ParryMaxAngle) {
+            parried = true;
+
+            float projectileSpeed = Mathf.Max(Config.ParriedProjectileMinimumSpeed, rb.linearVelocity.magnitude * Config.ParriedProjectileSpeedMultiplier);
+            Vector3 momentum = orientation.forward.normalized * projectileSpeed;
+
+            ParryProjectile parriedProjectileScript = Instantiate(parryProjectile, orientation.position, Quaternion.FromToRotation(Vector3.zero, orientation.forward)).GetComponent<ParryProjectile>();
+            parriedProjectileScript.Momentum = momentum;
+            parriedProjectileScript.Damage = Config.ParriedProjectileDefaultDamage * thresholdHolder.CurrentThreshold.DamageMultiplier;
+
+            Debug.Log("parry projectile created with momentum " + momentum.ToString());
+
+            Destroy(projectile.attachedRigidbody.gameObject);
+        }
     }
 
     private float CalculateDamage() {
@@ -126,28 +156,19 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
         health -= amount;
         healthBar.value = health;
         TutorialEvents.OnEnemyKilled?.Invoke();
-        if(health <= 0 && !gameOverCanvas.activeSelf)
-        {
+        if (health <= 0 && !gameOver.activeSelf) {
             Kill();
         }
     }
 
-    public void Kill()
-    {
-        StartCoroutine(Death());
-        
-    }
+    public void Kill() {
 
-    private IEnumerator Death()
-    {
-        yield return new WaitForSeconds(.5f);
-        gameOverCanvas.SetActive(true);
-        dead = true;
+
+        Time.timeScale = 0;
+        gameOver.SetActive(true);
         EventSystem.current.SetSelectedGameObject(firstSelectedObject);
 
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
-        Time.timeScale = 0;
+
     }
 
     public void Heal(float amount) {

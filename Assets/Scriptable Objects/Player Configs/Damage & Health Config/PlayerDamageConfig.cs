@@ -19,6 +19,13 @@ public class PlayerDamageConfig : ScriptableObject {
     [Tooltip("Hurtbox.Height = HurtboxLengthConstant + IMomentumModifiable.GetMomentum().magnitude * HurtboxLengthMomentumMultiplier (average speed is ~14 as of writing)")]
     [Min(0f)] public float HurtboxLengthMomentumMultiplier = 0.2f;
 
+    [Header("Parry")]
+    [Min(0f)] public float ParryCheckDistance = 1f;
+    [Min(0f)] public float ParryMaxAngle = 30f;
+    [Min(0f)] public float ParriedProjectileSpeedMultiplier = 2f;
+    [Min(0f)] public float ParriedProjectileMinimumSpeed = 10f;
+    [Min(0f)] public float ParriedProjectileDefaultDamage = 10f;
+
     [Header("Hitstop")]
     public bool UseHitStop = true;
     [Min(0f)] public float HitStopTimeScale = 0.02f;
