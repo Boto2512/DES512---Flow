@@ -8,13 +8,29 @@ public class EnemySpawning : MonoBehaviour
     [SerializeField] private GameObject homingRangedEnemy;
     [SerializeField] private GameObject turretObject;
     [SerializeField] private Transform[] sectionParents;
-
+    [SerializeField] private ToggleRenderScript toggleXray;
+    float xRayThreshold;
+    float totalCount;
     private int currentSection = 1;
     private List<GameObject> activeEnemies = new List<GameObject>();
 
     private void Start()
     {
+        xRayThreshold = toggleXray.Threshold();
         SpawnSection(currentSection);
+    }
+
+    private void Update()
+    {
+        if ((activeEnemies.Count / totalCount) * 100 <= xRayThreshold)
+        {
+            toggleXray.ToggleXRay(true);
+        }
+        else
+        {
+
+            toggleXray.ToggleXRay(false);
+        }
     }
 
     private void SpawnSection(int sectionIndex)
@@ -39,9 +55,9 @@ public class EnemySpawning : MonoBehaviour
                     enemy = Instantiate(turretObject, enemyData.spawnPoint, enemyData.spawnRotation, sectionParents[sectionIndex]);
                     break;
             }
-
             if (enemy != null)
             {
+                totalCount++;
                 activeEnemies.Add(enemy);
 
                 // Subscribe to OnDestroy to track death
@@ -70,6 +86,7 @@ public class EnemySpawning : MonoBehaviour
         if (activeEnemies.Count == 0)
         {
             currentSection++;
+            totalCount = 0;
             SpawnSection(currentSection);
         }
     }

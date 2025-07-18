@@ -11,9 +11,9 @@ public class EnemyCounter : MonoBehaviour
     [SerializeField] private Transform currentSectionParent;
     [Tooltip("The transform of the object for the next section")]
     [SerializeField] private Transform nextSectionParent;
-    [SerializeField] private float xRayThreshold;
+    private float xRayThreshold;
 
-    [SerializeField] private Vector3 doorEndPos;
+    [SerializeField] private Transform doorEndPos;
     [SerializeField] private Transform door;
     private List<GameObject> nextEnemies = new List<GameObject>();
     private float enemyCount;
@@ -30,6 +30,8 @@ public class EnemyCounter : MonoBehaviour
             nextEnemies.Add(nextSectionParent.GetChild(currentChild).gameObject);
         }
 
+
+        xRayThreshold = toggleXray.Threshold();
         enemyCount = currentSectionParent.childCount;
         totalCount = enemyCount;
     }
@@ -55,7 +57,6 @@ public class EnemyCounter : MonoBehaviour
                 }
             }
         }
-        else if (enemyCount == totalCount) { toggleXray.ToggleXRay(false); }
         else if ((enemyCount/totalCount) * 100 <= xRayThreshold) 
         {
             toggleXray.ToggleXRay(true);
@@ -66,15 +67,10 @@ public class EnemyCounter : MonoBehaviour
     {
         toggleXray.ToggleXRay(true);
     }
-    public void OnTriggerExit(Collider other)
-    {
-        toggleXray.ToggleXRay(false);
-
-    }
 
     private void OpenDoor()
     {   
-        door.position = Vector3.MoveTowards(door.position,doorEndPos, Time.deltaTime);
+        door.position = Vector3.MoveTowards(door.position,doorEndPos.position, Time.deltaTime);
         toggleXray.ToggleXRay(false);
     }
 
