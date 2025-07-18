@@ -346,6 +346,37 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &7773822759994004534
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8382388152680374709}
+  m_Layer: 0
+  m_Name: DoorEndPos
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8382388152680374709
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7773822759994004534}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -9.195175, y: 11.1, z: 0}
+  m_LocalScale: {x: 3.89, y: 25.227835, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2782608825518924362}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &2384504848286565793
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -356,15 +387,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 1e2f39c5a93064f44b8a09063641aec5, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 43.691505
+      value: -220.80482
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1e2f39c5a93064f44b8a09063641aec5, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.8500061
+      value: 1.24
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1e2f39c5a93064f44b8a09063641aec5, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -54.269684
+      value: 93.9
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1e2f39c5a93064f44b8a09063641aec5, type: 3}
       propertyPath: m_LocalRotation.w
@@ -411,6 +442,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 1e2f39c5a93064f44b8a09063641aec5, type: 3}
       insertIndex: -1
       addedObject: {fileID: 5507862480431422173}
+    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 1e2f39c5a93064f44b8a09063641aec5, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8382388152680374709}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 1e2f39c5a93064f44b8a09063641aec5, type: 3}
       insertIndex: -1
@@ -513,8 +547,8 @@ MonoBehaviour:
   enemyCounterText: {fileID: 8788344460826880832}
   currentSectionParent: {fileID: 0}
   nextSectionParent: {fileID: 0}
-  xRayThreshold: 10
-  doorEndPos: {x: -4.16, y: 11.1, z: 0}
+  xRayThreshold: 25
+  doorEndPos: {fileID: 8382388152680374709}
   door: {fileID: 5507862480431422173}
 --- !u!114 &7575826814563766961
 MonoBehaviour:
