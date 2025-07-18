@@ -13,12 +13,18 @@ public class LevelLaunchPad : MonoBehaviour
     [SerializeField] Transform[] sections;
     private bool unlocked;
     [SerializeField] bool bypassEnemies;
+    [Header("Level Timer")]
+    [SerializeField] float levelTimer;
+    private bool stopTimer;
+
     private void Start()
     {
 
     }
 
     private void Update() {
+        if (!stopTimer) { levelTimer += Time.deltaTime; }
+
         if(bypassEnemies) { unlocked = true; }
         else { 
             foreach (Transform section in sections) {
@@ -35,6 +41,7 @@ public class LevelLaunchPad : MonoBehaviour
     private void OnTriggerEnter(Collider other) {
         if (other.gameObject.CompareTag("Player") && unlocked) {
             other.attachedRigidbody.GetComponent<IMomentumModifiable>().SetMomentum(Vector3.up * launchForce);
+            stopTimer = true;
             StartCoroutine(LoadNextLevel());
         }
     }

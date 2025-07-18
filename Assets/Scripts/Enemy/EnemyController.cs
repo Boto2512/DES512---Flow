@@ -12,8 +12,9 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
     [SerializeField] GameObject healthDrop;
 
     [Header("Drops")]
-    [Min(0f)] public float BombRegenAmount { get; private set; } = 0.5f;
+    [SerializeField] private float _bombRegenAmount = 0.5f;
     [Min(0f)] private float droppedHealth;
+    public float BombRegenAmount { get => _bombRegenAmount; private set => _bombRegenAmount = value; }
 
     [Header("VFX Prefabs")]
     [SerializeField] private GameObject oilHitVFX;
@@ -133,15 +134,23 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
     }
 
     public void TakeDamage(float value) {
+        TakeDamage(value, null);
+    }
+
+    public void TakeDamage(float value, GameObject attacker = null) {
         //Debug.Log($"Taken {value} damage");
         health -= value;
         healthBar.value = health;
 
         if (health <= 0) {
             Instantiate(oilDieVFX, attackTransform.position, Quaternion.Euler(Vector3.up));
+            if (attacker != null && attacker.TryGetComponent<BBThrowController>(out var throwController)) {
+                throwController.AddChargeRegenAmount(BombRegenAmount);
+            }
             Kill();
-            TutorialEvents.OnEnemyKilled.Invoke();
-            TutorialEvents.enemyKilledVeryFast.Invoke();
+            TutorialEvents.OnEnemyKilled?.Invoke();
+            TutorialEvents.enemyKilledVeryFast?.Invoke();
+
         }
         else {
             Instantiate(oilHitVFX, attackTransform.position, Quaternion.Euler(Vector3.up));
@@ -153,7 +162,7 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
         healthBar.value = 0;
         Instantiate(healthDrop, transform.position, transform.rotation);
         Destroy(this.gameObject);
-        
+
     }
 
     public void Heal(float value) {
