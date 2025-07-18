@@ -13,6 +13,6 @@ public class PlayMusic : MonoBehaviour
 
     void Play()
     {
-        AudioManager.instance.PlaySound("name", audioSource);
+        AudioManager.instance.PlaySound(musicName, audioSource);
     }
 }

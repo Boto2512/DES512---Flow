@@ -138,6 +138,7 @@ public class BounceBomb : MonoBehaviour {
     }
 
     private void ExplosionVFX() {
+        AudioManager.instance.Play("BombBounce");
         vfxObject.GetComponent<VFXCleanUp>().StartTimer();
 
         vfx.transform.SetParent(null);
