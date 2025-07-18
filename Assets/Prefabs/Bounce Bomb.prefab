@@ -305,8 +305,11 @@ VisualEffect:
         m_Overridden: 1
     m_Vector4f:
       m_Array:
-      - m_Value: {x: 36.329643, y: 15.096216, z: 0, w: 1}
+      - m_Value: {x: 0.23968604, y: 11.984313, z: 6.6992335, w: 1}
         m_Name: ShockwaveColour 2
+        m_Overridden: 1
+      - m_Value: {x: 0.33670002, y: 0.91, z: 0.48958, w: 0.6}
+        m_Name: BaseColourShockwave
         m_Overridden: 1
     m_Uint:
       m_Array: []
@@ -320,17 +323,17 @@ VisualEffect:
       m_Array:
       - m_Value:
           serializedVersion: 2
-          key0: {r: 51.37788, g: 51.37788, b: 51.37788, a: 1}
-          key1: {r: 6.8831816, g: 4.3367248, b: 0, a: 1}
-          key2: {r: 29.857048, g: 0.28103074, b: 0, a: 0}
+          key0: {r: 0.058823533, g: 0.98039216, b: 0.48509964, a: 1}
+          key1: {r: 0.057078034, g: 0.97587764, b: 0.50037855, a: 0.39607844}
+          key2: {r: 0, g: 5.768287, b: 6.964404, a: 0}
           key3: {r: 0.30807695, g: 0.26884073, b: 0.26884073, a: 0}
           key4: {r: 0.7924528, g: 0.743859, b: 0.743859, a: 0}
           key5: {r: 0, g: 0, b: 0, a: 0}
           key6: {r: 0, g: 0, b: 0, a: 0}
           key7: {r: 0, g: 0, b: 0, a: 0}
           ctime0: 0
-          ctime1: 21588
-          ctime2: 36623
+          ctime1: 32189
+          ctime2: 64957
           ctime3: 47995
           ctime4: 57440
           ctime5: 0
@@ -346,30 +349,30 @@ VisualEffect:
           atime7: 0
           m_Mode: 0
           m_ColorSpace: -1
-          m_NumColorKeys: 5
+          m_NumColorKeys: 3
           m_NumAlphaKeys: 2
         m_Name: ExplosionColour
         m_Overridden: 1
       - m_Value:
           serializedVersion: 2
-          key0: {r: 51.37788, g: 51.37788, b: 51.37788, a: 1}
-          key1: {r: 1.1826346, g: 1.1642344, b: 1.1324284, a: 0.7921569}
-          key2: {r: 3.4822028, g: 0, b: 0, a: 0.58431375}
+          key0: {r: 0.01568626, g: 0.5176471, b: 0.27754182, a: 1}
+          key1: {r: 0, g: 22.363514, b: 10.2518835, a: 1}
+          key2: {r: 0, g: 3.482203, b: 2.027113, a: 0.58431375}
           key3: {r: 0, g: 0, b: 0, a: 0}
           key4: {r: 0, g: 0, b: 0, a: 0}
           key5: {r: 0, g: 0, b: 0, a: 0}
           key6: {r: 0, g: 0, b: 0, a: 0}
           key7: {r: 0, g: 0, b: 0, a: 0}
           ctime0: 0
-          ctime1: 7132
-          ctime2: 55512
+          ctime1: 29684
+          ctime2: 62066
           ctime3: 60331
           ctime4: 0
           ctime5: 0
           ctime6: 0
           ctime7: 0
           atime0: 0
-          atime1: 1157
+          atime1: 65535
           atime2: 65535
           atime3: 0
           atime4: 0
@@ -378,9 +381,41 @@ VisualEffect:
           atime7: 0
           m_Mode: 0
           m_ColorSpace: -1
-          m_NumColorKeys: 2
-          m_NumAlphaKeys: 3
+          m_NumColorKeys: 3
+          m_NumAlphaKeys: 2
         m_Name: ShockwaveColour
+        m_Overridden: 1
+      - m_Value:
+          serializedVersion: 2
+          key0: {r: 1, g: 1, b: 1, a: 1}
+          key1: {r: 6.4784155, g: 5.7790885, b: 5.5311, a: 1}
+          key2: {r: 0.2830189, g: 0.27367392, b: 0.27367392, a: 0}
+          key3: {r: 0, g: 0, b: 0, a: 0}
+          key4: {r: 0, g: 0, b: 0, a: 0}
+          key5: {r: 0, g: 0, b: 0, a: 0}
+          key6: {r: 0, g: 0, b: 0, a: 0}
+          key7: {r: 0, g: 0, b: 0, a: 0}
+          ctime0: 0
+          ctime1: 29684
+          ctime2: 55512
+          ctime3: 60331
+          ctime4: 0
+          ctime5: 0
+          ctime6: 0
+          ctime7: 0
+          atime0: 0
+          atime1: 65535
+          atime2: 0
+          atime3: 0
+          atime4: 0
+          atime5: 0
+          atime6: 0
+          atime7: 0
+          m_Mode: 0
+          m_ColorSpace: -1
+          m_NumColorKeys: 3
+          m_NumAlphaKeys: 2
+        m_Name: ExplosionColour 1
         m_Overridden: 1
     m_NamedObject:
       m_Array: []
