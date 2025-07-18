@@ -102,7 +102,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1989162332251687335}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: -0.7189214, w: 0.6950914}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1.13, y: 4.6, z: 0}
   m_LocalScale: {x: 3, y: 1, z: 3}
   m_ConstrainProportionsScale: 0
@@ -113,7 +113,7 @@ Transform:
   - {fileID: 8834746754843936434}
   - {fileID: 8174356013178880162}
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -91.931}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6331295136120192679
 GameObject:
   m_ObjectHideFlags: 0
@@ -140,13 +140,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6331295136120192679}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0.041, y: 0.093, z: 0.016}
   m_LocalScale: {x: 2.2917955, y: 0.77050006, z: 0.33358586}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2344345543099136048}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
 --- !u!2083052967 &7924947691928385006
 VisualEffect:
   m_ObjectHideFlags: 0
@@ -165,7 +165,7 @@ VisualEffect:
   m_PropertySheet:
     m_Float:
       m_Array:
-      - m_Value: 5.4
+      - m_Value: 21.99
         m_Name: SteamLength
         m_Overridden: 1
       - m_Value: 4
