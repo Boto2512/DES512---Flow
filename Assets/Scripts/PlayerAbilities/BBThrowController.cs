@@ -79,8 +79,10 @@ public class BBThrowController : MonoBehaviour {
     }
 
     private void DetonateBomb() {
-        bombInstance.GetComponent<BounceBomb>().Activate();
-        Destroy(bombInstance);
+        if (bombInstance != null && bombInstance.TryGetComponent<BounceBomb>(out var bb)) {
+            bb.Activate();
+            Destroy(bombInstance);
+        }
 
         toggle = false;
     }
