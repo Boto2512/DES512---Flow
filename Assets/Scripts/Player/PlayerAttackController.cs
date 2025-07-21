@@ -63,19 +63,11 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
             return;
         attackAnimator.SetTrigger("hasAttacked");
         cameraAnimator.SetTrigger("hasAttacked");
-        AudioManager.instance.Play("PlayerAttackInTheAir");
+        AudioManager.instance?.Play("PlayerAttackInTheAir");
 
-        // TODO: change it so attack range scales with speed too
-
-        //float damage = CalculateDamage();
-        //IDamageable[] damageables = GetEnemiesInAttackBox();
-        //foreach (var damageable in damageables) {
-        //    damageable.TakeDamage(damage);
-        //    HitStop.Slow(0.1f, 0.1f).Forget();
-        //}
         attacking = true;
         hurtbox.gameObject.SetActive(true);
-        
+
         this.InvokeOverwrite("attack animation playing", () => { attacking = false; parried = false; }, Config.AttackCooldown);
     }
 
@@ -95,7 +87,7 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
         //HitStop.Stop(0.33f).Forget();
 
         Instantiate(hitVFX, collider.ClosestPoint(hurtbox.transform.position), Quaternion.identity);
-        AudioManager.instance.Play("PlayerAttack");
+        AudioManager.instance?.Play("PlayerAttack");
     }
 
     private void Parry() {
@@ -113,10 +105,11 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
                 float projectileSpeed = Mathf.Max(Config.ParriedProjectileMinimumSpeed, rb.linearVelocity.magnitude * Config.ParriedProjectileSpeedMultiplier);
                 Vector3 momentum = orientation.forward.normalized * projectileSpeed;
 
-                if (projectiles[i].attachedRigidbody != null && projectiles[i].attachedRigidbody.gameObject.TryGetComponent<BounceBomb>(out _)) {
+                if (projectiles[i].attachedRigidbody != null && projectiles[i].attachedRigidbody.gameObject.TryGetComponent<BounceBomb>(out var bb)) {
                     projectiles[i].attachedRigidbody.linearVelocity = momentum;
                     projectiles[i].attachedRigidbody.useGravity = false;
                     projectiles[i].attachedRigidbody.linearDamping = 0f;
+                    bb.SetParried();
                 }
                 else {
                     ParryProjectile parriedProjectileScript = Instantiate(parryProjectile, orientation.position, Quaternion.FromToRotation(Vector3.zero, orientation.forward)).GetComponent<ParryProjectile>();
