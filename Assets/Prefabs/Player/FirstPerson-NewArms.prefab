@@ -5938,7 +5938,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Config: {fileID: 11400000, guid: cb52dd03a9c578144abe278b9225f369, type: 2}
   model: {fileID: 164520969487148287}
-  PrimaryAction:
+  PrimaryActionPressed:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 5278787350012368502}
+        m_TargetAssemblyTypeName: PlayerAttackController, Assembly-CSharp
+        m_MethodName: ReadyAttack
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  PrimaryActionReleased:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 5278787350012368502}
@@ -5953,12 +5968,12 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  SecondaryAction:
+  SecondaryActionPressed:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1916859216568388365}
         m_TargetAssemblyTypeName: BBThrowController, Assembly-CSharp
-        m_MethodName: ThrowBomb
+        m_MethodName: HoldThrow
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -5980,6 +5995,24 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  SecondaryActionReleased:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1916859216568388365}
+        m_TargetAssemblyTypeName: BBThrowController, Assembly-CSharp
+        m_MethodName: ThrowBomb
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  SpeedThresholdChanged:
+    m_PersistentCalls:
+      m_Calls: []
   targetPosition: {fileID: 6259882445244612647}
 --- !u!114 &4757123143735935829
 MonoBehaviour:
