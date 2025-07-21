@@ -2280,14 +2280,14 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d8154ca03c6ba0a4c9b18a06c8f6a7c2, type: 3}
---- !u!95 &1536079002 stripped
-Animator:
-  m_CorrespondingSourceObject: {fileID: 5866666021909216657, guid: 29fbd35f1acfde645ad87a5fc37ccdd8, type: 3}
-  m_PrefabInstance: {fileID: 900343844}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1536079003 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 29fbd35f1acfde645ad87a5fc37ccdd8, type: 3}
+  m_PrefabInstance: {fileID: 900343844}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &1536079004 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 5866666021909216657, guid: 29fbd35f1acfde645ad87a5fc37ccdd8, type: 3}
   m_PrefabInstance: {fileID: 900343844}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &1548528047
@@ -3198,13 +3198,17 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 436122386565736800, guid: 0a52e881c6995a14781b6eeb58ea919f, type: 3}
+      propertyPath: Config
+      value: 
+      objectReference: {fileID: 11400000, guid: e7250ba94bdb02b4cb24970966ebadaa, type: 2}
+    - target: {fileID: 436122386565736800, guid: 0a52e881c6995a14781b6eeb58ea919f, type: 3}
       propertyPath: handAnimator
       value: 
-      objectReference: {fileID: 1536079002}
+      objectReference: {fileID: 1536079004}
     - target: {fileID: 1916859216568388365, guid: 0a52e881c6995a14781b6eeb58ea919f, type: 3}
       propertyPath: handAnimator
       value: 
-      objectReference: {fileID: 1536079002}
+      objectReference: {fileID: 1536079004}
     - target: {fileID: 4072573821511744506, guid: 0a52e881c6995a14781b6eeb58ea919f, type: 3}
       propertyPath: m_Name
       value: FirstPerson-NewArms
@@ -3252,7 +3256,7 @@ PrefabInstance:
     - target: {fileID: 5278787350012368502, guid: 0a52e881c6995a14781b6eeb58ea919f, type: 3}
       propertyPath: attackAnimator
       value: 
-      objectReference: {fileID: 1536079002}
+      objectReference: {fileID: 1536079004}
     - target: {fileID: 8322387458828056848, guid: 0a52e881c6995a14781b6eeb58ea919f, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
