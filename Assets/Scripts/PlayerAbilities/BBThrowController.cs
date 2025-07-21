@@ -55,6 +55,8 @@ public class BBThrowController : MonoBehaviour {
         if (toggle || throwing)
             return;
 
+        handAnimator.SetBool("isHoldingBomb", false);
+
         if (chargeCounter < 1)
             return;
 
@@ -63,7 +65,6 @@ public class BBThrowController : MonoBehaviour {
         throwing = true;
         this.InvokeOverwrite("throwing bomb", () => throwing = false, Config.ThrowCooldown);
 
-        handAnimator.SetBool("isHoldingBomb", false);
         //handAnimator.SetTrigger("hasBombed");
         cameraShakeAnimator.SetTrigger("hasBombed");
 

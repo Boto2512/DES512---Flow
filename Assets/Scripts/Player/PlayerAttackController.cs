@@ -59,7 +59,9 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
     #region Attack
 
     public void ReadyAttack() {
-        // animation shit
+        if (attacking)
+            return;
+
         attackAnimator.SetBool("isHoldingHammer", true);
     }
 

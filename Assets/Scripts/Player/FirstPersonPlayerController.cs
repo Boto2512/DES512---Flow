@@ -89,13 +89,13 @@ public class FirstPersonPlayerController : MonoBehaviour, ITargetable, IHasSpeed
         for (int i = 1; i < Config.Thresholds.Count; ++i) {
             if (rb.linearVelocity.magnitude < Config.Thresholds[i].SpeedThreshold) {
                 CurrentThreshold = Config.Thresholds[i - 1];
-                //handAnimator.SetInteger("threshold", i - 1);
+                handAnimator.SetInteger("threshold", i - 1);
                 return;
             }
         }
 
         CurrentThreshold = Config.Thresholds.Last();
-        //handAnimator.SetInteger("threshold", Config.Thresholds.Count - 1);
+        handAnimator.SetInteger("threshold", Config.Thresholds.Count - 1);
     }
 
     #endregion Thresholds
