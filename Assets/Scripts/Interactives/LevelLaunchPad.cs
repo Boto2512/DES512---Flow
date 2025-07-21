@@ -47,4 +47,9 @@ public class LevelLaunchPad : MonoBehaviour
         AsyncOperation loadAsyncOperation = SceneManager.LoadSceneAsync(loadScene);
 
     }
+
+    private void LevelComplete()
+    {
+        LevelTimer.instance.SaveTime();
+    }
 }
