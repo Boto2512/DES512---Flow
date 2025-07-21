@@ -24,7 +24,7 @@ public class FirstPersonPlayerController : MonoBehaviour, ITargetable, IHasSpeed
     private BBThrowController throwController;
     private FirstPersonPhysicalAnimationController animationController;
 
-    private Animator handAnimator;
+    [SerializeField] private Animator handAnimator;
 
     [SerializeField] private GameObject model;
 
@@ -89,13 +89,13 @@ public class FirstPersonPlayerController : MonoBehaviour, ITargetable, IHasSpeed
         for (int i = 1; i < Config.Thresholds.Count; ++i) {
             if (rb.linearVelocity.magnitude < Config.Thresholds[i].SpeedThreshold) {
                 CurrentThreshold = Config.Thresholds[i - 1];
-                handAnimator.SetInteger("threshold", i - 1);
+                //handAnimator.SetInteger("threshold", i - 1);
                 return;
             }
         }
 
         CurrentThreshold = Config.Thresholds.Last();
-        handAnimator.SetInteger("threshold", Config.Thresholds.Count - 1);
+        //handAnimator.SetInteger("threshold", Config.Thresholds.Count - 1);
     }
 
     #endregion Thresholds
@@ -111,21 +111,19 @@ public class FirstPersonPlayerController : MonoBehaviour, ITargetable, IHasSpeed
     }
 
     public void AttackInput(InputAction.CallbackContext context) {
-        bool pressed = context.ReadValueAsButton();
-        if (pressed) {
+        if (context.performed) {
             PrimaryActionPressed.Invoke();
         }
-        else {
+        else if (context.canceled) {
             PrimaryActionReleased.Invoke();
         }
     }
 
     public void ThrowInput(InputAction.CallbackContext context) {
-        bool pressed = context.ReadValueAsButton();
-        if (pressed) {
+        if (context.performed) {
             SecondaryActionPressed.Invoke();
         }
-        else {
+        else if (context.canceled) {
             SecondaryActionReleased.Invoke();
         }
     }

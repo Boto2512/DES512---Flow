@@ -45,6 +45,9 @@ public class BBThrowController : MonoBehaviour {
     #region Throwing & Detonating
 
     public void HoldThrow() {
+        if (bombInstance != null)
+            return;
+
         handAnimator.SetBool("isHoldingBomb", true);
     }
 

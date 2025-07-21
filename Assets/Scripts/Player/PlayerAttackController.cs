@@ -71,14 +71,6 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
         cameraAnimator.SetTrigger("hasAttacked");
         AudioManager.instance.Play("PlayerAttackInTheAir");
 
-        // TODO: change it so attack range scales with speed too
-
-        //float damage = CalculateDamage();
-        //IDamageable[] damageables = GetEnemiesInAttackBox();
-        //foreach (var damageable in damageables) {
-        //    damageable.TakeDamage(damage);
-        //    HitStop.Slow(0.1f, 0.1f).Forget();
-        //}
         attacking = true;
         hurtbox.gameObject.SetActive(true);
 
