@@ -111,19 +111,21 @@ public class FirstPersonPlayerController : MonoBehaviour, ITargetable, IHasSpeed
     }
 
     public void AttackInput(InputAction.CallbackContext context) {
-        if (context.performed) {
+        bool pressed = context.ReadValueAsButton();
+        if (pressed) {
             PrimaryActionPressed.Invoke();
         }
-        else if (context.canceled) {
+        else {
             PrimaryActionReleased.Invoke();
         }
     }
 
     public void ThrowInput(InputAction.CallbackContext context) {
-        if (context.performed) {
+        bool pressed = context.ReadValueAsButton();
+        if (pressed) {
             SecondaryActionPressed.Invoke();
         }
-        else if (context.canceled) {
+        else {
             SecondaryActionReleased.Invoke();
         }
     }
