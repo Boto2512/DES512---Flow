@@ -58,10 +58,16 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
 
     #region Attack
 
+    public void ReadyAttack() {
+        // animation shit
+        attackAnimator.SetBool("isHoldingHammer", true);
+    }
+
     public void Attack() {
         if (attacking)
             return;
-        attackAnimator.SetTrigger("hasAttacked");
+        attackAnimator.SetBool("isHoldingHammer", false);
+        //attackAnimator.SetTrigger("hasAttacked");
         cameraAnimator.SetTrigger("hasAttacked");
         AudioManager.instance.Play("PlayerAttackInTheAir");
 
@@ -75,7 +81,7 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
         //}
         attacking = true;
         hurtbox.gameObject.SetActive(true);
-        
+
         this.InvokeOverwrite("attack animation playing", () => { attacking = false; parried = false; }, Config.AttackCooldown);
     }
 
