@@ -7,6 +7,10 @@ public class ProjectileHomingOnPlayer : MonoBehaviour
 
     [Header("Upwards")]
     [SerializeField] float upwardSpeed;
+    [Tooltip("Projectile would go upward to a random destination within the range.")]
+    [SerializeField] float upwardHorizontalRange;
+    [Tooltip("Projectile would go upward to a random destination within the range.")]
+    [SerializeField] float upwardVerticalRange;
     [SerializeField] float upwardHeight;
     [SerializeField] float rotateSpeed;
 
@@ -24,18 +28,21 @@ public class ProjectileHomingOnPlayer : MonoBehaviour
     [Header("Damage")]
     [SerializeField] private float damage;
 
+
     private Vector3 lockPosition;
+    private Vector3 lockDir;
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start() {
         projectileRigidBody = GetComponent<Rigidbody>();
 
-        heightTarget =new Vector3(transform.position.x, transform.position.y + upwardHeight, transform.position.z);
+        heightTarget =new Vector3(transform.position.x, transform.position.y + (upwardHeight+ upwardVerticalRange*Random.Range(-1f,1f)), transform.position.z)+new Vector3(1,0,1)* upwardHorizontalRange * Random.Range(-1f, 1f);
         //this.Invoke("literally anithing", startHoming, homingDelay);
         //Invoke(nameof(startHoming), homingDelay);
 
         player = Globals.PLAYER.transform;
+
 
     }
     // Update is called once per frame
@@ -58,8 +65,7 @@ public class ProjectileHomingOnPlayer : MonoBehaviour
 
         if (Vector3.Distance(newPosition, heightTarget) <= 0.5) { 
             hasReachedHeight = true;
-        }    
-    
+        }
     }
     private void Homing() {
         //homingDelay = 0;
@@ -67,19 +73,12 @@ public class ProjectileHomingOnPlayer : MonoBehaviour
         if (homingTime<homingDelay)
         {
             lockPosition=player.position;
+            lockDir= lockPosition - transform.position;
         }
 
-        Vector3 newPosition = Vector3.MoveTowards(transform.position, lockPosition, Time.deltaTime * homingSpeed);
-        Vector3 dir = lockPosition - transform.position;
-        transform.up = Vector3.Lerp(transform.up, dir, rotateSpeed);
-        if (dir.magnitude<0.01f)
-        {
-            Destroy(gameObject);
-        }
-        else
-        {
-            projectileRigidBody.MovePosition(newPosition);
-        }
+        Vector3 newPosition = transform.position + lockDir.normalized* Time.deltaTime * homingSpeed; //Vector3.MoveTowards(, lockPosition, Time.deltaTime * homingSpeed);
+        transform.up = Vector3.Lerp(transform.up, lockDir, rotateSpeed);
+        projectileRigidBody.MovePosition(newPosition);
     }
 
     private void OnTriggerEnter(Collider other) {
@@ -105,6 +104,11 @@ public class ProjectileHomingOnPlayer : MonoBehaviour
         if (homingDelay> homingDuration)
         {
             homingDelay = homingDuration;
+        }
+
+        if (upwardVerticalRange>upwardHeight)
+        {
+            upwardVerticalRange=upwardHeight;
         }
     }
 }
