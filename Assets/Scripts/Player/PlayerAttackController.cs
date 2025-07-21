@@ -69,7 +69,7 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
         attackAnimator.SetBool("isHoldingHammer", false);
         //attackAnimator.SetTrigger("hasAttacked");
         cameraAnimator.SetTrigger("hasAttacked");
-        AudioManager.instance.Play("PlayerAttackInTheAir");
+        AudioManager.instance?.Play("PlayerAttackInTheAir");
 
         attacking = true;
         hurtbox.gameObject.SetActive(true);
