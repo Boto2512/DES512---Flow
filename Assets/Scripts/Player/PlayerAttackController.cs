@@ -63,7 +63,7 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
             return;
         attackAnimator.SetTrigger("hasAttacked");
         cameraAnimator.SetTrigger("hasAttacked");
-        AudioManager.instance.Play("PlayerAttackInTheAir");
+        AudioManager.instance?.Play("PlayerAttackInTheAir");
 
         // TODO: change it so attack range scales with speed too
 
@@ -75,7 +75,7 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
         //}
         attacking = true;
         hurtbox.gameObject.SetActive(true);
-        
+
         this.InvokeOverwrite("attack animation playing", () => { attacking = false; parried = false; }, Config.AttackCooldown);
     }
 
@@ -95,7 +95,7 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
         //HitStop.Stop(0.33f).Forget();
 
         Instantiate(hitVFX, collider.ClosestPoint(hurtbox.transform.position), Quaternion.identity);
-        AudioManager.instance.Play("PlayerAttack");
+        AudioManager.instance?.Play("PlayerAttack");
     }
 
     private void Parry() {

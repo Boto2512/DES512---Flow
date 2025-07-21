@@ -40,7 +40,7 @@ public class BounceBomb : MonoBehaviour {
         rb.detectCollisions = false;
         CheckIfInsideBounceBombTriggerZone();
 
-        this.transform.SetPositionAndRotation(collision.collider.ClosestPoint(this.transform.position), Quaternion.FromToRotation(Vector3.up, collision.contacts[0].normal));
+        this.transform.SetPositionAndRotation(collision.collider.ClosestPoint(this.transform.position), Quaternion.FromToRotation(Vector3.forward, collision.contacts[0].normal));
         blastCentre.position = collision.GetContact(0).point;
     }
 
@@ -141,7 +141,7 @@ public class BounceBomb : MonoBehaviour {
     }
 
     private void ExplosionVFX() {
-        AudioManager.instance.Play("BombBounce");
+        AudioManager.instance?.Play("BombBounce");
         vfxObject.GetComponent<VFXCleanUp>().StartTimer();
 
         vfx.transform.SetParent(null);
