@@ -16,6 +16,8 @@ public class BBThrowController : MonoBehaviour {
     [Header("Animation")]
     [SerializeField] private Animator handAnimator;
     [SerializeField] private Animator cameraShakeAnimator;
+    private bool throwing = false;
+    private bool detonating = false;
 
 #if DEBUG
     [Header("Debug")]
@@ -43,13 +45,16 @@ public class BBThrowController : MonoBehaviour {
     #region Throwing & Detonating
 
     public void ThrowBomb() {
-        if (toggle)
+        if (toggle || throwing)
             return;
 
         if (chargeCounter < 1)
             return;
 
         --chargeCounter;
+
+        throwing = true;
+        this.InvokeOverwrite("throwing bomb", () => throwing = false, Config.ThrowCooldown);
 
         handAnimator.SetTrigger("hasBombed");
         cameraShakeAnimator.SetTrigger("hasBombed");
@@ -61,8 +66,11 @@ public class BBThrowController : MonoBehaviour {
     }
 
     public void TriggerDetonation() {
-        if (!toggle)
+        if (!toggle || detonating)
             return;
+
+        detonating = true;
+        this.InvokeOverwrite("detonating bomb", () => detonating = false, Config.DetonationCooldown);
 
         handAnimator.SetTrigger("hasDetonate");
         cameraShakeAnimator.SetTrigger("hasDetonate");
@@ -71,8 +79,10 @@ public class BBThrowController : MonoBehaviour {
     }
 
     private void DetonateBomb() {
-        bombInstance.GetComponent<BounceBomb>().Activate();
-        Destroy(bombInstance);
+        if (bombInstance != null && bombInstance.TryGetComponent<BounceBomb>(out var bb)) {
+            bb.Activate();
+            Destroy(bombInstance);
+        }
 
         toggle = false;
     }

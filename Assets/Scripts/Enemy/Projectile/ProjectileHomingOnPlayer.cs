@@ -23,6 +23,10 @@ public class ProjectileHomingOnPlayer : MonoBehaviour
 
     [Header("Damage")]
     [SerializeField] private float damage;
+
+    private Vector3 lockPosition;
+
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start() {
         projectileRigidBody = GetComponent<Rigidbody>();
@@ -40,7 +44,8 @@ public class ProjectileHomingOnPlayer : MonoBehaviour
             MoveUpwards();
         }
         else {
-            this.Invoke("Homing", Homing, homingDelay);
+            //this.Invoke("Homing", Homing, homingDelay);
+            Homing();
             if (homingTime >= homingDuration) { 
                 Destroy(gameObject);
             }
@@ -57,11 +62,24 @@ public class ProjectileHomingOnPlayer : MonoBehaviour
     
     }
     private void Homing() {
-        homingDelay = 0;
+        //homingDelay = 0;
         homingTime += Time.deltaTime;
-                
-        Vector3 newPosition = Vector3.MoveTowards(transform.position, player.position, Time.deltaTime * homingSpeed);
-        projectileRigidBody.MovePosition(newPosition);
+        if (homingTime<homingDelay)
+        {
+            lockPosition=player.position;
+        }
+
+        Vector3 newPosition = Vector3.MoveTowards(transform.position, lockPosition, Time.deltaTime * homingSpeed);
+        Vector3 dir = lockPosition - transform.position;
+        transform.up = Vector3.Lerp(transform.up, dir, rotateSpeed);
+        if (dir.magnitude<0.01f)
+        {
+            Destroy(gameObject);
+        }
+        else
+        {
+            projectileRigidBody.MovePosition(newPosition);
+        }
     }
 
     private void OnTriggerEnter(Collider other) {
@@ -71,6 +89,7 @@ public class ProjectileHomingOnPlayer : MonoBehaviour
             IDamageable damageable = other.attachedRigidbody.gameObject.GetComponent<IDamageable>();
             damageable.TakeDamage(damage);
             Destroy(gameObject);
+            //Debug.Log("Hit");
         }else if (other.CompareTag("Enemy"))
         {
             return;
@@ -78,6 +97,14 @@ public class ProjectileHomingOnPlayer : MonoBehaviour
         else { 
             //Destroy(other.gameObject);
             Destroy(gameObject);
+        }
+    }
+
+    private void OnValidate()
+    {
+        if (homingDelay> homingDuration)
+        {
+            homingDelay = homingDuration;
         }
     }
 }

@@ -12,6 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d63334f3b03a74d4a84bbbf28f2b618e, type: 3}
   m_Name: JosephBBThrowConfig
   m_EditorClassIdentifier: 
+  BounceBomb: {fileID: 569634559799669078, guid: d81a7fcd0188eb942827d7b4c3389bc0, type: 3}
   ThrowPower: 10
   FuseTime: 0.15
-  BounceBomb: {fileID: 569634559799669078, guid: d81a7fcd0188eb942827d7b4c3389bc0, type: 3}
+  ThrowCooldown: 0.15
+  DetonationCooldown: 0.15
+  MaxCharges: 3
+  ChargeRegenTime: 2
+  CapChargeIncreaseByLevel: 0

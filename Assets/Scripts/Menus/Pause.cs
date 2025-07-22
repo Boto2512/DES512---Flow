@@ -19,7 +19,6 @@ public class Pause : MonoBehaviour
     }
     private void Update()
     {
-        if (Input.GetKeyUp(KeyCode.Escape) && !optionsMenu.activeSelf) { PauseGame(!isPaused); }
         if (Input.GetKeyDown(KeyCode.R)) {
             Retry();
         }
@@ -30,6 +29,7 @@ public class Pause : MonoBehaviour
         if (pauseContext.started)
         {
             PauseGame(!isPaused);
+            optionsMenu.SetActive(false);
             EventSystem.current.SetSelectedGameObject(firstSelectedPause);
         }
     }

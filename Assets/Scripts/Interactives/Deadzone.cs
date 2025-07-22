@@ -6,18 +6,19 @@ using UnityEngine;
 public class Deadzone : MonoBehaviour
 {
     [SerializeField] private Transform destination;
-
-    private const string playerTag="Player";
-    private const string enemyTag="Enemy";
+    [SerializeField] private float damage;
+    private const string playerTag = "Player";
+    private const string enemyTag = "Enemy";
 
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.transform.CompareTag(playerTag))
         {
-           
+            collision.rigidbody.GetComponent<IDamageable>().TakeDamage(damage);
             SetToZero(collision.transform.GetComponent<IMomentumModifiable>());
             collision.transform.position = destination.position;
-        }else if (collision.transform.CompareTag(enemyTag))
+        }
+        else if (collision.transform.CompareTag(enemyTag))
         {
             Destroy(collision.gameObject);
         }

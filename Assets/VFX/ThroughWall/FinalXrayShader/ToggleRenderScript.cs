@@ -12,6 +12,8 @@ public class ToggleRenderScript : MonoBehaviour
 
     private ScriptableRendererFeature xrayFeature;
 
+    [SerializeField] private float xrayThreshold;
+
     void Awake()
     {
         if (rendererData == null)
@@ -34,19 +36,22 @@ public class ToggleRenderScript : MonoBehaviour
         {
             Debug.LogError($"XRayToggle: Could not find a feature named '{xrayFeatureName}'!");
         }
+
+        ToggleXRay(false);
+    }
+    private void Start()
+    {
+        ToggleXRay(false);
     }
 
-    void Update()
+    public void ToggleXRay(bool active)
     {
-        if (xrayFeature == null)
-            return;
+            xrayFeature.SetActive(active);
 
-        // Toggle with T key
-        if (Input.GetKeyDown(KeyCode.T))
-        {
-            bool newState = !xrayFeature.isActive;
-            xrayFeature.SetActive(newState);
-            Debug.Log($"XRayToggle: '{xrayFeatureName}' is now {(newState ? "ENABLED" : "DISABLED")}");
-        }
+    }
+
+    public float Threshold()
+    {
+        return xrayThreshold;
     }
 }

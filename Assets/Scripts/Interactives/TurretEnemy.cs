@@ -1,16 +1,14 @@
 using System.Collections;
-using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.VFX;
 
-public class TurretEnemy : MonoBehaviour, IDamageable
-{
+public class TurretEnemy : MonoBehaviour, IDamageable {
     [Header("Health")]
     [SerializeField] private float health;
     [SerializeField] private Slider healthBar;
 
-    [Header("Attack")]    
+    [Header("Attack")]
     [SerializeField] private float attackDamage;
     [SerializeField] private float attackRadius;
     [SerializeField] private float attackRange;
@@ -21,7 +19,9 @@ public class TurretEnemy : MonoBehaviour, IDamageable
     [SerializeField] private float attackDelay;
     [SerializeField] private LayerMask canHitMask;
 
+    [Header("Drops")]
     [SerializeField] private GameObject healthDrop;
+    [SerializeField] public float BombRegenAmount { get; private set; } = 0f;
 
     [SerializeField] private VisualEffect attackVFX;
     [SerializeField] private Transform orb;
@@ -29,14 +29,12 @@ public class TurretEnemy : MonoBehaviour, IDamageable
     private void Start() {
         player = Globals.PLAYER.transform;
         healthBar.maxValue = health;
-        healthBar.value = health;   
+        healthBar.value = health;
 
-        if (attackVFX.HasFloat("Duration"))
-        {
+        if (attackVFX.HasFloat("Duration")) {
             attackVFX.SetFloat("Duration", attackDelay);
         }
-        if (attackVFX.HasFloat("LaserWidth"))
-        {
+        if (attackVFX.HasFloat("LaserWidth")) {
             attackVFX.SetFloat("LaserWidth", attackRadius);
         }
     }
@@ -53,12 +51,12 @@ public class TurretEnemy : MonoBehaviour, IDamageable
         if (Vector3.Distance(transform.position, player.position) >= attackRange) {
             return false;
         }
-        else  {
+        else {
             Physics.Raycast(start, direction, out RaycastHit hit, attackRange, canHitMask);
-            
-            if(hit.transform != null) {
-                
-                if (hit.transform.CompareTag("Player")) { 
+
+            if (hit.transform != null) {
+
+                if (hit.transform.CompareTag("Player")) {
                     orb.LookAt(player);
                     return true;
                 }
@@ -82,9 +80,10 @@ public class TurretEnemy : MonoBehaviour, IDamageable
 
         Physics.Raycast(start, direction, out RaycastHit hit, attackRange, canHitMask);
         if (hit.collider != null) {
-            Debug.Log($"{hit.transform.name}");
-        } 
-        else { Debug.Log("Attack Missed"); }
+            //Debug.Log($"{hit.transform.name}");
+        }
+        else {// Debug.Log("Attack Missed");
+              }
         Debug.DrawRay(start, direction * attackRange, Color.darkRed, 3f);
 
         if (attackVFX.HasFloat("LaserLength")) { attackVFX.SetFloat("LaserLength", hit.distance); }
@@ -95,38 +94,34 @@ public class TurretEnemy : MonoBehaviour, IDamageable
                 hit.transform.GetComponent<IDamageable>().TakeDamage(attackRange);
             }
             yield return null;
-        } 
-        else { 
-            yield return null; 
+        }
+        else {
+            yield return null;
         }
     }
 
-    private void OnDrawGizmos()
-    {
+    private void OnDrawGizmos() {
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, attackRange);
     }
     #region ========================= IDamageable Interface =========================
-    public float GetHealth()
-    {
+    public float GetHealth() {
         return health;
     }
 
-    public void Heal(float value)
-    {
+    public void Heal(float value) {
         throw new System.NotImplementedException();
     }
-    public void TakeDamage(float value)
-    {
+    public void TakeDamage(float value) {
         health -= value;
         healthBar.value = health;
-        if (health < 0) { 
+        if (health < 0) {
             Kill();
+            TutorialEvents.enemyKilledVeryFast?.Invoke();
         }
     }
 
-    public void Kill()
-    {
+    public void Kill() {
         Instantiate(healthDrop, transform.position, transform.rotation);
         Destroy(gameObject);
     }

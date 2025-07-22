@@ -594,8 +594,7 @@ public class PlayerMovementController : MonoBehaviour, IMomentumModifiable {
         hasBeenBounceBombed = true;
     }
 
-    public void AddMomentum(Vector3 value)
-    {
+    public void AddMomentum(Vector3 value) {
         //if (value.y != 0)
         //{
         //    rb.linearVelocity = new Vector3(rb.linearVelocity.x, value.y, rb.linearVelocity.z);

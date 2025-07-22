@@ -663,6 +663,7 @@ public class ThirdPersonController : MonoBehaviour, IMomentumModifiable, IDamage
     #endregion  ========================= Momentum Interface  =========================
 
     #region  ========================= Damage Interface  =========================
+    public float BombRegenAmount { get; } = 0f;
     public float GetHealth() {
         return health;
         throw new System.NotImplementedException();

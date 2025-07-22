@@ -11,6 +11,15 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
     [SerializeField] Slider healthBar;
     [SerializeField] GameObject healthDrop;
 
+    [Header("Drops")]
+    [SerializeField] private float _bombRegenAmount = 0.5f;
+    [Min(0f)] private float droppedHealth;
+    public float BombRegenAmount { get => _bombRegenAmount; private set => _bombRegenAmount = value; }
+
+    [Header("VFX Prefabs")]
+    [SerializeField] private GameObject oilHitVFX;
+    [SerializeField] private GameObject oilDieVFX;
+
     [Header("Debug Events")]
     [SerializeField] private UnityEvent takeDamage = new();
     #endregion Damage Variables
@@ -125,24 +134,35 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
     }
 
     public void TakeDamage(float value) {
+        TakeDamage(value, null);
+    }
+
+    public void TakeDamage(float value, GameObject attacker = null) {
         //Debug.Log($"Taken {value} damage");
         health -= value;
         healthBar.value = health;
 
         if (health <= 0) {
+            Instantiate(oilDieVFX, attackTransform.position, Quaternion.Euler(Vector3.up));
+            if (attacker != null && attacker.TryGetComponent<BBThrowController>(out var throwController)) {
+                throwController.AddChargeRegenAmount(BombRegenAmount);
+            }
             Kill();
-            TutorialEvents.OnEnemyKilled.Invoke();
-            TutorialEvents.enemyKilledVeryFast.Invoke();
+            TutorialEvents.OnEnemyKilled?.Invoke();
+            TutorialEvents.enemyKilledVeryFast?.Invoke();
+
+        }
+        else {
+            Instantiate(oilHitVFX, attackTransform.position, Quaternion.Euler(Vector3.up));
         }
     }
 
-    public void Kill()
-    {
+    public void Kill() {
         //Debug.Log("Enemy Oneshotted - due to speed");
         healthBar.value = 0;
         Instantiate(healthDrop, transform.position, transform.rotation);
         Destroy(this.gameObject);
-        
+
     }
 
     public void Heal(float value) {
@@ -396,8 +416,12 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
         isGrounded = false;
         groundCheckEnabled = false;
 
-        rb.AddForce(value, ForceMode.VelocityChange);
+        rb.linearVelocity = value;
         //this.InvokeOverwrite("bombBounced", () => bombBounced = true, 0.1f);
+    }
+
+    public void AddMomentum(Vector3 value, ForceMode additionType = ForceMode.Impulse) {
+        SetMomentum(GetMomentum() + value);
     }
 
     public void BeenBombBounced() {

@@ -54,6 +54,8 @@ public class FirstPersonCameraController : MonoBehaviour {
 
         pan.Gain = (Config.InvertHorizontalInput ? -1 : 1) * Config.VerticalSensitivity / 2f;
         tilt.Gain = (Config.InvertVerticalInput ? 1 : -1) * Config.VerticalSensitivity / 2f;
+
+        Debug.Log("03  updated setings aiua-");
         // vertical input is negated by default, so inversion makes it positive
     }
 
@@ -67,8 +69,8 @@ public class FirstPersonCameraController : MonoBehaviour {
         if (currentThreshold != prevThreshold) {
             UpdateSpeedlineIntensity(currentThreshold.HasSpeedLines, currentThreshold.SpeedRangeOfLines, currentThreshold.SpeedlineSpawnRate);
 #if DEBUG
-            Debug.Log($"Going from speed threshold {prevThreshold.SpeedThreshold}, speedlines: {prevThreshold.HasSpeedLines}\n" +
-                $"to speed threshold {currentThreshold.SpeedThreshold}, speedlines: {currentThreshold.HasSpeedLines}");
+            //Debug.Log($"Going from speed threshold {prevThreshold.SpeedThreshold}, speedlines: {prevThreshold.HasSpeedLines}\n" +
+            //    $"to speed threshold {currentThreshold.SpeedThreshold}, speedlines: {currentThreshold.HasSpeedLines}");
 #endif
         }
         prevThreshold = currentThreshold;
