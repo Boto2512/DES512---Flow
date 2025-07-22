@@ -25,6 +25,7 @@ public class BounceBombConfig : ScriptableObject {
     [Header("Other")]
     [Tooltip("How far ahead the momentum projects the entity position")]
     [Min(0f)] public float EntityProjectionScale = 0f;
+    [Min(0f)] public float ParryDamage = 70f;
 
     private void OnValidate() {
         if (StrongBlastRadius > WeakBlastRadius) {

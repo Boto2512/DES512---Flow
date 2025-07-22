@@ -58,6 +58,7 @@ public class PlayerMovementController : MonoBehaviour, IMomentumModifiable {
         }
     }
     private bool hasBeenBounceBombed = false;
+    private bool touchingWall = false;
 
     #region Movement Variables
 
@@ -179,6 +180,25 @@ public class PlayerMovementController : MonoBehaviour, IMomentumModifiable {
 
         if (!enableGroundedStateCheck && Utility.DoesMaskContainLayer(groundMask, gameObject.layer)) {
             enableGroundedStateCheck = true;
+
+            touchingWall = !DefaultGroundCheck();
+        }
+    }
+
+    private void OnCollisionStay(Collision collision) {
+        if (!touchingWall)
+            return;
+
+        if (!Utility.DoesMaskContainLayer(groundMask, collision.gameObject.layer))
+            return;
+
+        foreach (var contact in collision.contacts) {
+            float normalAngle = Vector3.Angle(contact.normal, Vector3.up);
+            if (normalAngle <= Config.MaxSlopeAngle) {
+                enableGroundedStateCheck = true;
+                touchingWall = false;
+                break;
+            }
         }
     }
 
