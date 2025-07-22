@@ -72,6 +72,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1494711364416775596}
   - component: {fileID: 5645240896072539531}
+  - component: {fileID: 4956878989256045077}
   m_Layer: 0
   m_Name: EnemySpawning
   m_TagString: Untagged
@@ -109,7 +110,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ebc0b8f30f895d429d643ee88f6cf13, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sectionDatabase: {fileID: 0}
+  sectionDatabase: {fileID: 11400000, guid: b88578e4a1f2a484abaa118743cbe09e, type: 2}
   defaultRangedEnemy: {fileID: 3447609577201543841, guid: 49f05c96e5fb8394bb3a3c152445b449, type: 3}
   homingRangedEnemy: {fileID: 3447609577201543841, guid: cd39a317ec2510b4b9cc4a038bc4e57a, type: 3}
   turretObject: {fileID: 9013966770590656151, guid: 77df57866e397e048905f07e61accd39, type: 3}
@@ -117,6 +118,18 @@ MonoBehaviour:
   - {fileID: 1924832703254913789}
   - {fileID: 5900756768356475983}
   - {fileID: 9010823100705464556}
+--- !u!114 &4956878989256045077
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7031325919660169679}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8971f30f4a9f1484c94756b9862b90ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7192091972582715774
 GameObject:
   m_ObjectHideFlags: 0

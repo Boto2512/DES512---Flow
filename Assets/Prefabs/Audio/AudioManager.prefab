@@ -45,12 +45,48 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   soundList:
-  - soundName: testAudio
-    sound: {fileID: 8300000, guid: e097a4d08600a3a478b0c9c01711aa13, type: 3}
+  - soundName: PlayerAttack
+    clip: {fileID: 8300000, guid: c5d0e227f0553e34285c7eb838ccdc97, type: 3}
     priority: 1
-    volume: 1
-    pitch: 1
+    volume: 0.5
+    pitch: 0.9
     loop: 0
     mute: 0
-    mixer: {fileID: 7839286490650633151, guid: 37077b37cf7bfeb48be93012974dd892, type: 2}
+    mixerGroup: {fileID: 7839286490650633151, guid: 37077b37cf7bfeb48be93012974dd892, type: 2}
+    source: {fileID: 0}
+  - soundName: PlayerAttackInTheAir
+    clip: {fileID: 8300000, guid: 3c7653c994cb07f4e8fbe0176c81d7a2, type: 3}
+    priority: 1
+    volume: 0.7
+    pitch: 0.5
+    loop: 0
+    mute: 0
+    mixerGroup: {fileID: 7839286490650633151, guid: 37077b37cf7bfeb48be93012974dd892, type: 2}
+    source: {fileID: 0}
+  - soundName: BombBounce
+    clip: {fileID: 8300000, guid: 979a5dbba11b2d44da3d49a013e39e5f, type: 3}
+    priority: 1
+    volume: 1
+    pitch: 1.2
+    loop: 0
+    mute: 0
+    mixerGroup: {fileID: 7839286490650633151, guid: 37077b37cf7bfeb48be93012974dd892, type: 2}
+    source: {fileID: 0}
+  - soundName: BGM1
+    clip: {fileID: 8300000, guid: ce5d46afaac1fab4ab2cabf0560d5a59, type: 3}
+    priority: 1
+    volume: 0.5
+    pitch: 1
+    loop: 1
+    mute: 0
+    mixerGroup: {fileID: -4843252175066814224, guid: 37077b37cf7bfeb48be93012974dd892, type: 2}
+    source: {fileID: 0}
+  - soundName: BGM2
+    clip: {fileID: 8300000, guid: 17ccae916d9589b44b5c5bfdb64ff5b0, type: 3}
+    priority: 1
+    volume: 0.5
+    pitch: 1
+    loop: 1
+    mute: 0
+    mixerGroup: {fileID: -4843252175066814224, guid: 37077b37cf7bfeb48be93012974dd892, type: 2}
     source: {fileID: 0}

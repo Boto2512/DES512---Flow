@@ -14,18 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sections:
   - sectionName: Example 1 - Section
-    enemySpawnData: []
+    enemySpawnData:
+    - spawnPoint: {x: -243.86276, y: 50.00001, z: -33.320797}
+      spawnRotation: {x: 0, y: 0, z: 0, w: 1}
+      characterType: 0
+      tempGameWorldObject: {fileID: 0}
   - sectionName: First Section
     enemySpawnData:
-    - spawnPoint: {x: -236.11572, y: 22.37291, z: 56.617588}
-      spawnRotation: {x: 0, y: 0, z: 0, w: 1}
-      characterType: 1
-      tempGameWorldObject: {fileID: 0}
     - spawnPoint: {x: -236.37825, y: 12.251712, z: 39.3304}
-      spawnRotation: {x: 0, y: 0, z: 0, w: 1}
-      characterType: 1
-      tempGameWorldObject: {fileID: 0}
-    - spawnPoint: {x: -251.59131, y: 3.3634691, z: 78.23591}
       spawnRotation: {x: 0, y: 0, z: 0, w: 1}
       characterType: 1
       tempGameWorldObject: {fileID: 0}
@@ -36,10 +32,6 @@ MonoBehaviour:
     - spawnPoint: {x: -241.50096, y: 12.250225, z: 45.6231}
       spawnRotation: {x: 0, y: 0, z: 0, w: 1}
       characterType: 1
-      tempGameWorldObject: {fileID: 0}
-    - spawnPoint: {x: -241.8272, y: 50.000008, z: -36.489628}
-      spawnRotation: {x: 0, y: 0, z: 0, w: 1}
-      characterType: 0
       tempGameWorldObject: {fileID: 0}
     - spawnPoint: {x: -264.3861, y: 33.000004, z: -38.111534}
       spawnRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -69,14 +61,6 @@ MonoBehaviour:
       spawnRotation: {x: 0, y: 0, z: 0, w: 1}
       characterType: 0
       tempGameWorldObject: {fileID: 0}
-    - spawnPoint: {x: -272.0116, y: 1.9265337, z: 66.72504}
-      spawnRotation: {x: 0, y: 0, z: 0, w: 1}
-      characterType: 0
-      tempGameWorldObject: {fileID: 0}
-    - spawnPoint: {x: -229.77467, y: 1.5154233, z: 78.66984}
-      spawnRotation: {x: 0, y: 0, z: 0, w: 1}
-      characterType: 0
-      tempGameWorldObject: {fileID: 0}
     - spawnPoint: {x: -238.47604, y: 22.37291, z: 56.162666}
       spawnRotation: {x: 0, y: 0, z: 0, w: 1}
       characterType: 0
@@ -86,6 +70,22 @@ MonoBehaviour:
       characterType: 0
       tempGameWorldObject: {fileID: 0}
     - spawnPoint: {x: -236.6135, y: 22.37291, z: 40.34764}
+      spawnRotation: {x: 0, y: 0, z: 0, w: 1}
+      characterType: 0
+      tempGameWorldObject: {fileID: 0}
+    - spawnPoint: {x: -233.18637, y: 3.3813527, z: 78.79452}
+      spawnRotation: {x: 0, y: 0, z: 0, w: 1}
+      characterType: 0
+      tempGameWorldObject: {fileID: 0}
+    - spawnPoint: {x: -251.3743, y: 3.631271, z: 79.505615}
+      spawnRotation: {x: 0, y: 0, z: 0, w: 1}
+      characterType: 0
+      tempGameWorldObject: {fileID: 0}
+    - spawnPoint: {x: -272.2821, y: 3.1969256, z: 65.97481}
+      spawnRotation: {x: 0, y: 0, z: 0, w: 1}
+      characterType: 0
+      tempGameWorldObject: {fileID: 0}
+    - spawnPoint: {x: -278.58463, y: 3.2091565, z: 49.264973}
       spawnRotation: {x: 0, y: 0, z: 0, w: 1}
       characterType: 0
       tempGameWorldObject: {fileID: 0}
@@ -136,10 +136,6 @@ MonoBehaviour:
       characterType: 1
       tempGameWorldObject: {fileID: 0}
     - spawnPoint: {x: -165.33707, y: 16.665909, z: 29.994892}
-      spawnRotation: {x: 0, y: 0, z: 0, w: 1}
-      characterType: 1
-      tempGameWorldObject: {fileID: 0}
-    - spawnPoint: {x: -143.43227, y: 1.9999962, z: 89.71506}
       spawnRotation: {x: 0, y: 0, z: 0, w: 1}
       characterType: 1
       tempGameWorldObject: {fileID: 0}
@@ -202,4 +198,8 @@ MonoBehaviour:
     - spawnPoint: {x: -150.1409, y: 35.665916, z: 50.156094}
       spawnRotation: {x: 0, y: 0, z: 0, w: 1}
       characterType: 0
+      tempGameWorldObject: {fileID: 0}
+    - spawnPoint: {x: -165.10785, y: 5.999998, z: 94.86188}
+      spawnRotation: {x: 0, y: 0, z: 0, w: 1}
+      characterType: 2
       tempGameWorldObject: {fileID: 0}
