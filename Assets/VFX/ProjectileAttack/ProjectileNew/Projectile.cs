@@ -43,14 +43,14 @@ public class Projectile : MonoBehaviour {
             IDamageable damageable = other.attachedRigidbody.gameObject.GetComponent<IDamageable>();
             damageable.TakeDamage(damageAmount);
             Destroy(this.gameObject);
-            Debug.Log("hit player");
+            //Debug.Log("hit player");
         }
         else if (Utility.IsObstacle(other.gameObject.layer)) {
             Destroy(this.gameObject);
-            Debug.Log("hit obstacle");
+            //Debug.Log("hit obstacle");
         }
         else {
-            Debug.Log("hit something");
+            //Debug.Log("hit something");
         }
 
         //

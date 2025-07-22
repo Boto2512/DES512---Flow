@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 222789282917274760}
   - component: {fileID: 7807966142912715449}
   - component: {fileID: 1275420460902619788}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Trail
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -171,7 +171,7 @@ GameObject:
   - component: {fileID: 6856676875586794682}
   - component: {fileID: 4886796284603900417}
   - component: {fileID: 5194345472028736448}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: HomingProjectilePrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -214,7 +214,7 @@ SphereCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 0.3
+  m_Radius: 0.2
   m_Center: {x: 0, y: 0.2, z: 0}
 --- !u!54 &4886796284603900417
 Rigidbody:
@@ -255,13 +255,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 20924736bd9b0d840814f27ca1c71389, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  upwardSpeed: 5
-  upwardHeight: 10
-  rotateSpeed: 36
-  homingSpeed: 10
-  homingDelay: 1
-  homingDuration: 20
-  damage: 30
+  upwardSpeed: 80
+  upwardHeight: 3
+  rotateSpeed: 0.25
+  homingSpeed: 80
+  homingDelay: 1.5
+  homingDuration: 3
+  damage: 15
 --- !u!1001 &3668659514010375146
 PrefabInstance:
   m_ObjectHideFlags: 0

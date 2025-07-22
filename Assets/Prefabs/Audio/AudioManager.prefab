@@ -1,0 +1,92 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &8109924179497908428
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6219088366736459797}
+  - component: {fileID: 5756315456945496000}
+  m_Layer: 0
+  m_Name: AudioManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6219088366736459797
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8109924179497908428}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 992.6961, y: 508.85257, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5756315456945496000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8109924179497908428}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 493575c4699958940a38b2726b4e8b35, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  soundList:
+  - soundName: PlayerAttack
+    clip: {fileID: 8300000, guid: c5d0e227f0553e34285c7eb838ccdc97, type: 3}
+    priority: 1
+    volume: 0.5
+    pitch: 0.9
+    loop: 0
+    mute: 0
+    mixerGroup: {fileID: 7839286490650633151, guid: 37077b37cf7bfeb48be93012974dd892, type: 2}
+    source: {fileID: 0}
+  - soundName: PlayerAttackInTheAir
+    clip: {fileID: 8300000, guid: 3c7653c994cb07f4e8fbe0176c81d7a2, type: 3}
+    priority: 1
+    volume: 0.7
+    pitch: 0.5
+    loop: 0
+    mute: 0
+    mixerGroup: {fileID: 7839286490650633151, guid: 37077b37cf7bfeb48be93012974dd892, type: 2}
+    source: {fileID: 0}
+  - soundName: BombBounce
+    clip: {fileID: 8300000, guid: 979a5dbba11b2d44da3d49a013e39e5f, type: 3}
+    priority: 1
+    volume: 1
+    pitch: 1.2
+    loop: 0
+    mute: 0
+    mixerGroup: {fileID: 7839286490650633151, guid: 37077b37cf7bfeb48be93012974dd892, type: 2}
+    source: {fileID: 0}
+  - soundName: BGM1
+    clip: {fileID: 8300000, guid: ce5d46afaac1fab4ab2cabf0560d5a59, type: 3}
+    priority: 1
+    volume: 0.5
+    pitch: 1
+    loop: 1
+    mute: 0
+    mixerGroup: {fileID: -4843252175066814224, guid: 37077b37cf7bfeb48be93012974dd892, type: 2}
+    source: {fileID: 0}
+  - soundName: BGM2
+    clip: {fileID: 8300000, guid: 17ccae916d9589b44b5c5bfdb64ff5b0, type: 3}
+    priority: 1
+    volume: 0.5
+    pitch: 1
+    loop: 1
+    mute: 0
+    mixerGroup: {fileID: -4843252175066814224, guid: 37077b37cf7bfeb48be93012974dd892, type: 2}
+    source: {fileID: 0}

@@ -13,6 +13,10 @@ public interface IDamageable {
     /// <param name="value"> the amount of damage to inflict </param>
     public void TakeDamage(float value);
 
+    public void TakeDamage(float value, GameObject attacker = null) {
+        TakeDamage(value);
+    }
+
     /// <summary>
     /// Used to kill the entity attached to the interface
     /// note: do not use on player
@@ -20,4 +24,6 @@ public interface IDamageable {
     public void Kill();
 
     public void Heal(float value);
+
+    public float BombRegenAmount { get; }
 }

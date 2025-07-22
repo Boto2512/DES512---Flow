@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1bdbfefd7f7f064096afafe2f782376, type: 3}
+  m_Name: ThaliaTestLevel
+  m_EditorClassIdentifier: 
+  sections:
+  - sectionName: TestSection1
+    enemySpawnData:
+    - spawnPoint: {x: 4.023862, y: 0.8499999, z: -76.28125}
+      spawnRotation: {x: 0, y: 0, z: 0, w: 1}
+      characterType: 2
+      tempGameWorldObject: {fileID: 0}
+    - spawnPoint: {x: 13.939013, y: 0.8499999, z: -83.11139}
+      spawnRotation: {x: 0, y: 0, z: 0, w: 1}
+      characterType: 2
+      tempGameWorldObject: {fileID: 0}
+  - sectionName: TestSection2
+    enemySpawnData:
+    - spawnPoint: {x: 78.40438, y: 0.8499999, z: -73.598045}
+      spawnRotation: {x: 0, y: 0, z: 0, w: 1}
+      characterType: 2
+      tempGameWorldObject: {fileID: 0}
+    - spawnPoint: {x: 76.81645, y: 0.8499999, z: -74.13469}
+      spawnRotation: {x: 0, y: 0, z: 0, w: 1}
+      characterType: 0
+      tempGameWorldObject: {fileID: 0}
+    - spawnPoint: {x: 77.95634, y: 0.8499999, z: -71.7062}
+      spawnRotation: {x: 0, y: 0, z: 0, w: 1}
+      characterType: 1
+      tempGameWorldObject: {fileID: 0}
+    - spawnPoint: {x: 38.38983, y: 1.4527979, z: -59.131264}
+      spawnRotation: {x: 0, y: 0, z: 0, w: 1}
+      characterType: 1
+      tempGameWorldObject: {fileID: 0}

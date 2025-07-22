@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -8,14 +7,14 @@ public static class Globals {
 
     public static readonly LayerMask PLAYER_MASK = Utility.LayerToLayerMask(LayerMask.NameToLayer("Player"));
     public static readonly LayerMask DEFAULT_MASK = Utility.LayerToLayerMask(LayerMask.NameToLayer("Default"));
-    public static readonly LayerMask GROUND_MASK = Utility.LayerToLayerMask(LayerMask.NameToLayer("Ground"));
+    public static readonly LayerMask GROUND_ONLY_MASK = Utility.LayerToLayerMask(LayerMask.NameToLayer("Ground"));
     public static readonly LayerMask PROJECTILE_MASK = Utility.LayerToLayerMask(LayerMask.NameToLayer("Projectile"));
     public static readonly LayerMask ENEMY_MASK = Utility.LayerToLayerMask(LayerMask.NameToLayer("Enemy"));
     public static readonly LayerMask ENEMY_CANNOT_USE_MASK = Utility.LayerToLayerMask(LayerMask.NameToLayer("EnemyCannotUse"));
 
+    public static readonly LayerMask GROUND_MASK = GROUND_ONLY_MASK | ENEMY_CANNOT_USE_MASK;
     public static readonly LayerMask OBSTACLE_MASK = DEFAULT_MASK | GROUND_MASK | ENEMY_CANNOT_USE_MASK;
     public static readonly LayerMask STICKY_MASK = DEFAULT_MASK | GROUND_MASK | ENEMY_CANNOT_USE_MASK;
-    public static readonly HashSet<TagHandle> STICKY_TAGS = new() { };
 
     #endregion Layers
 
@@ -25,14 +24,14 @@ public static class Globals {
 
     #endregion
 
-    private static MonoBehaviour player;
+    private static MonoBehaviour _player;
     /// <summary>
     /// Invokes EVENT_PLAYER_MODIFIED when PLAYER is set
     /// </summary>
     public static MonoBehaviour PLAYER {
-        get { return player; }
+        get { return _player; }
         set {
-            player = value;
+            _player = value;
             PLAYER_TARGET = value as ITargetable;
             EVENT_PLAYER_MODIFIED.Invoke();
         }

@@ -9,7 +9,10 @@ public class FirstPersonCameraController : MonoBehaviour {
     private IMomentumModifiable momentumHolder;
     private SpeedStageThreshold currentThreshold => thresholdHolder.CurrentThreshold;
     private float currentFOV;
+    private float previousTargetFOV;
+    private float fovProgress;
 
+    private SpeedStageThreshold prevThreshold;
 
     #region Cinemachine Game Objects
 
@@ -18,7 +21,7 @@ public class FirstPersonCameraController : MonoBehaviour {
 
     #endregion Cinemachine Game Object
 
-    [SerializeField] private VisualEffect runningLines;
+    [SerializeField] private VisualEffect speedlines;
 
     public Transform Orientation => cinemachineCamera.transform;
 
@@ -34,15 +37,18 @@ public class FirstPersonCameraController : MonoBehaviour {
         UpdateSensitivity();
 
         currentFOV = currentThreshold.FieldOfView;
-        Debug.LogWarning($"currentFOV {currentFOV}");
+        previousTargetFOV = currentFOV;
+
+        prevThreshold = thresholdHolder.CurrentThreshold;
     }
 
     // Update is called once per frame
     void Update() {
         FovChanges();
+        SpeedlineChanges();
     }
 
-    private void UpdateSensitivity() {
+    public void UpdateSensitivity() {
         var pan = inputAxisController.Controllers[0].Input;
         var tilt = inputAxisController.Controllers[1].Input;
 
@@ -53,29 +59,52 @@ public class FirstPersonCameraController : MonoBehaviour {
 
     #region Visual Effects
 
+    private void SpeedlineChanges() {
+        if (speedlines == null)
+            return;
+
+
+        if (currentThreshold != prevThreshold) {
+            UpdateSpeedlineIntensity(currentThreshold.HasSpeedLines, currentThreshold.SpeedRangeOfLines, currentThreshold.SpeedlineSpawnRate);
+#if DEBUG
+            //Debug.Log($"Going from speed threshold {prevThreshold.SpeedThreshold}, speedlines: {prevThreshold.HasSpeedLines}\n" +
+            //    $"to speed threshold {currentThreshold.SpeedThreshold}, speedlines: {currentThreshold.HasSpeedLines}");
+#endif
+        }
+        prevThreshold = currentThreshold;
+    }
+
     /// <summary>
     /// Controls the intensity of the running lines visual effect
     /// </summary>
     /// <param name="speedOfLines"> how fast the speedlines will go </param>
     /// <param name="spawnRate"> how fast speed lines will spawn </param>
-    private void RunningLinesIntensity(Vector2 speedOfLines, float spawnRate) {
-        runningLines.enabled = true;
-        if (runningLines.HasVector2("SpeedOfLines")) {
-            runningLines.SetVector2("SpeedOfLines", speedOfLines);
+    private void UpdateSpeedlineIntensity(bool hasSpeedlines, Vector2 speedOfLines, float spawnRate) {
+        speedlines.enabled = hasSpeedlines;
+        if (speedlines.HasVector2("SpeedOfLines")) {
+            speedlines.SetVector2("SpeedOfLines", speedOfLines);
         }
-        if (runningLines.HasFloat("SpawnRate")) {
-            runningLines.SetFloat("SpawnRate", spawnRate);
+        if (speedlines.HasFloat("SpawnRate")) {
+            speedlines.SetFloat("SpawnRate", spawnRate);
         }
     }
 
     #endregion Visual Effects
 
     private void FovChanges() {
-        float speed = momentumHolder.GetMomentum().magnitude;
 
         float targetFOV = currentThreshold.FieldOfView;
-        currentFOV = Mathf.MoveTowards(currentFOV, targetFOV, Config.fovChangeSpeed * Time.deltaTime);
-        Debug.Log($"targetFOV {targetFOV}\n currentFOV {currentFOV}");
+        if (targetFOV != previousTargetFOV) { fovProgress = 0; }
+
+        if (currentFOV != targetFOV) {
+
+            currentFOV = Mathf.Lerp(currentFOV, targetFOV, fovProgress);
+            fovProgress += Config.fovChangeSpeed * Time.deltaTime;
+        }
+        else if (fovProgress == 1) {
+            fovProgress = 0.0f;
+        }
         cinemachineCamera.Lens.FieldOfView = currentFOV;
+        previousTargetFOV = targetFOV;
     }
 }

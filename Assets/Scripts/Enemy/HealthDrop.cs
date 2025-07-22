@@ -31,13 +31,12 @@ public class HealthDrop : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log(other.gameObject.name);
         if (other.gameObject.CompareTag("Player"))
         { 
             other.GetComponentInParent<IDamageable>().Heal(healAmount);
             floatTween.Kill();
             rotateTween.Kill();
-            Destroy(parent.gameObject);
+            Destroy(parent.gameObject, 0.5f);
         }
     }
 }

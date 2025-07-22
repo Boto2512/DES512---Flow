@@ -20,12 +20,15 @@ public class BounceBomb : MonoBehaviour {
     [SerializeField] private GameObject vfxObject;
     [SerializeField] private VisualEffect vfx;
 
+    private bool parried = false;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start() {
         rb = GetComponent<Rigidbody>();
         rb.includeLayers = Globals.STICKY_MASK;
         rb.excludeLayers = ~Globals.STICKY_MASK;
+
+        rb.angularVelocity = new(0f, 50f, 0f);
     }
 
     // Update is called once per frame
@@ -38,8 +41,11 @@ public class BounceBomb : MonoBehaviour {
         rb.detectCollisions = false;
         CheckIfInsideBounceBombTriggerZone();
 
-        blastCentre.position = collision.contacts[0].point;
+        this.transform.SetPositionAndRotation(collision.collider.ClosestPoint(this.transform.position), Quaternion.FromToRotation(Vector3.forward, collision.GetContact(0).normal));
+        blastCentre.position = collision.GetContact(0).point;
     }
+
+    public void SetParried() => parried = true;
 
     public void Throw() {
 
@@ -73,12 +79,20 @@ public class BounceBomb : MonoBehaviour {
         var allColliders = new List<(IMomentumModifiable, bool)>();
 
         foreach (var collider in Physics.OverlapSphere(blastOrigin, Config.WeakBlastRadius)) {
+            if (collider.gameObject.CompareTag("ExplosiveBarrel")) {
+                collider.transform.GetComponent<IDamageable>().TakeDamage(1);
+            }
+
             Rigidbody rb = collider.attachedRigidbody;
             if (rb == null) {
                 continue;
             }
 
-            if (!rb.gameObject.TryGetComponent<IMomentumModifiable>(out IMomentumModifiable imm)) {
+            if (parried && !Utility.DoesMaskContainLayer(Globals.PLAYER_MASK, rb.gameObject.layer) && rb.gameObject.TryGetComponent<IDamageable>(out var damageable)) {
+                damageable.TakeDamage(Config.ParryDamage);
+            }
+
+            if (!rb.gameObject.TryGetComponent<IMomentumModifiable>(out var imm)) {
                 continue;
             }
 
@@ -94,9 +108,7 @@ public class BounceBomb : MonoBehaviour {
                 continue;
             }
 
-            if (collider.gameObject.CompareTag("ExplosiveBarrel")) {
-                collider.transform.GetComponent<IDamageable>().TakeDamage(1);
-            }
+
         }
 
         return allColliders.ToList();
@@ -129,11 +141,13 @@ public class BounceBomb : MonoBehaviour {
         }
 
         //Vector3 newMomentum = new(directionFromBlast.x * newHorizontalSpeed, newVerticalSpeed, directionFromBlast.z * newHorizontalSpeed);
-        Debug.Log($"Old: {entity.GetMomentum()}; New: {newMomentum}; InStrongBlast: {inStrongBlast}; Old Horizontal Momentum: {momentum.Horizontal().magnitude}; New Horizontal Momentum: {newHorizontalSpeed}");
+        //Debug.Log($"Old: {entity.GetMomentum()}; New: {newMomentum}; InStrongBlast: {inStrongBlast}; Old Horizontal Momentum: {momentum.Horizontal().magnitude}; New Horizontal Momentum: {newHorizontalSpeed}");
         entity.SetMomentum(newMomentum);
+        entity.BeenBombBounced();
     }
 
     private void ExplosionVFX() {
+        AudioManager.instance?.Play("BombBounce");
         vfxObject.GetComponent<VFXCleanUp>().StartTimer();
 
         vfx.transform.SetParent(null);
@@ -155,6 +169,7 @@ public class BounceBomb : MonoBehaviour {
             ExplosiveSteam steam = col.GetComponent<ExplosiveSteam>();
             if (steam != null) {
                 Destroy(steam.gameObject);
+                TutorialEvents.OnBarrelExploded?.Invoke();
             }
         }
     }

@@ -13,6 +13,7 @@ public class FirstPersonPlayerController : MonoBehaviour, ITargetable, IHasSpeed
 
     [SerializeField] private PlayerControllerConfig Config;
     public SpeedStageThreshold CurrentThreshold { get; private set; }
+    private SpeedStageThreshold prevThreshold = null;
 
     #region Facets of Character
 
@@ -23,6 +24,8 @@ public class FirstPersonPlayerController : MonoBehaviour, ITargetable, IHasSpeed
     private BBThrowController throwController;
     private FirstPersonPhysicalAnimationController animationController;
 
+    [SerializeField] private Animator handAnimator;
+
     [SerializeField] private GameObject model;
 
     #endregion Facets of Character
@@ -30,14 +33,19 @@ public class FirstPersonPlayerController : MonoBehaviour, ITargetable, IHasSpeed
     #region Events
 
     [Header("Events")]
-    public UnityEvent PrimaryAction = new();
-    public UnityEvent SecondaryAction = new();
+    public UnityEvent PrimaryActionPressed = new();
+    public UnityEvent PrimaryActionReleased = new();
+    public UnityEvent SecondaryActionPressed = new();
+    public UnityEvent SecondaryActionReleased = new();
+
+    public UnityEvent SpeedThresholdChanged;
 
     #endregion Events
 
     [Header("Target")]
     [SerializeField] private Transform targetPosition;
     public Transform Target => targetPosition;
+
 
     private void Awake() {
         rb = this.GetComponent<Rigidbody>();
@@ -46,12 +54,15 @@ public class FirstPersonPlayerController : MonoBehaviour, ITargetable, IHasSpeed
         attackController = this.GetComponent<PlayerAttackController>();
         throwController = this.GetComponent<BBThrowController>();
         animationController = this.GetComponent<FirstPersonPhysicalAnimationController>();
+
         CurrentThreshold = Config.Thresholds.First();
+        prevThreshold = CurrentThreshold;
+
+        Globals.PLAYER = this;
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start() {
-        Globals.PLAYER = this;
 
     }
 
@@ -62,6 +73,11 @@ public class FirstPersonPlayerController : MonoBehaviour, ITargetable, IHasSpeed
 
     private void FixedUpdate() {
         FindCurrentThreshold();
+        if (prevThreshold == CurrentThreshold) {
+            SpeedThresholdChanged.Invoke();
+        }
+
+        prevThreshold = CurrentThreshold;
     }
 
     #region Thresholds
@@ -73,11 +89,13 @@ public class FirstPersonPlayerController : MonoBehaviour, ITargetable, IHasSpeed
         for (int i = 1; i < Config.Thresholds.Count; ++i) {
             if (rb.linearVelocity.magnitude < Config.Thresholds[i].SpeedThreshold) {
                 CurrentThreshold = Config.Thresholds[i - 1];
+                handAnimator.SetInteger("threshold", i - 1);
                 return;
             }
         }
 
-        CurrentThreshold = Config.Thresholds.First();
+        CurrentThreshold = Config.Thresholds.Last();
+        handAnimator.SetInteger("threshold", Config.Thresholds.Count - 1);
     }
 
     #endregion Thresholds
@@ -93,18 +111,20 @@ public class FirstPersonPlayerController : MonoBehaviour, ITargetable, IHasSpeed
     }
 
     public void AttackInput(InputAction.CallbackContext context) {
-        if (context.started) {
-            PrimaryAction.Invoke();
+        if (context.performed) {
+            PrimaryActionPressed.Invoke();
         }
         else if (context.canceled) {
+            PrimaryActionReleased.Invoke();
         }
     }
 
     public void ThrowInput(InputAction.CallbackContext context) {
-        if (context.started) {
-            SecondaryAction.Invoke();
+        if (context.performed) {
+            SecondaryActionPressed.Invoke();
         }
         else if (context.canceled) {
+            SecondaryActionReleased.Invoke();
         }
     }
 
