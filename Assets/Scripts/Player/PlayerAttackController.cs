@@ -58,10 +58,18 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
 
     #region Attack
 
+    public void ReadyAttack() {
+        if (attacking)
+            return;
+
+        attackAnimator.SetBool("isHoldingHammer", true);
+    }
+
     public void Attack() {
         if (attacking)
             return;
-        attackAnimator.SetTrigger("hasAttacked");
+        attackAnimator.SetBool("isHoldingHammer", false);
+        //attackAnimator.SetTrigger("hasAttacked");
         cameraAnimator.SetTrigger("hasAttacked");
         AudioManager.instance?.Play("PlayerAttackInTheAir");
 
