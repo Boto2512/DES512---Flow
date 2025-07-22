@@ -6,7 +6,7 @@ AvatarMask:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Left Hand Mask
+  m_Name: Mask Hands Only
   m_Mask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
   m_Elements:
   - m_Path: 
@@ -16,45 +16,45 @@ AvatarMask:
   - m_Path: ArmRig/Camera handle
     m_Weight: 0
   - m_Path: ArmRig/Camera handle/Camera handle_end
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: ArmRig/Hammer
     m_Weight: 1
   - m_Path: ArmRig/Hammer/Eyes
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: ArmRig/Hammer/Eyes/Eyes_end
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: ArmRig/Hammer/Handle
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: ArmRig/Hammer/Handle/Handle_end
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: ArmRig/Hammer/Head
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: ArmRig/Hammer/Head/Head_end
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: ArmRig/Hammer/Lower Front
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: ArmRig/Hammer/Lower Front/Lower Front_end
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: ArmRig/Hammer/Lower Rear
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: ArmRig/Hammer/Lower Rear/Lower Rear_end
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: ArmRig/Hammer/Mouth
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: ArmRig/Hammer/Mouth/Mouth_end
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: ArmRig/Hammer/Upper Front
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: ArmRig/Hammer/Upper Front/Upper Front_end
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: ArmRig/Hammer/Upper Rear
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: ArmRig/Hammer/Upper Rear/Upper Rear_end
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: ArmRig/Hammer/Wings
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: ArmRig/Hammer/Wings/Wings_end
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: ArmRig/Main
     m_Weight: 1
   - m_Path: ArmRig/Main/L_Pole
@@ -116,15 +116,15 @@ AvatarMask:
   - m_Path: ArmRig/Main/L_UpperArm/L_ForeArm/L_Hand/L_Thumb1/L_Thumb2/L_Arm3/L_Arm3_end
     m_Weight: 1
   - m_Path: ArmRig/Main/R_Pole
-    m_Weight: 0
+    m_Weight: 1
   - m_Path: ArmRig/Main/R_Pole/R_Pole_end
     m_Weight: 1
   - m_Path: ArmRig/Main/R_Target
-    m_Weight: 0
+    m_Weight: 1
   - m_Path: ArmRig/Main/R_Target/R_Target_end
     m_Weight: 1
   - m_Path: ArmRig/Main/R_UpperArm
-    m_Weight: 0
+    m_Weight: 1
   - m_Path: ArmRig/Main/R_UpperArm/R_ForeArm
     m_Weight: 1
   - m_Path: ArmRig/Main/R_UpperArm/R_ForeArm/R_Hand
@@ -170,8 +170,8 @@ AvatarMask:
   - m_Path: ArmRig/Main/R_UpperArm/R_ForeArm/R_Hand/R_Thumb1/R_Thumb2/R_Arm3/R_Arm3_end
     m_Weight: 1
   - m_Path: Arms.001
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: Arms.002
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: Hammer.001
-    m_Weight: 1
+    m_Weight: 0

@@ -44,9 +44,18 @@ public class BBThrowController : MonoBehaviour {
 
     #region Throwing & Detonating
 
+    public void HoldThrow() {
+        if (bombInstance != null)
+            return;
+
+        handAnimator.SetBool("isHoldingBomb", true);
+    }
+
     public void ThrowBomb() {
         if (toggle || throwing)
             return;
+
+        handAnimator.SetBool("isHoldingBomb", false);
 
         if (chargeCounter < 1)
             return;
@@ -56,7 +65,7 @@ public class BBThrowController : MonoBehaviour {
         throwing = true;
         this.InvokeOverwrite("throwing bomb", () => throwing = false, Config.ThrowCooldown);
 
-        handAnimator.SetTrigger("hasBombed");
+        //handAnimator.SetTrigger("hasBombed");
         cameraShakeAnimator.SetTrigger("hasBombed");
 
         bombInstance = Instantiate(Config.BounceBomb, throwPosition.position, throwOrientation.rotation);
