@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class CheckpointManager : MonoBehaviour
 {
-    [SerializeField] List<Transform> checkpoints;
+    List<Transform> checkpoints;
     Transform currentCheckpoint;
     Transform player;
 
@@ -26,7 +26,7 @@ public class CheckpointManager : MonoBehaviour
         if (Input.GetKeyUp(KeyCode.K)) { MovePlayer(); }
     }
 
-    void MovePlayer()
+    public void MovePlayer()
     {
         player.GetComponent<IMomentumModifiable>().SetMomentum(Vector3.zero);
         Vector3 spawnpostition = currentCheckpoint.position + (Vector3.up * 2);
