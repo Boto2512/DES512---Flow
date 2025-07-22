@@ -11198,7 +11198,7 @@ VisualEffect:
         m_Overridden: 1
     m_Vector4f:
       m_Array:
-      - m_Value: {x: 34.701454, y: 9.673886, z: 0, w: 1}
+      - m_Value: {x: 0.5943396, y: 0.24458314, z: 0.09251513, w: 1}
         m_Name: SteamColour
         m_Overridden: 1
     m_Uint:
@@ -11223,13 +11223,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 464403781}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.0152709745, y: -0.8052806, z: 0.06905014, w: 0.58866125}
-  m_LocalPosition: {x: -12.33, y: 0.768, z: -4.62}
+  m_LocalRotation: {x: -0.19474973, y: -0.15816118, z: 0.7278698, w: 0.63817173}
+  m_LocalPosition: {x: -11.387, y: 0.687, z: -6.754}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 7.423, y: -107.454, z: 3.278}
+  m_LocalEulerAnglesHint: {x: -1.05, y: -29.042, z: 97.786}
 --- !u!1 &502071690
 GameObject:
   m_ObjectHideFlags: 0
@@ -22266,7 +22266,7 @@ Transform:
   m_GameObject: {fileID: 864821447}
   serializedVersion: 2
   m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: -8.773075, y: -0.8899996, z: -2.957726}
+  m_LocalPosition: {x: -8.773075, y: 0.266, z: -2.958}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -40538,6 +40538,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rendererData: {fileID: 11400000, guid: f288ae1f4751b564a96ac7587541f7a2, type: 2}
   xrayFeatureName: XrayRenderer
+  xrayThreshold: 0
 --- !u!1 &1997468142
 GameObject:
   m_ObjectHideFlags: 0
