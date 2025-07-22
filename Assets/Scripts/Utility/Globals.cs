@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -15,7 +14,6 @@ public static class Globals {
 
     public static readonly LayerMask OBSTACLE_MASK = DEFAULT_MASK | GROUND_MASK | ENEMY_CANNOT_USE_MASK;
     public static readonly LayerMask STICKY_MASK = DEFAULT_MASK | GROUND_MASK | ENEMY_CANNOT_USE_MASK;
-    public static readonly HashSet<TagHandle> STICKY_TAGS = new() { };
 
     #endregion Layers
 

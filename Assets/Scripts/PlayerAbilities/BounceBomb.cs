@@ -20,6 +20,7 @@ public class BounceBomb : MonoBehaviour {
     [SerializeField] private GameObject vfxObject;
     [SerializeField] private VisualEffect vfx;
 
+    private bool parried = false;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start() {
@@ -40,9 +41,11 @@ public class BounceBomb : MonoBehaviour {
         rb.detectCollisions = false;
         CheckIfInsideBounceBombTriggerZone();
 
-        this.transform.SetPositionAndRotation(collision.collider.ClosestPoint(this.transform.position), Quaternion.FromToRotation(Vector3.up, collision.contacts[0].normal));
+        this.transform.SetPositionAndRotation(collision.collider.ClosestPoint(this.transform.position), Quaternion.FromToRotation(Vector3.forward, collision.GetContact(0).normal));
         blastCentre.position = collision.GetContact(0).point;
     }
+
+    public void SetParried() => parried = true;
 
     public void Throw() {
 
@@ -79,14 +82,17 @@ public class BounceBomb : MonoBehaviour {
             if (collider.gameObject.CompareTag("ExplosiveBarrel")) {
                 collider.transform.GetComponent<IDamageable>().TakeDamage(1);
             }
-            else { }
 
             Rigidbody rb = collider.attachedRigidbody;
             if (rb == null) {
                 continue;
             }
 
-            if (!rb.gameObject.TryGetComponent<IMomentumModifiable>(out IMomentumModifiable imm)) {
+            if (parried && !Utility.DoesMaskContainLayer(Globals.PLAYER_MASK, rb.gameObject.layer) && rb.gameObject.TryGetComponent<IDamageable>(out var damageable)) {
+                damageable.TakeDamage(Config.ParryDamage);
+            }
+
+            if (!rb.gameObject.TryGetComponent<IMomentumModifiable>(out var imm)) {
                 continue;
             }
 
