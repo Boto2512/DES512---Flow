@@ -12,6 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d63334f3b03a74d4a84bbbf28f2b618e, type: 3}
   m_Name: SumitBBThrowConfig
   m_EditorClassIdentifier: 
+  BounceBomb: {fileID: 569634559799669078, guid: f7f4fd0f170bb3545a73fa7b8db1fe8b, type: 3}
   ThrowPower: 10
   FuseTime: 0.15
-  BounceBomb: {fileID: 569634559799669078, guid: f7f4fd0f170bb3545a73fa7b8db1fe8b, type: 3}
+  ThrowCooldown: 0.15
+  DetonationCooldown: 0.15
+  MaxCharges: 3
+  ChargeRegenTime: 3
+  CapChargeIncreaseByLevel: 0
