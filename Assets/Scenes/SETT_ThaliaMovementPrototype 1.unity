@@ -1118,6 +1118,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1001657702}
     m_Modifications:
+    - target: {fileID: -9070541716762400362, guid: 29fbd35f1acfde645ad87a5fc37ccdd8, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -9070541716762400362, guid: 29fbd35f1acfde645ad87a5fc37ccdd8, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 2ea0f354f66341648bb2412bf8d89dc3, type: 2}
     - target: {fileID: -8679921383154817045, guid: 29fbd35f1acfde645ad87a5fc37ccdd8, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -1158,6 +1166,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -2683083879783004936, guid: 29fbd35f1acfde645ad87a5fc37ccdd8, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -2683083879783004936, guid: 29fbd35f1acfde645ad87a5fc37ccdd8, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: d361ac28cd5bb57488d37ddd2b8f444a, type: 2}
     - target: {fileID: 919132149155446097, guid: 29fbd35f1acfde645ad87a5fc37ccdd8, type: 3}
       propertyPath: m_Name
       value: FPS Rig Animations
@@ -1165,7 +1181,15 @@ PrefabInstance:
     - target: {fileID: 5866666021909216657, guid: 29fbd35f1acfde645ad87a5fc37ccdd8, type: 3}
       propertyPath: m_Controller
       value: 
-      objectReference: {fileID: 9100000, guid: 2e0b99f13d8f8f749b17ef0f01c9b845, type: 2}
+      objectReference: {fileID: 9100000, guid: 4e6e6508d7c11494d929f7cbe3f9615a, type: 2}
+    - target: {fileID: 7679596118649456669, guid: 29fbd35f1acfde645ad87a5fc37ccdd8, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7679596118649456669, guid: 29fbd35f1acfde645ad87a5fc37ccdd8, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: d361ac28cd5bb57488d37ddd2b8f444a, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
