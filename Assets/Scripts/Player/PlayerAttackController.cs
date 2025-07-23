@@ -129,6 +129,8 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
                     projectiles[i].attachedRigidbody.linearVelocity = momentum;
                     projectiles[i].attachedRigidbody.useGravity = false;
                     projectiles[i].attachedRigidbody.linearDamping = 0f;
+                    projectiles[i].attachedRigidbody.rotation = Quaternion.Euler(90f, 0f, 0f);
+                    projectiles[i].attachedRigidbody.angularVelocity = new(0f, 50f, 0f);
                     bb.SetParried();
                 }
                 else {
