@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 
 namespace Secret {
-    public class SecretEnemy : MonoBehaviour, IDamageable, IMomentumModifiable
+    public class SecretEnemy : MonoBehaviour, IDamageable//, IMomentumModifiable
     {
         #region Damage Variables
         [Header("Health")]
@@ -296,7 +296,7 @@ namespace Secret {
 
             if (NavMesh.SamplePosition(targetPosition + toComfortableRange, out NavMeshHit hit, halfComfortableRange, NavMesh.AllAreas))
             {
-                SetAgentDestination(hit.position);
+               SetAgentDestination(hit.position);
             }
         }
 
