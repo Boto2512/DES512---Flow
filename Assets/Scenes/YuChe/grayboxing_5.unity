@@ -1944,6 +1944,11 @@ MonoBehaviour:
   m_LightCookieSize: {x: 1, y: 1}
   m_LightCookieOffset: {x: 0, y: 0}
   m_SoftShadowQuality: 0
+--- !u!95 &237767435 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 2706531703947577647, guid: 2fab9f41ce824a24f9b6b279975808b2, type: 3}
+  m_PrefabInstance: {fileID: 442285985}
+  m_PrefabAsset: {fileID: 0}
 --- !u!43 &242554736
 Mesh:
   m_ObjectHideFlags: 0
@@ -30775,7 +30780,7 @@ PrefabInstance:
     - target: {fileID: 5586452117014544014, guid: af43fcbb260d3034e9663abcd9ed2276, type: 3}
       propertyPath: fadeAnimation
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 237767435}
     - target: {fileID: 5586452117014544014, guid: af43fcbb260d3034e9663abcd9ed2276, type: 3}
       propertyPath: sections.Array.size
       value: 0
