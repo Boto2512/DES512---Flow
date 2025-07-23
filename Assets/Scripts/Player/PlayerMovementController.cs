@@ -437,6 +437,7 @@ public class PlayerMovementController : MonoBehaviour, IMomentumModifiable {
         if (DefaultGroundCheck(out RaycastHit hitInfo)) {
             float angle = Vector3.Angle(Vector3.up, hitInfo.normal);
             inverseSlopeNormal = -hitInfo.normal;
+            slopeNormal = hitInfo.normal;
             groundedState = (angle < Config.MaxSlopeAngle && angle > Config.MinSlopeAngle) ? PlayerGroundedState.OnSlope : PlayerGroundedState.OnGround;
         }
         else {
@@ -444,8 +445,12 @@ public class PlayerMovementController : MonoBehaviour, IMomentumModifiable {
         }
     }
 
+    private Vector3 slopeNormal = Vector3.zero;
     private void StickToSlope() {
-        rb.AddForce(inverseSlopeNormal * 50f, ForceMode.Force);
+        Vector3 projectedVelocity = Vector3.ProjectOnPlane(rb.linearVelocity, slopeNormal);
+        rb.linearVelocity = projectedVelocity;
+
+        //rb.AddForce(inverseSlopeNormal * 50f, ForceMode.Force);
 
         //CapsuleCollider collider = model.GetComponent<CapsuleCollider>();
         //if (Physics.SphereCast(collider.transform.position, collider.radius, Vector3.down, out RaycastHit hitInfo, 100f, Globals.GROUND_MASK)) {
@@ -471,7 +476,7 @@ public class PlayerMovementController : MonoBehaviour, IMomentumModifiable {
                 break;
 
             case PlayerGroundedState.OnSlope:
-                rb.useGravity = false;
+                //rb.useGravity = false;
                 break;
 
             case PlayerGroundedState.InAir:
@@ -493,7 +498,7 @@ public class PlayerMovementController : MonoBehaviour, IMomentumModifiable {
         }
 
         if (groundedState != PlayerGroundedState.OnSlope) {
-            rb.useGravity = true;
+            //rb.useGravity = true;
         }
 
         if (!inAir) {
