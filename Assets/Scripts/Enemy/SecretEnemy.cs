@@ -49,8 +49,13 @@ namespace Secret {
         [Header("Attack")]
         [SerializeField] private GameObject projectile;
         [SerializeField] private Transform attackTransform;
+
+        [SerializeField] private int attackSeries = 3;
+        [SerializeField] private float attackSeriesInterval = .1f;
+
         [SerializeField, Min(0f)] private float attackCooldown = 1f;
         private bool isAttacking = false;
+        private int seriesNumber = 0;
         private Vector3 firingPosition => attackTransform.position;
 
         private List<StateMachine.Transition<EnemyAIState>> transitions;
@@ -267,7 +272,21 @@ namespace Secret {
 
             isAttacking = true;
             Instantiate(projectile, attackTransform.position, attackTransform.rotation);
-            this.InvokeExclusive("attackCooldown", () => isAttacking = false, attackCooldown);
+
+            seriesNumber++;
+            if (seriesNumber<attackSeries)
+            {
+                this.InvokeExclusive("attackSeriesCooldown", () => {
+                    isAttacking = false;
+                } , attackSeriesInterval);
+            }
+            else
+            {
+                seriesNumber = 0;
+                this.InvokeExclusive("attackCooldown", () => {
+                    isAttacking = false;
+                }, attackCooldown);
+            }
         }
 
         private void Reposition()
