@@ -123,6 +123,9 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
                 float projectileSpeed = Mathf.Max(Config.ParriedProjectileMinimumSpeed, rb.linearVelocity.magnitude * Config.ParriedProjectileSpeedMultiplier);
                 Vector3 momentum = orientation.forward.normalized * projectileSpeed;
 
+                if (Config.UseParryHitStop)
+                    HitStop.Slow(Config.HitStopTimeScale, Config.HitStopDuration).Forget();
+
                 if (projectiles[i].attachedRigidbody != null && projectiles[i].attachedRigidbody.gameObject.TryGetComponent<BounceBomb>(out var bb)) {
                     projectiles[i].attachedRigidbody.linearVelocity = momentum;
                     projectiles[i].attachedRigidbody.useGravity = false;
