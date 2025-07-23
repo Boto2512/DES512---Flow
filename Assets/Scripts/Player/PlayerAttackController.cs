@@ -36,6 +36,9 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
     private Rigidbody rb;
     private IHasSpeedThresholds thresholdHolder;
 
+    // input
+    private bool attackPressed = false;
+
     private void Start() {
         rb = this.GetComponent<Rigidbody>();
         thresholdHolder = this.GetComponent<IHasSpeedThresholds>();
@@ -60,6 +63,7 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
     #region Attack
 
     public void ReadyAttack() {
+        attackPressed = true;
         if (attacking)
             return;
 
@@ -68,6 +72,7 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
     }
 
     public void Attack() {
+        attackPressed = false;
         if (attacking || !attackReadied)
             return;
 
@@ -80,7 +85,7 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
         attackReadied = false;
         hurtbox.gameObject.SetActive(true);
 
-        this.InvokeOverwrite("attack animation playing", () => { attacking = false; parried = false; }, Config.AttackCooldown);
+        this.InvokeOverwrite("attack animation playing", () => { attacking = false; parried = false; CheckHoldingAttack(); }, Config.AttackCooldown);
     }
 
     public void DamageableHit(IDamageable damageable, Collider collider) {
@@ -144,6 +149,12 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
             return Config.Attack;
 
         return Config.Attack * thresholdHolder.CurrentThreshold.DamageMultiplier;
+    }
+
+    private void CheckHoldingAttack() {
+        if (attackPressed) {
+            ReadyAttack();
+        }
     }
 
     //private IDamageable[] GetEnemiesInAttackBox() {
