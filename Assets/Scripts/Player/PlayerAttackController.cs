@@ -29,6 +29,7 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
     [SerializeField] private Animator attackAnimator;
     [SerializeField] private Animator cameraAnimator;
     private bool attacking = false;
+    private bool attackReadied = false;
 
     [Header("Hurtbox")]
     [SerializeField] private PlayerHurtbox hurtbox;
@@ -40,6 +41,9 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
 
     private Rigidbody rb;
     private IHasSpeedThresholds thresholdHolder;
+
+    // input
+    private bool attackPressed = false;
 
     private void Start() {
         rb = this.GetComponent<Rigidbody>();
@@ -69,24 +73,29 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
     #region Attack
 
     public void ReadyAttack() {
+        attackPressed = true;
         if (attacking)
             return;
 
+        attackReadied = true;
         attackAnimator.SetBool("isHoldingHammer", true);
     }
 
     public void Attack() {
-        if (attacking)
+        attackPressed = false;
+        if (attacking || !attackReadied)
             return;
+
         attackAnimator.SetBool("isHoldingHammer", false);
         //attackAnimator.SetTrigger("hasAttacked");
         cameraAnimator.SetTrigger("hasAttacked");
         AudioManager.instance?.Play("PlayerAttackInTheAir");
 
         attacking = true;
+        attackReadied = false;
         hurtbox.gameObject.SetActive(true);
 
-        this.InvokeOverwrite("attack animation playing", () => { attacking = false; parried = false; }, Config.AttackCooldown);
+        this.InvokeOverwrite("attack animation playing", () => { attacking = false; parried = false; CheckHoldingAttack(); }, Config.AttackCooldown);
     }
 
     public void DamageableHit(IDamageable damageable, Collider collider) {
@@ -150,6 +159,12 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
             return Config.Attack;
 
         return Config.Attack * thresholdHolder.CurrentThreshold.DamageMultiplier;
+    }
+
+    private void CheckHoldingAttack() {
+        if (attackPressed) {
+            ReadyAttack();
+        }
     }
 
     //private IDamageable[] GetEnemiesInAttackBox() {

@@ -98,7 +98,8 @@ public class PlayerMovementController : MonoBehaviour, IMomentumModifiable {
     private float timeSpentGrounded = 0f;
     private bool inAir => groundedState == PlayerGroundedState.InAir;
 
-    private Vector3 inverseSlopeNormal = Vector3.up;
+    //private Vector3 inverseSlopeNormal = Vector3.up;
+    private Vector3 slopeNormal = Vector3.up;
 
 
     #endregion Ground & Slope Check
@@ -436,7 +437,7 @@ public class PlayerMovementController : MonoBehaviour, IMomentumModifiable {
 
         if (DefaultGroundCheck(out RaycastHit hitInfo)) {
             float angle = Vector3.Angle(Vector3.up, hitInfo.normal);
-            inverseSlopeNormal = -hitInfo.normal;
+            //inverseSlopeNormal = -hitInfo.normal;
             slopeNormal = hitInfo.normal;
             groundedState = (angle < Config.MaxSlopeAngle && angle > Config.MinSlopeAngle) ? PlayerGroundedState.OnSlope : PlayerGroundedState.OnGround;
         }
@@ -445,7 +446,6 @@ public class PlayerMovementController : MonoBehaviour, IMomentumModifiable {
         }
     }
 
-    private Vector3 slopeNormal = Vector3.zero;
     private void StickToSlope() {
         Vector3 projectedVelocity = Vector3.ProjectOnPlane(rb.linearVelocity, slopeNormal);
         rb.linearVelocity = projectedVelocity;

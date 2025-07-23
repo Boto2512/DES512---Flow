@@ -21,6 +21,17 @@ public static class Utility {
 
     public static Vector2 Flattened(this Vector3 v) => new(v.x, v.z);
 
+    /// <summary>
+    /// Creates a copy of the Vector3 with different named values
+    /// </summary>
+    public static Vector3 With(this Vector3 v, float? x, float? y, float? z) {
+        return new Vector3(
+            x ?? v.x,
+            y ?? v.y,
+            z ?? v.z
+            );
+    }
+
     #endregion Vector Logic
 
     #region UniTask Logic
