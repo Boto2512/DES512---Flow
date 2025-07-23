@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
@@ -60,6 +61,18 @@ namespace Secret {
 
         private List<StateMachine.Transition<EnemyAIState>> transitions;
 
+        [Header("Laser Attack")]
+        [SerializeField] private BoxCollider laserCollider;
+        [SerializeField] private float laserAttackHeight;
+        [SerializeField] private float laserRisingTime=1f;
+        [SerializeField] private float laserDuration = 5f;
+        [SerializeField] private float laserRotationSpeed;
+
+
+        private bool isLasering=false;
+        private bool isLastAttackLaser=false;
+
+
         #endregion AI Variables
 
         [Header("Ranges")]
@@ -100,6 +113,7 @@ namespace Secret {
         // Start is called once before the first execution of Update after the MonoBehaviour is created
         void Start()
         {
+
             healthBar.maxValue = health;
             healthBar.value = healthBar.maxValue;
 
@@ -270,6 +284,33 @@ namespace Secret {
             if (isAttacking)
                 return;
 
+            if (isLasering)
+                return;
+
+            if (healthBar.value<1f &&!isLastAttackLaser)
+            {
+                float randomNum = Random.Range(0f,1f);
+                Debug.Log($"Check Laser:{randomNum}");
+                if (randomNum<1)
+                {
+                    
+                    isLasering = true;
+                    isLastAttackLaser=true;
+                    isAttacking = true;
+                    var rb = GetComponent<Rigidbody>();
+                    float originalY = rb.position.y;
+                    rb.DOMoveY(originalY + laserAttackHeight,laserRisingTime).OnComplete(()=> laserCollider.enabled=true);
+                    this.InvokeExclusive("laserSeriesCooldown", () => {
+                        isLasering = false;
+                        isAttacking=false;
+                        laserCollider.enabled = false;
+                        rb.DOMoveY(originalY, laserRisingTime).OnComplete(() => laserCollider.enabled = true);
+                    },laserDuration);
+                    return;
+                }
+            }
+
+            isLastAttackLaser = false;
             isAttacking = true;
             Instantiate(projectile, attackTransform.position, attackTransform.rotation);
 
