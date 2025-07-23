@@ -84,7 +84,7 @@ public class BBThrowController : MonoBehaviour {
         //handAnimator.SetTrigger("hasBombed");
         cameraShakeAnimator.SetTrigger("hasBombed");
 
-        bombInstance = Instantiate(Config.BounceBomb, throwPosition.position, throwOrientation.rotation);
+        bombInstance = Instantiate(Config.BounceBomb, throwPosition.position, Quaternion.identity);
         bombInstance.GetComponent<Rigidbody>().AddForce(momentousEntity.Value.GetMomentum() + throwOrientation.forward * Config.ThrowPower, ForceMode.VelocityChange);
 
         Utility.RunNextFrame(() => toggle = true).Forget();     // one physics tick later
@@ -133,6 +133,9 @@ public class BBThrowController : MonoBehaviour {
 
         chargeCounter = Mathf.Min(chargeCounter + amount, currentChargeCap);
     }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public float ChargeRegenProgress() => chargeCounter - (float)ChargeCount();
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int ChargeCount() => (int)chargeCounter;
