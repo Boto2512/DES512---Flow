@@ -1944,6 +1944,11 @@ MonoBehaviour:
   m_LightCookieSize: {x: 1, y: 1}
   m_LightCookieOffset: {x: 0, y: 0}
   m_SoftShadowQuality: 0
+--- !u!95 &237767435 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 2706531703947577647, guid: 2fab9f41ce824a24f9b6b279975808b2, type: 3}
+  m_PrefabInstance: {fileID: 442285985}
+  m_PrefabAsset: {fileID: 0}
 --- !u!43 &242554736
 Mesh:
   m_ObjectHideFlags: 0
@@ -5219,6 +5224,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: FirstPerson-Final
       objectReference: {fileID: 0}
+    - target: {fileID: 7333138646730308612, guid: 2fab9f41ce824a24f9b6b279975808b2, type: 3}
+      propertyPath: vignetteMAT
+      value: 
+      objectReference: {fileID: 2100000, guid: 833e6d7d79369b74c85c4ba5916da44e, type: 2}
     - target: {fileID: 7476585009670342273, guid: 2fab9f41ce824a24f9b6b279975808b2, type: 3}
       propertyPath: m_LocalPosition.x
       value: -169.7
@@ -30259,7 +30268,7 @@ PrefabInstance:
     - target: {fileID: 5586452117014544014, guid: af43fcbb260d3034e9663abcd9ed2276, type: 3}
       propertyPath: fadeAnimation
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 237767435}
     - target: {fileID: 5586452117014544014, guid: af43fcbb260d3034e9663abcd9ed2276, type: 3}
       propertyPath: sections.Array.size
       value: 1
@@ -35010,6 +35019,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 5756315456945496000, guid: 83fa99cd267d2b0408c02cb1a3a9d7bb, type: 3}
+      propertyPath: soundList.Array.data[3].clip
+      value: 
+      objectReference: {fileID: 8300000, guid: 17ccae916d9589b44b5c5bfdb64ff5b0, type: 3}
     - target: {fileID: 6219088366736459797, guid: 83fa99cd267d2b0408c02cb1a3a9d7bb, type: 3}
       propertyPath: m_LocalPosition.x
       value: -297.8242

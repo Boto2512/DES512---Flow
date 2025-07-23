@@ -3812,6 +3812,9 @@ MonoBehaviour:
   gameOverCanvas: {fileID: 4733186393717285722}
   dead: 0
   healthBar: {fileID: 8022890928000830075}
+  vignetteMAT: {fileID: 2100000, guid: 833e6d7d79369b74c85c4ba5916da44e, type: 2}
+  vignettePower: 10
+  vignetteDelay: 0
   orientation: {fileID: 3146960624109261639}
   attackAnimator: {fileID: 7993044128406477219}
   cameraAnimator: {fileID: 8323960724218085972}
@@ -4780,12 +4783,12 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 4751748500830247361}
   - {fileID: 378157665454573922}
   - {fileID: 887202045245529098}
   - {fileID: 5906366881620421882}
   - {fileID: 1653424683030477943}
   - {fileID: 1231284302378613808}
+  - {fileID: 4751748500830247361}
   m_Father: {fileID: 7476585009670342273}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}

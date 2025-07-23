@@ -2,7 +2,9 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.UI;
+using static UnityEngine.Rendering.STP;
 
 public class PlayerAttackController : MonoBehaviour, IDamageable {
     [SerializeField] public PlayerDamageConfig Config;
@@ -15,6 +17,10 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
     [Header("Health")]
     [SerializeField] private Slider healthBar;
     private float health;
+    [SerializeField] private Material vignetteMAT;
+    [SerializeField] private float vignettePower = 10;
+    [SerializeField] private float vignetteDelay;
+    float vignetteTimer;
 
     [Header("Orientation")]
     [SerializeField] private Transform orientation;
@@ -51,6 +57,8 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
         hurtbox.gameObject.SetActive(false);
         gameOverCanvas.SetActive(false);
 
+        vignetteMAT = GetComponent<FullScreenPassRendererFeature>().passMaterial;
+
         if (!parryProjectile.TryGetComponent<ParryProjectile>(out _))
             Debug.LogError("Parry Projectile prefab in PlayerAttackController doesn't have the ParryProjectile script component");
     }
@@ -58,6 +66,8 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
     private void Update() {
         if (attacking && !parried)
             Parry();
+
+        VignettePower();
     }
 
     #region Attack
@@ -188,11 +198,25 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
         healthBar.value = health;
         TutorialEvents.OnEnemyKilled?.Invoke();
 
+
+        vignettePower = 3f;
+        vignetteMAT.SetFloat("_VignettePower", vignettePower);
+        vignetteTimer = 0;
+
         if (health <= 0 && !gameOverCanvas.activeSelf) {
             Kill();
         }
     }
 
+    private void VignettePower()
+    {
+        if (vignettePower != 6)
+        {
+            vignetteTimer += Time.deltaTime * .01f;
+            vignettePower = Mathf.Lerp(vignettePower, 7, vignetteTimer );
+            vignetteMAT.SetFloat("_VignettePower", vignettePower );
+        }
+    }
     public void Kill() {
         StartCoroutine(Death());
 
@@ -211,6 +235,7 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
 
     public void Heal(float amount) {
         health = Mathf.Clamp(health + amount, 0f, Config.MaxHealth);
+        healthBar.value = health;
     }
 
     #endregion IDamageable
