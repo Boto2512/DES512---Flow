@@ -1,3 +1,4 @@
+using System;
 using System.Runtime.CompilerServices;
 using AYellowpaper;
 using TMPro;
@@ -19,6 +20,10 @@ public class BBThrowController : MonoBehaviour {
     private bool throwing = false;
     private bool detonating = false;
     private bool thrownThisInput = false;
+
+    [Header("UI")]
+    [SerializeField] private Material[] chargeMaterials;
+
 
 #if DEBUG
     [Header("Debug")]
@@ -126,6 +131,8 @@ public class BBThrowController : MonoBehaviour {
         }
 
         chargeCounter += Time.deltaTime / Config.ChargeRegenTime;
+
+        ChargeUI();
     }
 
     public void AddChargeRegenAmount(float amount) {
@@ -144,5 +151,21 @@ public class BBThrowController : MonoBehaviour {
         AddChargeRegenAmount(1f);
     }
 
+
+    private void ChargeUI() {
+
+        if(chargeCounter == Config.MaxCharges) { return; }
+        float currentCharge = (chargeCounter % 1);
+        int currentAmount = Mathf.FloorToInt(chargeCounter);
+        int index = 0;
+
+        foreach (Material mat in chargeMaterials) {
+            if (index == currentAmount) { chargeMaterials[index].SetFloat("_LiquidAmount", currentCharge); }
+            else if (index < currentAmount) { chargeMaterials[index].SetFloat("_LiquidAmount", 1); }
+            else if (index > currentAmount) { chargeMaterials[index].SetFloat("_LiquidAmount", 0); }
+
+            index++;
+        }
+    }
     #endregion Charges
 }
