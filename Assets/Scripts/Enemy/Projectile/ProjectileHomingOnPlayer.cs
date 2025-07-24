@@ -5,6 +5,7 @@ public class ProjectileHomingOnPlayer : MonoBehaviour
 {
     private Rigidbody projectileRigidBody;
 
+
     [Header("Upwards")]
     [SerializeField] float upwardSpeed;
     [Tooltip("Projectile would go upward to a random destination within the range.")]
@@ -29,7 +30,9 @@ public class ProjectileHomingOnPlayer : MonoBehaviour
     [SerializeField] private float damage;
 
 
-    private Vector3 lockPosition;
+    [Header("Model")]
+    [SerializeField] private Transform projectileModel;
+
     private Vector3 lockDir;
 
 
@@ -72,12 +75,11 @@ public class ProjectileHomingOnPlayer : MonoBehaviour
         homingTime += Time.deltaTime;
         if (homingTime<homingDelay)
         {
-            lockPosition=player.position;
-            lockDir= lockPosition - transform.position;
+            lockDir= player.position - transform.position;
         }
 
         Vector3 newPosition = transform.position + lockDir.normalized* Time.deltaTime * homingSpeed; //Vector3.MoveTowards(, lockPosition, Time.deltaTime * homingSpeed);
-        transform.up = Vector3.Lerp(transform.up, lockDir, rotateSpeed);
+        projectileModel.up = Vector3.Lerp(projectileModel.up, lockDir, rotateSpeed);
         projectileRigidBody.MovePosition(newPosition);
     }
 
