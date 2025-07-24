@@ -22,6 +22,7 @@ public class PlayerDamageConfig : ScriptableObject {
     [Header("Parry")]
     [Min(0f)] public float ParryCheckDistance = 1f;
     [Min(0f)] public float ParryMaxAngle = 30f;
+    public bool UseParryHitStop = true;
     [Min(0f)] public float ParriedProjectileSpeedMultiplier = 2f;
     [Min(0f)] public float ParriedProjectileMinimumSpeed = 10f;
     [Min(0f)] public float ParriedProjectileDefaultDamage = 10f;

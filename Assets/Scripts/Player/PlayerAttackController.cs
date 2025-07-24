@@ -2,7 +2,9 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.UI;
+using static UnityEngine.Rendering.STP;
 
 public class PlayerAttackController : MonoBehaviour, IDamageable {
     [SerializeField] public PlayerDamageConfig Config;
@@ -15,6 +17,10 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
     [Header("Health")]
     [SerializeField] private Slider healthBar;
     private float health;
+    [SerializeField] private Material vignetteMAT;
+    [SerializeField] private float vignettePower = 10;
+    [SerializeField] private float vignetteDelay;
+    float vignetteTimer;
 
     [Header("Orientation")]
     [SerializeField] private Transform orientation;
@@ -23,6 +29,7 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
     [SerializeField] private Animator attackAnimator;
     [SerializeField] private Animator cameraAnimator;
     private bool attacking = false;
+    private bool attackReadied = false;
 
     [Header("Hurtbox")]
     [SerializeField] private PlayerHurtbox hurtbox;
@@ -34,6 +41,9 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
 
     private Rigidbody rb;
     private IHasSpeedThresholds thresholdHolder;
+
+    // input
+    private bool attackPressed = false;
 
     private void Start() {
         rb = this.GetComponent<Rigidbody>();
@@ -47,6 +57,8 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
         hurtbox.gameObject.SetActive(false);
         gameOverCanvas.SetActive(false);
 
+        vignetteMAT = GetComponent<FullScreenPassRendererFeature>().passMaterial;
+
         if (!parryProjectile.TryGetComponent<ParryProjectile>(out _))
             Debug.LogError("Parry Projectile prefab in PlayerAttackController doesn't have the ParryProjectile script component");
     }
@@ -54,29 +66,36 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
     private void Update() {
         if (attacking && !parried)
             Parry();
+
+        VignettePower();
     }
 
     #region Attack
 
     public void ReadyAttack() {
+        attackPressed = true;
         if (attacking)
             return;
 
+        attackReadied = true;
         attackAnimator.SetBool("isHoldingHammer", true);
     }
 
     public void Attack() {
-        if (attacking)
+        attackPressed = false;
+        if (attacking || !attackReadied)
             return;
+
         attackAnimator.SetBool("isHoldingHammer", false);
         //attackAnimator.SetTrigger("hasAttacked");
         cameraAnimator.SetTrigger("hasAttacked");
         AudioManager.instance?.Play("PlayerAttackInTheAir");
 
         attacking = true;
+        attackReadied = false;
         hurtbox.gameObject.SetActive(true);
 
-        this.InvokeOverwrite("attack animation playing", () => { attacking = false; parried = false; }, Config.AttackCooldown);
+        this.InvokeOverwrite("attack animation playing", () => { attacking = false; parried = false; CheckHoldingAttack(); }, Config.AttackCooldown);
     }
 
     public void DamageableHit(IDamageable damageable, Collider collider) {
@@ -113,10 +132,15 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
                 float projectileSpeed = Mathf.Max(Config.ParriedProjectileMinimumSpeed, rb.linearVelocity.magnitude * Config.ParriedProjectileSpeedMultiplier);
                 Vector3 momentum = orientation.forward.normalized * projectileSpeed;
 
+                if (Config.UseParryHitStop)
+                    HitStop.Slow(Config.HitStopTimeScale, Config.HitStopDuration).Forget();
+
                 if (projectiles[i].attachedRigidbody != null && projectiles[i].attachedRigidbody.gameObject.TryGetComponent<BounceBomb>(out var bb)) {
                     projectiles[i].attachedRigidbody.linearVelocity = momentum;
                     projectiles[i].attachedRigidbody.useGravity = false;
                     projectiles[i].attachedRigidbody.linearDamping = 0f;
+                    projectiles[i].attachedRigidbody.rotation = Quaternion.Euler(90f, 0f, 0f);
+                    projectiles[i].attachedRigidbody.angularVelocity = new(0f, 50f, 0f);
                     bb.SetParried();
                 }
                 else {
@@ -137,6 +161,12 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
             return Config.Attack;
 
         return Config.Attack * thresholdHolder.CurrentThreshold.DamageMultiplier;
+    }
+
+    private void CheckHoldingAttack() {
+        if (attackPressed) {
+            ReadyAttack();
+        }
     }
 
     //private IDamageable[] GetEnemiesInAttackBox() {
@@ -168,11 +198,25 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
         healthBar.value = health;
         TutorialEvents.OnEnemyKilled?.Invoke();
 
+
+        vignettePower = 3f;
+        vignetteMAT.SetFloat("_VignettePower", vignettePower);
+        vignetteTimer = 0;
+
         if (health <= 0 && !gameOverCanvas.activeSelf) {
             Kill();
         }
     }
 
+    private void VignettePower()
+    {
+        if (vignettePower != 6)
+        {
+            vignetteTimer += Time.deltaTime * .01f;
+            vignettePower = Mathf.Lerp(vignettePower, 7, vignetteTimer );
+            vignetteMAT.SetFloat("_VignettePower", vignettePower );
+        }
+    }
     public void Kill() {
         StartCoroutine(Death());
 
@@ -191,6 +235,7 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
 
     public void Heal(float amount) {
         health = Mathf.Clamp(health + amount, 0f, Config.MaxHealth);
+        healthBar.value = health;
     }
 
     #endregion IDamageable

@@ -18,6 +18,7 @@ public class BBThrowController : MonoBehaviour {
     [SerializeField] private Animator cameraShakeAnimator;
     private bool throwing = false;
     private bool detonating = false;
+    private bool thrownThisInput = false;
 
 #if DEBUG
     [Header("Debug")]
@@ -49,29 +50,44 @@ public class BBThrowController : MonoBehaviour {
             return;
 
         handAnimator.SetBool("isHoldingBomb", true);
+
+        // 1f is the hardcoded time until the hand goes down
+        if (chargeCounter < 1) {
+            this.InvokeExclusive("not holding bomb", () => handAnimator.SetBool("isHoldingBomb", false), 0.8f);
+        }
+        else {
+            this.InvokeCancel("not holding bomb");
+        }
     }
 
     public void ThrowBomb() {
+        if (thrownThisInput) {
+            thrownThisInput = false;
+            return;
+        }
+
         if (toggle || throwing)
             return;
-
-        handAnimator.SetBool("isHoldingBomb", false);
 
         if (chargeCounter < 1)
             return;
 
         --chargeCounter;
 
+        this.InvokeCancel("not holding bomb");
+        handAnimator.SetBool("isHoldingBomb", false);
+
         throwing = true;
+        thrownThisInput = true;
         this.InvokeOverwrite("throwing bomb", () => throwing = false, Config.ThrowCooldown);
 
         //handAnimator.SetTrigger("hasBombed");
         cameraShakeAnimator.SetTrigger("hasBombed");
 
-        bombInstance = Instantiate(Config.BounceBomb, throwPosition.position, throwOrientation.rotation);
+        bombInstance = Instantiate(Config.BounceBomb, throwPosition.position, Quaternion.identity);
         bombInstance.GetComponent<Rigidbody>().AddForce(momentousEntity.Value.GetMomentum() + throwOrientation.forward * Config.ThrowPower, ForceMode.VelocityChange);
 
-        this.InvokeExclusive("toggle blow status", () => toggle = true, Time.fixedDeltaTime);       // one physics tick later
+        Utility.RunNextFrame(() => toggle = true).Forget();     // one physics tick later
     }
 
     public void TriggerDetonation() {
@@ -117,6 +133,9 @@ public class BBThrowController : MonoBehaviour {
 
         chargeCounter = Mathf.Min(chargeCounter + amount, currentChargeCap);
     }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public float ChargeRegenProgress() => chargeCounter - (float)ChargeCount();
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int ChargeCount() => (int)chargeCounter;
