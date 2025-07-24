@@ -63,12 +63,14 @@ namespace Secret {
 
         [Header("Laser Attack")]
         [SerializeField] private Transform laserTransform;
-        [SerializeField] private float laserPossible;
         [SerializeField] private float laserMinY, laserMaxY;
         [SerializeField] private float laserRisingTime=1f;
         [SerializeField] private float laserDuration = 5f;
         [SerializeField] private float laserRotationSpeed;
 
+
+        [Header("Stages")]
+        [SerializeField] private List<EnemyStage> stages;
 
         private bool isLasering=false;
         private bool isLastAttackLaser=false;
@@ -285,12 +287,12 @@ namespace Secret {
             if (isAttacking||isLasering)
                 return;
 
-            float hpratio=health/initialHealth;
 
             if (!isLastAttackLaser &&seriesNumber==0)
             {
+                float hpratio = health / initialHealth;
                 float randomNum = Random.Range(0f,1f);
-                if (randomNum< laserPossible)
+                if (randomNum< InWhichStage(hpratio).laserPossibility)
                 {
                     StartLaser();
                     return;
@@ -583,6 +585,37 @@ namespace Secret {
         }
 
         #endregion Safe NavMeshAgent Methods
+
+
+        #region Stage
+        [System.Serializable]
+        public class EnemyStage {
+            public float healthRatio;
+            public float laserPossibility;
+
+            public EnemyStage(float healthRation, float laserPossibility)
+            {
+                this.healthRatio = healthRation;
+                this.laserPossibility = laserPossibility;
+            }
+        }
+
+        public EnemyStage InWhichStage(float hpratio)
+        {
+            Debug.Log($"hp ratio={hpratio}");
+            for (int i=0;i<stages.Count;i++)
+            {
+                if (hpratio>= stages[i].healthRatio)
+                {
+                    Debug.Log($"Stage={i}");
+                    return stages[i];
+                }
+            }
+
+            return new EnemyStage(1,0);
+        }
+
+        #endregion
 
     }
 
