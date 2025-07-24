@@ -293,33 +293,26 @@ namespace Secret {
                 Debug.Log($"Check Laser:{randomNum}");
                 if (randomNum<1)
                 {
-                    
-                    isLasering = true;
-                    isLastAttackLaser=true;
-                    isAttacking = true;
-                    var rb = GetComponent<Rigidbody>();
-                    float originalY = rb.position.y;
-                    rb.DOMoveY(originalY + laserAttackHeight,laserRisingTime).OnComplete(()=> laserCollider.enabled=true);
-                    this.InvokeExclusive("laserSeriesCooldown", () => {
-                        isLasering = false;
-                        isAttacking=false;
-                        laserCollider.enabled = false;
-                        rb.DOMoveY(originalY, laserRisingTime).OnComplete(() => laserCollider.enabled = true);
-                    },laserDuration);
+                    StartLaser();
                     return;
                 }
             }
+            LaunchProjectile();
+            
+        }
 
+        private void LaunchProjectile()
+        {
             isLastAttackLaser = false;
             isAttacking = true;
             Instantiate(projectile, attackTransform.position, attackTransform.rotation);
 
             seriesNumber++;
-            if (seriesNumber<attackSeries)
+            if (seriesNumber < attackSeries)
             {
                 this.InvokeExclusive("attackSeriesCooldown", () => {
                     isAttacking = false;
-                } , attackSeriesInterval);
+                }, attackSeriesInterval);
             }
             else
             {
@@ -328,6 +321,22 @@ namespace Secret {
                     isAttacking = false;
                 }, attackCooldown);
             }
+        }
+
+        private void StartLaser()
+        {
+            isLasering = true;
+            isLastAttackLaser = true;
+            isAttacking = true;
+            var rb = GetComponent<Rigidbody>();
+            float originalY = rb.position.y;
+            rb.DOMoveY(originalY + laserAttackHeight, laserRisingTime).OnComplete(() => laserCollider.enabled = true);
+            this.InvokeExclusive("laserSeriesCooldown", () => {
+                isLasering = false;
+                isAttacking = false;
+                laserCollider.enabled = false;
+                rb.DOMoveY(originalY, laserRisingTime).OnComplete(() => laserCollider.enabled = true);
+            }, laserDuration);
         }
 
         private void Reposition()
