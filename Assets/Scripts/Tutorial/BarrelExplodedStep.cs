@@ -27,5 +27,5 @@ public class BarrelExplodedStep : ITutorialStep
 
     public bool Validate() => barrelExploded;
 
-    public string GetMessage() => "Explode the barrel using Bomb Bounce!";
+    public string GetMessage() => "Killing all enemies in the area opens the gate.";
 }
