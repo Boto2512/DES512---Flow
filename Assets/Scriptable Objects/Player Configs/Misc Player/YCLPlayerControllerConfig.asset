@@ -14,19 +14,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Thresholds:
   - speedThreshold: 0
-    damageMultiplier: 1
+    damageMultiplier: 1.2
     fieldOfView: 60
     hasSpeedlines: 0
     speedRangeOfLines: {x: 0, y: 0}
     speedlineSpawnRate: 0
   - speedThreshold: 5
-    damageMultiplier: 1.2
+    damageMultiplier: 2
     fieldOfView: 60
     hasSpeedlines: 1
-    speedRangeOfLines: {x: 1, y: 4}
+    speedRangeOfLines: {x: 1, y: 2}
     speedlineSpawnRate: 12
   - speedThreshold: 13
-    damageMultiplier: 2
+    damageMultiplier: 2.5
     fieldOfView: 60
     hasSpeedlines: 1
     speedRangeOfLines: {x: 2, y: 8}
@@ -35,5 +35,5 @@ MonoBehaviour:
     damageMultiplier: 5
     fieldOfView: 60
     hasSpeedlines: 1
-    speedRangeOfLines: {x: 3, y: 8}
+    speedRangeOfLines: {x: 4, y: 16}
     speedlineSpawnRate: 50
