@@ -88,9 +88,10 @@ public class BBThrowController : MonoBehaviour {
 
         //handAnimator.SetTrigger("hasBombed");
         cameraShakeAnimator.SetTrigger("hasBombed");
-
+        AudioManager.instance?.Play("BombThrow");
         bombInstance = Instantiate(Config.BounceBomb, throwPosition.position, Quaternion.identity);
         bombInstance.GetComponent<Rigidbody>().AddForce(momentousEntity.Value.GetMomentum() + throwOrientation.forward * Config.ThrowPower, ForceMode.VelocityChange);
+
 
         Utility.RunNextFrame(() => toggle = true).Forget();     // one physics tick later
     }
