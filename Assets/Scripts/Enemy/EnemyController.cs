@@ -43,6 +43,8 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
     private bool isTargetTooFar => !(isInComfortableRange || isTargetTooClose);
     private bool bombBounced = false;
 
+    private bool movedExternallyAtLeastOnce = false;
+
     [Header("Attack")]
     [SerializeField] private GameObject projectile;
     [SerializeField] private Transform attackTransform;
@@ -257,7 +259,7 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
 
     private Vector3 GetPursueDestination() {
         if (target == null)
-            return rb.position;
+            return this.transform.position;
 
         if (isTargetReachable)
             return desiredDestination;
@@ -287,7 +289,7 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
         //Vector3 directionToTarget = (targetPosition - rb.position).normalized;
         //Vector3 desiredPosition = targetPosition - directionToTarget * desiredDistance;
 
-        bool result = NavMesh.SamplePosition(targetPosition, out NavMeshHit hit, attackRange, NavMesh.AllAreas);
+        bool result = NavMesh.SamplePosition(targetPosition, out NavMeshHit hit, attackRange, new NavMeshQueryFilter() { agentTypeID = agent.agentTypeID, areaMask = agent.areaMask });
         desiredDestination = hit.position;
 
         return result;
@@ -304,7 +306,7 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
     }
 
     private bool IdleToPursueCheck() {
-        return isTargetReachable && isGrounded && !bombBounced;
+        return isTargetReachable && isGrounded && !bombBounced && movedExternallyAtLeastOnce;
     }
 
     private bool AttackToIdleCheck() {
@@ -324,11 +326,11 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
     }
 
     private bool AttackToPursueCheck() {
-        return !isTargetInAttackRange || !isTargetInView || bombBounced;
+        return (!isTargetInAttackRange || !isTargetInView || bombBounced) && movedExternallyAtLeastOnce;
     }
 
     private bool AttackToRepositionCheck() {
-        return isTargetInView && isTargetTooClose;
+        return isTargetInView && isTargetTooClose && movedExternallyAtLeastOnce;
     }
 
     private bool RepositionToAttackCheck() {
@@ -418,6 +420,8 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
 
         rb.linearVelocity = value;
         //this.InvokeOverwrite("bombBounced", () => bombBounced = true, 0.1f);
+
+        movedExternallyAtLeastOnce = true;
     }
 
     public void AddMomentum(Vector3 value, ForceMode additionType = ForceMode.Impulse) {
