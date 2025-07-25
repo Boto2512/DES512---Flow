@@ -62,16 +62,19 @@ namespace Secret {
         private List<StateMachine.Transition<EnemyAIState>> transitions;
 
         [Header("Laser Attack")]
-        [SerializeField] private BoxCollider laserCollider;
-        [SerializeField] private float laserAttackHeight;
+        [SerializeField] private Transform laserTransform;
+        [SerializeField] private float laserMinY, laserMaxY;
         [SerializeField] private float laserRisingTime=1f;
         [SerializeField] private float laserDuration = 5f;
         [SerializeField] private float laserRotationSpeed;
 
 
+        [Header("Stages")]
+        [SerializeField] private List<EnemyStage> stages;
+
         private bool isLasering=false;
         private bool isLastAttackLaser=false;
-
+        private float initialHealth;
 
         #endregion AI Variables
 
@@ -113,7 +116,7 @@ namespace Secret {
         // Start is called once before the first execution of Update after the MonoBehaviour is created
         void Start()
         {
-
+            initialHealth = health;
             healthBar.maxValue = health;
             healthBar.value = healthBar.maxValue;
 
@@ -281,45 +284,37 @@ namespace Secret {
 
         private void Attack()
         {
-            if (isAttacking)
+            if (isAttacking||isLasering)
                 return;
 
-            if (isLasering)
-                return;
 
-            if (healthBar.value<1f &&!isLastAttackLaser)
+            if (!isLastAttackLaser &&seriesNumber==0)
             {
+                float hpratio = health / initialHealth;
                 float randomNum = Random.Range(0f,1f);
-                Debug.Log($"Check Laser:{randomNum}");
-                if (randomNum<1)
+                if (randomNum< InWhichStage(hpratio).laserPossibility)
                 {
-                    
-                    isLasering = true;
-                    isLastAttackLaser=true;
-                    isAttacking = true;
-                    var rb = GetComponent<Rigidbody>();
-                    float originalY = rb.position.y;
-                    rb.DOMoveY(originalY + laserAttackHeight,laserRisingTime).OnComplete(()=> laserCollider.enabled=true);
-                    this.InvokeExclusive("laserSeriesCooldown", () => {
-                        isLasering = false;
-                        isAttacking=false;
-                        laserCollider.enabled = false;
-                        rb.DOMoveY(originalY, laserRisingTime).OnComplete(() => laserCollider.enabled = true);
-                    },laserDuration);
+                    StartLaser();
                     return;
                 }
             }
+            LaunchProjectile();
+        }
+
+        private void LaunchProjectile()
+        {
+            Debug.Log("Launch projectile");
 
             isLastAttackLaser = false;
             isAttacking = true;
             Instantiate(projectile, attackTransform.position, attackTransform.rotation);
 
             seriesNumber++;
-            if (seriesNumber<attackSeries)
+            if (seriesNumber < attackSeries)
             {
                 this.InvokeExclusive("attackSeriesCooldown", () => {
                     isAttacking = false;
-                } , attackSeriesInterval);
+                }, attackSeriesInterval);
             }
             else
             {
@@ -328,6 +323,21 @@ namespace Secret {
                     isAttacking = false;
                 }, attackCooldown);
             }
+        }
+
+        private void StartLaser()
+        {
+            Debug.Log("Start Laser");
+            isLasering = true;
+            isLastAttackLaser = true;
+            var rb = GetComponent<Rigidbody>();
+            float originalY = laserTransform.position.y;
+            //laserCollider.enabled = true;
+            laserTransform.DOLocalMoveY(laserMaxY, laserRisingTime).OnComplete(() => { Debug.Log("Rised"); } );
+            this.InvokeExclusive("lasering", () => {
+                laserTransform.DOLocalMoveY(laserMinY, laserRisingTime).OnComplete(() => { Debug.Log("Sink"); });
+                this.InvokeExclusive("laserCooldown",()=> isLasering = false,attackCooldown);
+            }, laserDuration);
         }
 
         private void Reposition()
@@ -575,6 +585,37 @@ namespace Secret {
         }
 
         #endregion Safe NavMeshAgent Methods
+
+
+        #region Stage
+        [System.Serializable]
+        public class EnemyStage {
+            public float healthRatio;
+            public float laserPossibility;
+
+            public EnemyStage(float healthRation, float laserPossibility)
+            {
+                this.healthRatio = healthRation;
+                this.laserPossibility = laserPossibility;
+            }
+        }
+
+        public EnemyStage InWhichStage(float hpratio)
+        {
+            Debug.Log($"hp ratio={hpratio}");
+            for (int i=0;i<stages.Count;i++)
+            {
+                if (hpratio>= stages[i].healthRatio)
+                {
+                    Debug.Log($"Stage={i}");
+                    return stages[i];
+                }
+            }
+
+            return new EnemyStage(1,0);
+        }
+
+        #endregion
 
     }
 
