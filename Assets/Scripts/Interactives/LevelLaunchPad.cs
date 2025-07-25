@@ -55,7 +55,7 @@ public class LevelLaunchPad : MonoBehaviour
         fadeAnimation.SetTrigger("startFade");
         yield return new WaitForSeconds(wait);
         completionTimer.enabled = true;
-        yield return new WaitForSeconds(wait * 3);
+        yield return new WaitForSeconds(2.5f);
         AsyncOperation loadAsyncOperation = SceneManager.LoadSceneAsync(loadScene);
     }
 
