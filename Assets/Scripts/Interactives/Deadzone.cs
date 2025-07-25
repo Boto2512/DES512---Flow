@@ -19,11 +19,13 @@ public class Deadzone : MonoBehaviour
     {
         if (collision.transform.CompareTag(playerTag))
         {
+            AudioManager.instance?.Play("FallWater");
             collision.rigidbody.GetComponent<IDamageable>().TakeDamage(damage);
             checkpointManager.MovePlayer();
         }
         else if (collision.transform.CompareTag(enemyTag))
         {
+            AudioManager.instance?.Play("FallWater");
             Destroy(collision.gameObject);
         }
     }
