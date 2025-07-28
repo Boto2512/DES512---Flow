@@ -11,7 +11,8 @@ public class LevelLaunchPad : MonoBehaviour
     [Tooltip("Link to the animator on Player UI Canvas called Fade")]
     [SerializeField] Animator fadeAnimation;
     [Header("Timer")]
-    [SerializeField] TextMeshProUGUI completionTimer;
+    TextMeshProUGUI completionTimer;
+    [SerializeField] GameObject completionCanvas;
     private float timer;
     private bool isTiming = true;
 
@@ -24,7 +25,10 @@ public class LevelLaunchPad : MonoBehaviour
 
     private void Start()
     {
-        completionTimer.enabled = false;
+        Debug.Log($"{GameObject.FindWithTag("CompletionCanvas")}");
+        completionCanvas = GameObject.FindWithTag("CompletionCanvas");
+        completionTimer = completionCanvas.GetComponentInChildren<TextMeshProUGUI>();
+        completionCanvas.SetActive(false);
     }
 
     private void Update() {
@@ -59,7 +63,7 @@ public class LevelLaunchPad : MonoBehaviour
     private IEnumerator LoadNextLevel() {
         fadeAnimation.SetTrigger("startFade");
         yield return new WaitForSeconds(wait);
-        completionTimer.enabled = true;
+        completionCanvas.SetActive(true);
         yield return new WaitForSeconds(2.5f);
         AsyncOperation loadAsyncOperation = SceneManager.LoadSceneAsync(loadScene);
     }

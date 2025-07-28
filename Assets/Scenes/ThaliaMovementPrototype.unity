@@ -1963,6 +1963,22 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3146960624109261639, guid: 2fab9f41ce824a24f9b6b279975808b2, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.9306476
+      objectReference: {fileID: 0}
+    - target: {fileID: 3146960624109261639, guid: 2fab9f41ce824a24f9b6b279975808b2, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.34852687
+      objectReference: {fileID: 0}
+    - target: {fileID: 3146960624109261639, guid: 2fab9f41ce824a24f9b6b279975808b2, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.10438348
+      objectReference: {fileID: 0}
+    - target: {fileID: 3146960624109261639, guid: 2fab9f41ce824a24f9b6b279975808b2, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0.03909154
+      objectReference: {fileID: 0}
     - target: {fileID: 3692983667398255008, guid: 2fab9f41ce824a24f9b6b279975808b2, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -1970,6 +1986,14 @@ PrefabInstance:
     - target: {fileID: 3692983667398255008, guid: 2fab9f41ce824a24f9b6b279975808b2, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3974594690685169123, guid: 2fab9f41ce824a24f9b6b279975808b2, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3974594690685169123, guid: 2fab9f41ce824a24f9b6b279975808b2, type: 3}
+      propertyPath: m_TagString
+      value: CompletionCanvas
       objectReference: {fileID: 0}
     - target: {fileID: 4158138146600974247, guid: 2fab9f41ce824a24f9b6b279975808b2, type: 3}
       propertyPath: m_Name
@@ -2080,7 +2104,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 7884842395340683116, guid: 2fab9f41ce824a24f9b6b279975808b2, type: 3}
+    - {fileID: 6844730971328118004, guid: 2fab9f41ce824a24f9b6b279975808b2, type: 3}
+    - {fileID: 2867659599232784840, guid: 2fab9f41ce824a24f9b6b279975808b2, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2fab9f41ce824a24f9b6b279975808b2, type: 3}
@@ -2971,6 +2998,14 @@ PrefabInstance:
       propertyPath: fadeAnimation
       value: 
       objectReference: {fileID: 1362982673}
+    - target: {fileID: 5586452117014544014, guid: af43fcbb260d3034e9663abcd9ed2276, type: 3}
+      propertyPath: completionTimer
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 5586452117014544014, guid: af43fcbb260d3034e9663abcd9ed2276, type: 3}
+      propertyPath: completionCanvas
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 5586452117014544014, guid: af43fcbb260d3034e9663abcd9ed2276, type: 3}
       propertyPath: 'sections.Array.data[0]'
       value: 
