@@ -32,10 +32,10 @@ public class BounceBomb : MonoBehaviour {
     }
 
     private void OnCollisionEnter(Collision collision) {
+        AudioManager.instance?.Play("BombAttach");
         rb.isKinematic = true;
         rb.detectCollisions = false;
         CheckIfInsideBounceBombTriggerZone();
-
         this.transform.SetPositionAndRotation(collision.collider.ClosestPoint(this.transform.position), Quaternion.FromToRotation(Vector3.up, collision.GetContact(0).normal));
         blastCentre.position = collision.GetContact(0).point;
     }
@@ -62,7 +62,6 @@ public class BounceBomb : MonoBehaviour {
 
     private Vector3 CalculateProjectedEntityPosition(IMomentumModifiable imm) {
         Vector3 projectedPosition = imm.GetPosition() + imm.GetMomentum() * Config.EntityProjectionScale;
-
         return projectedPosition;
     }
 

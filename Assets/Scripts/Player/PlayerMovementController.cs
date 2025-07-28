@@ -506,8 +506,9 @@ public class PlayerMovementController : MonoBehaviour, IMomentumModifiable {
                 this.InvokeCancel("decelerate");
                 Debug.Log("cancelling deceleration");
                 waitingToDecelerate = false;
+                
             }
-
+            AudioManager.instance?.Play("Jump");
             slideEnded = false;
             this.InvokeExclusive("End Slide", () => slideEnded = true, Config.SlideTime);
             hasJumped = false;
@@ -563,6 +564,7 @@ public class PlayerMovementController : MonoBehaviour, IMomentumModifiable {
     }
 
     private void WallKick(in RaycastHit hitInfo) {
+        AudioManager.instance?.Play("WallKick");
         Vector3 newHorizontalDirection = Vector3.Reflect(rb.linearVelocity.Horizontal(), hitInfo.normal).normalized;
         float horizontalSpeed = rb.linearVelocity.Horizontal().magnitude;
 
