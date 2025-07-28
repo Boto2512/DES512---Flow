@@ -68,6 +68,8 @@ namespace Secret {
         [SerializeField] private float laserDuration = 5f;
         [SerializeField] private float laserRotationSpeed;
 
+        [SerializeField] private List<SecretEnemyLaser> secretEnemyLaserList;
+
 
         [Header("Stages")]
         [SerializeField] private List<EnemyStage> stages;
@@ -333,11 +335,17 @@ namespace Secret {
             var rb = GetComponent<Rigidbody>();
             float originalY = laserTransform.position.y;
             //laserCollider.enabled = true;
-            laserTransform.DOLocalMoveY(laserMaxY, laserRisingTime).OnComplete(() => { Debug.Log("Rised"); } );
+            laserTransform.gameObject.SetActive(true);
+            laserTransform.DOLocalMoveY(laserMaxY, laserRisingTime).OnComplete(() => {
+                foreach (var laser in secretEnemyLaserList)
+                {
+                    laser.ShootLaser(laserDuration);
+                }
+            });
             this.InvokeExclusive("lasering", () => {
-                laserTransform.DOLocalMoveY(laserMinY, laserRisingTime).OnComplete(() => { Debug.Log("Sink"); });
+                laserTransform.DOLocalMoveY(laserMinY, laserRisingTime).OnComplete(() => { laserTransform.gameObject.SetActive(false); });
                 this.InvokeExclusive("laserCooldown",()=> isLasering = false,attackCooldown);
-            }, laserDuration);
+            }, laserDuration+2f);
         }
 
         private void Reposition()
