@@ -1,3 +1,4 @@
+using System;
 using System.Runtime.CompilerServices;
 using AYellowpaper;
 using TMPro;
@@ -18,6 +19,11 @@ public class BBThrowController : MonoBehaviour {
     [SerializeField] private Animator cameraShakeAnimator;
     private bool throwing = false;
     private bool detonating = false;
+    private bool thrownThisInput = false;
+
+    [Header("UI")]
+    [SerializeField] private Material[] chargeMaterials;
+
 
 #if DEBUG
     [Header("Debug")]
@@ -44,7 +50,27 @@ public class BBThrowController : MonoBehaviour {
 
     #region Throwing & Detonating
 
+    public void HoldThrow() {
+        if (bombInstance != null)
+            return;
+
+        handAnimator.SetBool("isHoldingBomb", true);
+
+        // 1f is the hardcoded time until the hand goes down
+        if (chargeCounter < 1) {
+            this.InvokeExclusive("not holding bomb", () => handAnimator.SetBool("isHoldingBomb", false), 0.8f);
+        }
+        else {
+            this.InvokeCancel("not holding bomb");
+        }
+    }
+
     public void ThrowBomb() {
+        if (thrownThisInput) {
+            thrownThisInput = false;
+            return;
+        }
+
         if (toggle || throwing)
             return;
 
@@ -53,16 +79,21 @@ public class BBThrowController : MonoBehaviour {
 
         --chargeCounter;
 
+        this.InvokeCancel("not holding bomb");
+        handAnimator.SetBool("isHoldingBomb", false);
+
         throwing = true;
+        thrownThisInput = true;
         this.InvokeOverwrite("throwing bomb", () => throwing = false, Config.ThrowCooldown);
 
-        handAnimator.SetTrigger("hasBombed");
+        //handAnimator.SetTrigger("hasBombed");
         cameraShakeAnimator.SetTrigger("hasBombed");
-
-        bombInstance = Instantiate(Config.BounceBomb, throwPosition.position, throwOrientation.rotation);
+        AudioManager.instance?.Play("BombThrow");
+        bombInstance = Instantiate(Config.BounceBomb, throwPosition.position, Quaternion.identity);
         bombInstance.GetComponent<Rigidbody>().AddForce(momentousEntity.Value.GetMomentum() + throwOrientation.forward * Config.ThrowPower, ForceMode.VelocityChange);
 
-        this.InvokeExclusive("toggle blow status", () => toggle = true, Time.fixedDeltaTime);       // one physics tick later
+
+        Utility.RunNextFrame(() => toggle = true).Forget();     // one physics tick later
     }
 
     public void TriggerDetonation() {
@@ -101,6 +132,8 @@ public class BBThrowController : MonoBehaviour {
         }
 
         chargeCounter += Time.deltaTime / Config.ChargeRegenTime;
+
+        ChargeUI();
     }
 
     public void AddChargeRegenAmount(float amount) {
@@ -110,11 +143,30 @@ public class BBThrowController : MonoBehaviour {
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public float ChargeRegenProgress() => chargeCounter - (float)ChargeCount();
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int ChargeCount() => (int)chargeCounter;
 
     public void BombBounceEnded() {
         AddChargeRegenAmount(1f);
     }
 
+
+    private void ChargeUI() {
+
+        if(chargeCounter == Config.MaxCharges) { return; }
+        float currentCharge = (chargeCounter % 1);
+        int currentAmount = Mathf.FloorToInt(chargeCounter);
+        int index = 0;
+
+        foreach (Material mat in chargeMaterials) {
+            if (index == currentAmount) { chargeMaterials[index].SetFloat("_LiquidAmount", currentCharge); }
+            else if (index < currentAmount) { chargeMaterials[index].SetFloat("_LiquidAmount", 1); }
+            else if (index > currentAmount) { chargeMaterials[index].SetFloat("_LiquidAmount", 0); }
+
+            index++;
+        }
+    }
     #endregion Charges
 }

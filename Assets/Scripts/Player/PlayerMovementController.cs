@@ -58,6 +58,7 @@ public class PlayerMovementController : MonoBehaviour, IMomentumModifiable {
         }
     }
     private bool hasBeenBounceBombed = false;
+    private bool touchingWall = false;
 
     #region Movement Variables
 
@@ -97,7 +98,8 @@ public class PlayerMovementController : MonoBehaviour, IMomentumModifiable {
     private float timeSpentGrounded = 0f;
     private bool inAir => groundedState == PlayerGroundedState.InAir;
 
-    private Vector3 inverseSlopeNormal = Vector3.up;
+    //private Vector3 inverseSlopeNormal = Vector3.up;
+    private Vector3 slopeNormal = Vector3.up;
 
 
     #endregion Ground & Slope Check
@@ -179,6 +181,25 @@ public class PlayerMovementController : MonoBehaviour, IMomentumModifiable {
 
         if (!enableGroundedStateCheck && Utility.DoesMaskContainLayer(groundMask, gameObject.layer)) {
             enableGroundedStateCheck = true;
+
+            touchingWall = !DefaultGroundCheck();
+        }
+    }
+
+    private void OnCollisionStay(Collision collision) {
+        if (!touchingWall)
+            return;
+
+        if (!Utility.DoesMaskContainLayer(groundMask, collision.gameObject.layer))
+            return;
+
+        foreach (var contact in collision.contacts) {
+            float normalAngle = Vector3.Angle(contact.normal, Vector3.up);
+            if (normalAngle <= Config.MaxSlopeAngle) {
+                enableGroundedStateCheck = true;
+                touchingWall = false;
+                break;
+            }
         }
     }
 
@@ -416,7 +437,8 @@ public class PlayerMovementController : MonoBehaviour, IMomentumModifiable {
 
         if (DefaultGroundCheck(out RaycastHit hitInfo)) {
             float angle = Vector3.Angle(Vector3.up, hitInfo.normal);
-            inverseSlopeNormal = -hitInfo.normal;
+            //inverseSlopeNormal = -hitInfo.normal;
+            slopeNormal = hitInfo.normal;
             groundedState = (angle < Config.MaxSlopeAngle && angle > Config.MinSlopeAngle) ? PlayerGroundedState.OnSlope : PlayerGroundedState.OnGround;
         }
         else {
@@ -425,7 +447,10 @@ public class PlayerMovementController : MonoBehaviour, IMomentumModifiable {
     }
 
     private void StickToSlope() {
-        rb.AddForce(inverseSlopeNormal * 50f, ForceMode.Force);
+        Vector3 projectedVelocity = Vector3.ProjectOnPlane(rb.linearVelocity, slopeNormal);
+        rb.linearVelocity = projectedVelocity;
+
+        //rb.AddForce(inverseSlopeNormal * 50f, ForceMode.Force);
 
         //CapsuleCollider collider = model.GetComponent<CapsuleCollider>();
         //if (Physics.SphereCast(collider.transform.position, collider.radius, Vector3.down, out RaycastHit hitInfo, 100f, Globals.GROUND_MASK)) {
@@ -451,7 +476,7 @@ public class PlayerMovementController : MonoBehaviour, IMomentumModifiable {
                 break;
 
             case PlayerGroundedState.OnSlope:
-                rb.useGravity = false;
+                //rb.useGravity = false;
                 break;
 
             case PlayerGroundedState.InAir:
@@ -473,7 +498,7 @@ public class PlayerMovementController : MonoBehaviour, IMomentumModifiable {
         }
 
         if (groundedState != PlayerGroundedState.OnSlope) {
-            rb.useGravity = true;
+            //rb.useGravity = true;
         }
 
         if (!inAir) {
@@ -481,8 +506,9 @@ public class PlayerMovementController : MonoBehaviour, IMomentumModifiable {
                 this.InvokeCancel("decelerate");
                 Debug.Log("cancelling deceleration");
                 waitingToDecelerate = false;
+                
             }
-
+            AudioManager.instance?.Play("Jump");
             slideEnded = false;
             this.InvokeExclusive("End Slide", () => slideEnded = true, Config.SlideTime);
             hasJumped = false;
@@ -538,6 +564,7 @@ public class PlayerMovementController : MonoBehaviour, IMomentumModifiable {
     }
 
     private void WallKick(in RaycastHit hitInfo) {
+        AudioManager.instance?.Play("WallKick");
         Vector3 newHorizontalDirection = Vector3.Reflect(rb.linearVelocity.Horizontal(), hitInfo.normal).normalized;
         float horizontalSpeed = rb.linearVelocity.Horizontal().magnitude;
 

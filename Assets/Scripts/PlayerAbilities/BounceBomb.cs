@@ -31,11 +31,6 @@ public class BounceBomb : MonoBehaviour {
         rb.angularVelocity = new(0f, 50f, 0f);
     }
 
-    // Update is called once per frame
-    void Update() {
-
-    }
-
     private void OnCollisionEnter(Collision collision) {
         CheckIfInsideBounceBombTriggerZone();
         AttachToSurface(collision);
@@ -87,7 +82,6 @@ public class BounceBomb : MonoBehaviour {
 
     private Vector3 CalculateProjectedEntityPosition(IMomentumModifiable imm) {
         Vector3 projectedPosition = imm.GetPosition() + imm.GetMomentum() * Config.EntityProjectionScale;
-
         return projectedPosition;
     }
 

@@ -5,21 +5,27 @@ using UnityEngine;
 /// </summary>
 public class Deadzone : MonoBehaviour
 {
-    [SerializeField] private Transform destination;
+    [SerializeField] private CheckpointManager checkpointManager;
     [SerializeField] private float damage;
     private const string playerTag = "Player";
     private const string enemyTag = "Enemy";
+
+    private void Start()
+    {
+        checkpointManager = FindFirstObjectByType<CheckpointManager>();
+    }
 
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.transform.CompareTag(playerTag))
         {
+            AudioManager.instance?.Play("FallWater");
             collision.rigidbody.GetComponent<IDamageable>().TakeDamage(damage);
-            SetToZero(collision.transform.GetComponent<IMomentumModifiable>());
-            collision.transform.position = destination.position;
+            checkpointManager.MovePlayer();
         }
         else if (collision.transform.CompareTag(enemyTag))
         {
+            AudioManager.instance?.Play("FallWater");
             Destroy(collision.gameObject);
         }
     }
