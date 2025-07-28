@@ -18,6 +18,8 @@ public class LevelLaunchPad : MonoBehaviour
 
     [SerializeField] Transform[] sections;
     private bool unlocked;
+    private int enemyCount;
+    TextMeshProUGUI enemyCounter;
     [SerializeField] bool bypassEnemies;
     [Header("Level Timer")]
     [SerializeField] float levelTimer;
@@ -28,7 +30,17 @@ public class LevelLaunchPad : MonoBehaviour
         Debug.Log($"{GameObject.FindWithTag("CompletionCanvas")}");
         completionCanvas = GameObject.FindWithTag("CompletionCanvas");
         completionTimer = completionCanvas.GetComponentInChildren<TextMeshProUGUI>();
+        enemyCounter = gameObject.GetComponentInChildren<TextMeshProUGUI>();
         completionCanvas.SetActive(false);
+
+        foreach (Transform section in sections)
+        {
+            if (section.childCount != 0)
+            {
+                enemyCount += section.childCount;
+                break;
+            }
+        }
     }
 
     private void Update() {
@@ -37,17 +49,24 @@ public class LevelLaunchPad : MonoBehaviour
         if(isTiming) { timer += Time.deltaTime; }
 
         if(bypassEnemies) { unlocked = true; }
-        else { 
+        else {
+            int enemies = 0;
             foreach (Transform section in sections) {
                 if(section.childCount != 0) {
                     unlocked = false;
+                    enemies += section.childCount;
                     break;
                 } 
                 else {
                     unlocked = true;
+                    //enemyCounter.enabled = false;
                 }
             }
+            enemyCount = enemies;
         }
+            enemyCounter.text = enemyCount.ToString();
+            if(enemyCount == 0) enemyCounter.enabled = false;
+
     }
     private void OnTriggerEnter(Collider other) {
         if (other.gameObject.CompareTag("Player") && unlocked) {
