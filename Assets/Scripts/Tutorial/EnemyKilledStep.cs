@@ -5,7 +5,7 @@ public class EnemyKilledStep : ITutorialStep
     private Sprite tutorialGif;
     public Sprite GetGifSprite() => tutorialGif;
     public void SetGifSprite(Sprite sprite) => tutorialGif = sprite;
-    
+    public string GetAnimationTrigger() => "Attacked"; 
     private bool enemyKilled = false;
 
     public void OnStepStart()

@@ -5,7 +5,7 @@ public class EnemyFastKill : ITutorialStep
     private Sprite tutorialGif;
     public Sprite GetGifSprite() => tutorialGif;
     public void SetGifSprite(Sprite sprite) => tutorialGif = sprite;
-    
+    public string GetAnimationTrigger() => "FastAttacked"; 
     private bool enemyKilledVeryFast = false;
 
     public void OnStepStart()

@@ -1,16 +1,12 @@
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class ToasterManager : MonoBehaviour
 {
     public static ToasterManager Instance;
 
-    [SerializeField]
-    private TextMeshProUGUI toasterMessage;
-
-    [SerializeField]
-    private Image tutorialGifImage; 
+    [SerializeField] private TextMeshProUGUI toasterMessage;
+    [SerializeField] private Animator toasterAnimator;
 
     private GameObject toasterObject;
 
@@ -28,7 +24,10 @@ public class ToasterManager : MonoBehaviour
         HideToaster();
     }
 
-    public void ShowToaster(string message, Sprite gifSprite = null)
+    /// <summary>
+    /// Show toaster UI with text and optional animation trigger.
+    /// </summary>
+    public void ShowToaster(string message, string animationTrigger = null)
     {
         if (toasterMessage == null || toasterObject == null)
         {
@@ -39,17 +38,11 @@ public class ToasterManager : MonoBehaviour
         toasterMessage.text = message;
         toasterObject.SetActive(true);
 
-        if (tutorialGifImage != null)
+        // Trigger animation if set
+        if (toasterAnimator != null && !string.IsNullOrEmpty(animationTrigger))
         {
-            if (gifSprite != null)
-            {
-                tutorialGifImage.sprite = gifSprite;
-                tutorialGifImage.gameObject.SetActive(true);
-            }
-            else
-            {
-                tutorialGifImage.gameObject.SetActive(false);
-            }
+            toasterAnimator.ResetTrigger(animationTrigger); // optional: clear first
+            toasterAnimator.SetTrigger(animationTrigger);
         }
 
         CancelInvoke(nameof(HideToaster));
@@ -59,7 +52,5 @@ public class ToasterManager : MonoBehaviour
     private void HideToaster()
     {
         toasterObject?.SetActive(false);
-        if (tutorialGifImage != null)
-            tutorialGifImage.gameObject.SetActive(false);
     }
 }
