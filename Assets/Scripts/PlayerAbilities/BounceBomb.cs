@@ -37,12 +37,32 @@ public class BounceBomb : MonoBehaviour {
     }
 
     private void OnCollisionEnter(Collision collision) {
+        CheckIfInsideBounceBombTriggerZone();
+        AttachToSurface(collision);
+    }
+
+    private void AttachToSurface(Collision collision) {
+        Vector3 closestPoint;
+        Quaternion rotation;
+        if (collision.collider is MeshCollider mc &&
+                !mc.convex &&
+                mc.Raycast(new(this.rb.position, this.rb.linearVelocity.normalized), out RaycastHit hitInfo, 50f)) {
+            closestPoint = hitInfo.point;
+            rotation = Quaternion.FromToRotation(Vector3.up, hitInfo.normal);
+            Debug.Log("raycast hit");
+        }
+        else {
+            closestPoint = collision.collider.ClosestPoint(this.transform.position);
+            rotation = Quaternion.FromToRotation(Vector3.up, collision.GetContact(0).normal);
+            Debug.Log("collider type = " + collision.collider.GetType() + ((collision.collider is MeshCollider mc1 && mc1.convex) ? " and is convex mesh" : " and isn't a convex mesh"));
+        }
+
+        this.transform.SetPositionAndRotation(closestPoint, rotation);
+        blastCentre.position = collision.GetContact(0).point;
+
+        AudioManager.instance?.Play("BombAttach");
         rb.isKinematic = true;
         rb.detectCollisions = false;
-        CheckIfInsideBounceBombTriggerZone();
-
-        this.transform.SetPositionAndRotation(collision.collider.ClosestPoint(this.transform.position), Quaternion.FromToRotation(Vector3.forward, collision.GetContact(0).normal));
-        blastCentre.position = collision.GetContact(0).point;
     }
 
     public void SetParried() => parried = true;

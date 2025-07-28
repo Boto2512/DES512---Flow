@@ -31,4 +31,29 @@ public static class Utility {
     }
 
     #endregion UniTask Logic
+
+    #region Maths
+
+    /// <summary>
+    /// Clamps the value and returns true if the value actually was clamped
+    /// </summary>
+    public static bool TryClamp(ref float value, float min, float max) {
+        if (min > max)
+            throw new Exception("TryClamp min param cannot be larger than max param");
+
+        bool clamped = false;
+
+        if (value < min) {
+            value = min;
+            clamped = true;
+        }
+        else if (value > max) {
+            value = max;
+            clamped = true;
+        }
+
+        return clamped;
+    }
+
+    #endregion Maths
 }
