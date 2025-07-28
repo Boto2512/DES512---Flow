@@ -12,6 +12,8 @@ public class TutorialManager : MonoBehaviour
 
     private bool stepCompleted = false;
 
+    private Animator animator;
+
     [SerializeField] private Sprite moveStepGif;
     [SerializeField] private Sprite ReachedBounceBombStepGif;
     [SerializeField] private Sprite UsedBounceBombStepGif;
