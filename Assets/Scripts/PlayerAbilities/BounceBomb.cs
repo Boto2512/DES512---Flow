@@ -43,7 +43,6 @@ public class BounceBomb : MonoBehaviour {
             if (mc.Raycast(new(this.rb.position, this.rb.linearVelocity.normalized), out RaycastHit hitInfo, 2f)) {
                 closestPoint = hitInfo.point;
                 rotation = Quaternion.FromToRotation(Vector3.up, hitInfo.normal);
-                Debug.Log("raycast hit");
             }
             else {
                 closestPoint = Utility.ClosestPointOnConcaveMesh(mc, rb.position, out var normal);
@@ -53,7 +52,6 @@ public class BounceBomb : MonoBehaviour {
         else {
             closestPoint = collision.collider.ClosestPoint(this.transform.position);
             rotation = Quaternion.FromToRotation(Vector3.up, collision.GetContact(0).normal);
-            Debug.Log("collider type = " + collision.collider.GetType() + ((collision.collider is MeshCollider mc1 && mc1.convex) ? " and is convex mesh" : " and isn't a convex mesh"));
         }
 
         this.transform.SetPositionAndRotation(closestPoint, rotation);
