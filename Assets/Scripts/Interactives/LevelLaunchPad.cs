@@ -24,6 +24,7 @@ public class LevelLaunchPad : MonoBehaviour
     [Header("Level Timer")]
     [SerializeField] float levelTimer;
     private bool stopTimer;
+    private Transform player;
 
     private void Start()
     {
@@ -31,6 +32,8 @@ public class LevelLaunchPad : MonoBehaviour
         completionTimer = completionCanvas.GetComponentInChildren<TextMeshProUGUI>();
         enemyCounter = gameObject.GetComponentInChildren<TextMeshProUGUI>();
         completionCanvas.SetActive(false);
+
+        player = Globals.PLAYER.transform;
 
         foreach (Transform section in sections)
         {
@@ -43,6 +46,8 @@ public class LevelLaunchPad : MonoBehaviour
     }
 
     private void Update() {
+
+        enemyCounter.transform.LookAt(player.position);
         if (!stopTimer) { levelTimer += Time.deltaTime; }
 
         if(isTiming) { timer += Time.deltaTime; }
