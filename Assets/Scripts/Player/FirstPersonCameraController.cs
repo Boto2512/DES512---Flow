@@ -65,7 +65,7 @@ public class FirstPersonCameraController : MonoBehaviour {
 
 
         if (currentThreshold != prevThreshold) {
-            UpdateSpeedlineIntensity(currentThreshold.HasSpeedLines, currentThreshold.SpeedRangeOfLines, currentThreshold.SpeedlineSpawnRate);
+            UpdateSpeedlineIntensity(currentThreshold.HasSpeedLines, currentThreshold.SpeedRangeOfLines, currentThreshold.SpeedlineSpawnRate, currentThreshold.SpeedlineColor);
 #if DEBUG
             //Debug.Log($"Going from speed threshold {prevThreshold.SpeedThreshold}, speedlines: {prevThreshold.HasSpeedLines}\n" +
             //    $"to speed threshold {currentThreshold.SpeedThreshold}, speedlines: {currentThreshold.HasSpeedLines}");
@@ -79,13 +79,16 @@ public class FirstPersonCameraController : MonoBehaviour {
     /// </summary>
     /// <param name="speedOfLines"> how fast the speedlines will go </param>
     /// <param name="spawnRate"> how fast speed lines will spawn </param>
-    private void UpdateSpeedlineIntensity(bool hasSpeedlines, Vector2 speedOfLines, float spawnRate) {
+    private void UpdateSpeedlineIntensity(bool hasSpeedlines, Vector2 speedOfLines, float spawnRate, Color color) {
         speedlines.enabled = hasSpeedlines;
         if (speedlines.HasVector2("SpeedOfLines")) {
             speedlines.SetVector2("SpeedOfLines", speedOfLines);
         }
         if (speedlines.HasFloat("SpawnRate")) {
             speedlines.SetFloat("SpawnRate", spawnRate);
+        }
+        if (speedlines.HasVector4("MainLineColour")) {
+            speedlines.SetVector4("MainLineColour", color);
         }
     }
 

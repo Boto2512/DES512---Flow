@@ -34,11 +34,8 @@ public class EnemySpawning : MonoBehaviour
 
     private void SpawnSection(int sectionIndex)
     {
-        Debug.Log("Spawning enemies");
-
         if (sectionIndex >= sectionDatabase.sections.Count) return;
 
-        Debug.Log("section databases");
         SectionData section = sectionDatabase.sections[sectionIndex];
 
         foreach (SpawnData enemyData in section.enemySpawnData)

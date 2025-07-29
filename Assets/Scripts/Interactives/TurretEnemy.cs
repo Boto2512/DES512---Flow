@@ -7,6 +7,7 @@ public class TurretEnemy : MonoBehaviour, IDamageable {
     [Header("Health")]
     [SerializeField] private float health;
     [SerializeField] private Slider healthBar;
+    [SerializeField] private Transform healthbarParent;
 
     [Header("Attack")]
     [SerializeField] private float attackDamage;
@@ -30,6 +31,7 @@ public class TurretEnemy : MonoBehaviour, IDamageable {
         player = Globals.PLAYER.transform;
         healthBar.maxValue = health;
         healthBar.value = health;
+        healthbarParent = healthBar.GetComponentInParent<Canvas>().transform;
 
         if (attackVFX.HasFloat("Duration")) {
             attackVFX.SetFloat("Duration", attackDelay);
@@ -40,6 +42,7 @@ public class TurretEnemy : MonoBehaviour, IDamageable {
     }
 
     private void Update() {
+        healthbarParent.LookAt(player);
         if (IsInRange()) { ChargingAttack(); }
         else { return; }
     }
