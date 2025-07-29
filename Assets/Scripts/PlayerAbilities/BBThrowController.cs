@@ -38,6 +38,9 @@ public class BBThrowController : MonoBehaviour {
 
     private void Start() {
         chargeCounter = (float)Config.MaxCharges;
+        chargeMaterials[0].SetFloat("_LiquidAmount", 1);
+        chargeMaterials[1].SetFloat("_LiquidAmount", 1);
+        chargeMaterials[2].SetFloat("_LiquidAmount", 1);
     }
 
     private void Update() {
