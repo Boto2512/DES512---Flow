@@ -27,7 +27,6 @@ public class LevelLaunchPad : MonoBehaviour
 
     private void Start()
     {
-        Debug.Log($"{GameObject.FindWithTag("CompletionCanvas")}");
         completionCanvas = GameObject.FindWithTag("CompletionCanvas");
         completionTimer = completionCanvas.GetComponentInChildren<TextMeshProUGUI>();
         enemyCounter = gameObject.GetComponentInChildren<TextMeshProUGUI>();

@@ -2097,8 +2097,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2362132022644605445}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.34852687, y: 0.10438348, z: 0.03909154, w: 0.9306476}
-  m_LocalPosition: {x: 0, y: 0.5, z: 0}
+  m_LocalRotation: {x: 0.23554876, y: 0.24713998, z: -0.062070422, w: 0.9378624}
+  m_LocalPosition: {x: 104.50536, y: -0.00999999, z: 219.78041}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -2170,7 +2170,7 @@ Camera:
     height: 1
   near clip plane: 0.01
   far clip plane: 1000
-  field of view: 60.000004
+  field of view: 65
   orthographic: 0
   orthographic size: 5
   m_Depth: 0
@@ -6022,7 +6022,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6117900273502935523}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.34852687, y: 0.10438348, z: 0.03909154, w: 0.9306476}
+  m_LocalRotation: {x: -0.24663354, y: 0.32196537, z: 0.08727181, w: 0.9098867}
   m_LocalPosition: {x: 0, y: 0.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -6100,7 +6100,7 @@ MonoBehaviour:
   ReferenceFrame: 3
   RecenterTarget: 0
   PanAxis:
-    Value: 12.799347
+    Value: 38.97287
     Center: 0
     Range: {x: -180, y: 180}
     Wrap: 1
@@ -6110,7 +6110,7 @@ MonoBehaviour:
       Time: 2
     Restrictions: 0
   TiltAxis:
-    Value: -41.06178
+    Value: -30.332293
     Center: 0
     Range: {x: -89, y: 89}
     Wrap: 0
@@ -8317,7 +8317,10 @@ VisualEffect:
     m_Vector3f:
       m_Array: []
     m_Vector4f:
-      m_Array: []
+      m_Array:
+      - m_Value: {x: 1, y: 1, z: 1, w: 1}
+        m_Name: MainLineColour
+        m_Overridden: 1
     m_Uint:
       m_Array: []
     m_Int:
