@@ -9,6 +9,7 @@ public class ToasterManager : MonoBehaviour
     [SerializeField] private Animator toasterAnimator;
 
     private GameObject toasterObject;
+    [SerializeField] GameObject AnimationObject;
 
     private const float TOAST_DURATION_SECONDS = 5f;
 
@@ -37,6 +38,7 @@ public class ToasterManager : MonoBehaviour
 
         toasterMessage.text = message;
         toasterObject.SetActive(true);
+        AnimationObject.SetActive(true);
 
         // Trigger animation if set
         if (toasterAnimator != null && !string.IsNullOrEmpty(animationTrigger))
@@ -52,5 +54,6 @@ public class ToasterManager : MonoBehaviour
     private void HideToaster()
     {
         toasterObject?.SetActive(false);
+        AnimationObject?.SetActive(false);
     }
 }
