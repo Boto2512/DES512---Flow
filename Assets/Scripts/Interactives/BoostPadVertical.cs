@@ -3,6 +3,9 @@ using UnityEngine;
 
 public class BoostPadVertical : MonoBehaviour
 {
+
+    [SerializeField] private Transform fan;
+
     [SerializeField] private float force;
 
     [SerializeField] private float height;
@@ -12,11 +15,13 @@ public class BoostPadVertical : MonoBehaviour
     private void Update() {
         cylinder = transform;
         cylinder.localScale = new Vector3(2, height, 2);
+
+        fan.Rotate(new Vector3(0, 0, 36));
     }
 
     private void OnTriggerStay(Collider other)
     {
-        if (other.CompareTag("Player"))
+        if (other.CompareTag("Player") || other.CompareTag("Enemy"))
         {
             IMomentumModifiable momentum = other.attachedRigidbody.GetComponent<IMomentumModifiable>();
             Vector3 playerMomentum = momentum.GetMomentum();

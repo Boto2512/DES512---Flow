@@ -11,12 +11,15 @@ public class LevelLaunchPad : MonoBehaviour
     [Tooltip("Link to the animator on Player UI Canvas called Fade")]
     [SerializeField] Animator fadeAnimation;
     [Header("Timer")]
-    [SerializeField] TextMeshProUGUI completionTimer;
+    TextMeshProUGUI completionTimer;
+    [SerializeField] GameObject completionCanvas;
     private float timer;
     private bool isTiming = true;
 
     [SerializeField] Transform[] sections;
     private bool unlocked;
+    private int enemyCount;
+    TextMeshProUGUI enemyCounter;
     [SerializeField] bool bypassEnemies;
     [Header("Level Timer")]
     [SerializeField] float levelTimer;
@@ -24,7 +27,19 @@ public class LevelLaunchPad : MonoBehaviour
 
     private void Start()
     {
-        completionTimer.enabled = false;
+        completionCanvas = GameObject.FindWithTag("CompletionCanvas");
+        completionTimer = completionCanvas.GetComponentInChildren<TextMeshProUGUI>();
+        enemyCounter = gameObject.GetComponentInChildren<TextMeshProUGUI>();
+        completionCanvas.SetActive(false);
+
+        foreach (Transform section in sections)
+        {
+            if (section.childCount != 0)
+            {
+                enemyCount += section.childCount;
+                break;
+            }
+        }
     }
 
     private void Update() {
@@ -33,17 +48,24 @@ public class LevelLaunchPad : MonoBehaviour
         if(isTiming) { timer += Time.deltaTime; }
 
         if(bypassEnemies) { unlocked = true; }
-        else { 
+        else {
+            int enemies = 0;
             foreach (Transform section in sections) {
                 if(section.childCount != 0) {
                     unlocked = false;
+                    enemies += section.childCount;
                     break;
                 } 
                 else {
                     unlocked = true;
+                    //enemyCounter.enabled = false;
                 }
             }
+            enemyCount = enemies;
         }
+            enemyCounter.text = enemyCount.ToString();
+            if(enemyCount == 0) enemyCounter.enabled = false;
+
     }
     private void OnTriggerEnter(Collider other) {
         if (other.gameObject.CompareTag("Player") && unlocked) {
@@ -59,8 +81,8 @@ public class LevelLaunchPad : MonoBehaviour
     private IEnumerator LoadNextLevel() {
         fadeAnimation.SetTrigger("startFade");
         yield return new WaitForSeconds(wait);
-        completionTimer.enabled = true;
-        yield return new WaitForSeconds(wait * 3);
+        completionCanvas.SetActive(true);
+        yield return new WaitForSeconds(2.5f);
         AsyncOperation loadAsyncOperation = SceneManager.LoadSceneAsync(loadScene);
     }
 }
