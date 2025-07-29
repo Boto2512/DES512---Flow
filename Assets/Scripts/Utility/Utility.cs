@@ -70,6 +70,8 @@ public static class Utility {
 
     #region Mesh Logic
 
+    public static Vector3 ClosestPointOnConcaveMesh(this MeshCollider mesh, Vector3 worldPoint) => ClosestPointOnConcaveMesh(mesh, worldPoint, out _);
+
     public static Vector3 ClosestPointOnConcaveMesh(this MeshCollider mesh, Vector3 worldPoint, out Vector3 normal) {
         Vector3 localOther = mesh.transform.InverseTransformPoint(worldPoint);
         Vector3[] vertices = mesh.sharedMesh.vertices;
