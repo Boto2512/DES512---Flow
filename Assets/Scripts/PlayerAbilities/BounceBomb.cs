@@ -39,12 +39,16 @@ public class BounceBomb : MonoBehaviour {
     private void AttachToSurface(Collision collision) {
         Vector3 closestPoint;
         Quaternion rotation;
-        if (collision.collider is MeshCollider mc &&
-                !mc.convex &&
-                mc.Raycast(new(this.rb.position, this.rb.linearVelocity.normalized), out RaycastHit hitInfo, 50f)) {
-            closestPoint = hitInfo.point;
-            rotation = Quaternion.FromToRotation(Vector3.up, hitInfo.normal);
-            Debug.Log("raycast hit");
+        if (collision.collider is MeshCollider mc && !mc.convex) {
+            if (mc.Raycast(new(this.rb.position, this.rb.linearVelocity.normalized), out RaycastHit hitInfo, 2f)) {
+                closestPoint = hitInfo.point;
+                rotation = Quaternion.FromToRotation(Vector3.up, hitInfo.normal);
+                Debug.Log("raycast hit");
+            }
+            else {
+                closestPoint = Utility.ClosestPointOnConcaveMesh(mc, rb.position, out var normal);
+                rotation = Quaternion.FromToRotation(Vector3.up, normal);
+            }
         }
         else {
             closestPoint = collision.collider.ClosestPoint(this.transform.position);
@@ -53,7 +57,6 @@ public class BounceBomb : MonoBehaviour {
         }
 
         this.transform.SetPositionAndRotation(closestPoint, rotation);
-        blastCentre.position = collision.GetContact(0).point;
 
         AudioManager.instance?.Play("BombAttach");
         rb.isKinematic = true;
