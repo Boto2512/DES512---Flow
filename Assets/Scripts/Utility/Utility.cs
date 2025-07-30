@@ -79,6 +79,10 @@ public static class Utility {
     /// Warning: This method is quite resource-heavy. Do not use often.
     /// </summary>
     public static Vector3 ClosestPointOnConcaveMesh(this MeshCollider mesh, Vector3 worldPoint, out Vector3 normal) {
+        normal = Vector3.zero;
+        if (!mesh.sharedMesh.isReadable)
+            return worldPoint;
+
         Vector3 localOther = mesh.transform.InverseTransformPoint(worldPoint);
         Vector3[] vertices = mesh.sharedMesh.vertices;
         int[] triangles = mesh.sharedMesh.triangles;
