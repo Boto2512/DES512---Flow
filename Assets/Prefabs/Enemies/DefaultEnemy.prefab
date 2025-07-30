@@ -47,7 +47,7 @@ GameObject:
   - component: {fileID: 2546958744857171336}
   - component: {fileID: 8447710061839039070}
   - component: {fileID: 9132261340163813383}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: ElectrcityParticalSystem
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5025,6 +5025,8 @@ MonoBehaviour:
   attackTransform: {fileID: 5016809008175739469}
   attackCooldown: 2
   attackChargeTime: 3
+  chargeOrb: {fileID: 1095573669686191259}
+  scaleGoal: {x: 1, y: 1, z: 1}
   attackRange: 20
   maxComfortableRange: 10
   minComfortableRange: 5
@@ -5117,8 +5119,7 @@ GameObject:
   - component: {fileID: 1095573669686191259}
   - component: {fileID: 2570188757720915207}
   - component: {fileID: 7539782317856202721}
-  - component: {fileID: 7633262480141710231}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: chargeSphere_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5193,27 +5194,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!135 &7633262480141710231
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5730927901653508469}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 0.5
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &5875816800308308471
 GameObject:
   m_ObjectHideFlags: 0

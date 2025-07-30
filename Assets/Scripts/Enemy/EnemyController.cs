@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Events;
@@ -55,8 +56,8 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
     private bool isAttacking = false;
     private bool canAttack = true;
     private ParticleSystem chargeVFX;
-    [SerializeField] private GameObject chargeOrb;
-
+    [SerializeField] private Transform chargeOrb;
+    [SerializeField] private Vector3 scaleGoal;
     private Vector3 firingPosition => attackTransform.position;
 
     private List<StateMachine.Transition<EnemyAIState>> transitions;
@@ -99,6 +100,8 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start() {
+        DOTween.Init();
+
         healthBar.maxValue = health;
         healthBar.value = healthBar.maxValue;
         healthBarParent = healthBar.transform.GetComponentInParent<Canvas>().transform;
@@ -255,12 +258,18 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
         }
         else if (canAttack && timer < attackChargeTime) {
             timer += Time.deltaTime;
+            ScaleOrb();
             return;
         }  
-        else if (canAttack){ 
+        else if (canAttack){
+
             timer = 0;
             canAttack = false;
             isAttacking = false;
+            chargeOrb.localScale = Vector3.zero;
+
+
+
             Instantiate(projectile, attackTransform.position, attackTransform.rotation);
             this.InvokeExclusive("attackCooldown", () => canAttack = true, attackCooldown);
         }
@@ -270,6 +279,14 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
         }
     }
 
+    private void ScaleOrb()
+    {
+        float progress = (timer/attackChargeTime) *.1f;
+        Vector3 lerpedScale;
+        lerpedScale = Vector3.Lerp(chargeOrb.transform.localScale, scaleGoal, progress);
+        chargeOrb.localScale = lerpedScale;
+    }
+
     private void Reposition() {
         float halfComfortableRange = (maxComfortableRange + minComfortableRange) / 2f;
         Vector3 toComfortableRange = (rb.position - targetPosition).normalized * halfComfortableRange;
@@ -277,6 +294,11 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
         if (NavMesh.SamplePosition(targetPosition + toComfortableRange, out NavMeshHit hit, halfComfortableRange, NavMesh.AllAreas)) {
             SetAgentDestination(hit.position);
         }
+
+        canAttack = true;
+        isAttacking= false;
+        timer = 0;
+
     }
 
     private void FanOut() {

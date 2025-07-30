@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 410578827170312750}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: Fill Area
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -190,6 +190,8 @@ MonoBehaviour:
   attackTransform: {fileID: 5016809008175739469}
   attackCooldown: 2
   attackChargeTime: 3
+  chargeOrb: {fileID: 5399882036165481911}
+  scaleGoal: {x: 1, y: 1, z: 1}
   attackRange: 15
   maxComfortableRange: 10
   minComfortableRange: 5
@@ -207,7 +209,7 @@ GameObject:
   - component: {fileID: 8318610824884318522}
   - component: {fileID: 6073490088261810618}
   - component: {fileID: 513199872872680040}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: Fill
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -281,7 +283,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9049315869489598558}
   - component: {fileID: 898514468998955983}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: PlayerHealth
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -371,7 +373,7 @@ GameObject:
   - component: {fileID: 1720056469658567121}
   - component: {fileID: 6372139350909034114}
   - component: {fileID: 7491332627298982003}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: ElectrcityParticalSystem
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5206,8 +5208,7 @@ GameObject:
   - component: {fileID: 5399882036165481911}
   - component: {fileID: 8589961676371907429}
   - component: {fileID: 6414865125968285410}
-  - component: {fileID: 7055844910855963699}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: chargeSphere_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5222,9 +5223,9 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6566772951816836189}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.96406734, y: -0.26565826, z: -0.000000029802322, w: 0}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 1720056469658567121}
@@ -5282,27 +5283,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!135 &7055844910855963699
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6566772951816836189}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 0.5
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &7576375290578846219
 GameObject:
   m_ObjectHideFlags: 0
@@ -5478,7 +5458,7 @@ GameObject:
   - component: {fileID: 7096588828213065547}
   - component: {fileID: 3371875494720283000}
   - component: {fileID: 4788820751696082803}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
