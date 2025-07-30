@@ -4,7 +4,6 @@ using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.UI;
-using static UnityEngine.Rendering.STP;
 
 public class PlayerAttackController : MonoBehaviour, IDamageable {
     [SerializeField] public PlayerDamageConfig Config;
@@ -37,6 +36,7 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
     [Header("Prefabs")]
     [SerializeField] private GameObject hitVFX;
     [SerializeField] private GameObject parryProjectile;
+    [SerializeField] private Transform parryProjectilePosition;
     private bool parried = false;
 
     private Rigidbody rb;
@@ -144,7 +144,7 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
                     bb.SetParried();
                 }
                 else {
-                    ParryProjectile parriedProjectileScript = Instantiate(parryProjectile, orientation.position, Quaternion.FromToRotation(Vector3.zero, orientation.forward)).GetComponent<ParryProjectile>();
+                    ParryProjectile parriedProjectileScript = Instantiate(parryProjectile, parryProjectilePosition.position, Quaternion.FromToRotation(Vector3.zero, orientation.forward)).GetComponent<ParryProjectile>();
                     parriedProjectileScript.Momentum = momentum;
                     parriedProjectileScript.Damage = Config.ParriedProjectileDefaultDamage * thresholdHolder.CurrentThreshold.DamageMultiplier;
 
@@ -208,13 +208,11 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
         }
     }
 
-    private void VignettePower()
-    {
-        if (vignettePower != 6)
-        {
+    private void VignettePower() {
+        if (vignettePower != 6) {
             vignetteTimer += Time.deltaTime * .01f;
-            vignettePower = Mathf.Lerp(vignettePower, 7, vignetteTimer );
-            vignetteMAT.SetFloat("_VignettePower", vignettePower );
+            vignettePower = Mathf.Lerp(vignettePower, 7, vignetteTimer);
+            vignetteMAT.SetFloat("_VignettePower", vignettePower);
         }
     }
     public void Kill() {
