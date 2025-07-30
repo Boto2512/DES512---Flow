@@ -119,6 +119,11 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!4 &8384430 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 9010823100705464556, guid: b6b01198bf6a20f4fac994b91cbc0932, type: 3}
+  m_PrefabInstance: {fileID: 1828512713}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &33834571
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8503,7 +8508,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5586452117014544014, guid: af43fcbb260d3034e9663abcd9ed2276, type: 3}
       propertyPath: bypassEnemies
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5586452117014544014, guid: af43fcbb260d3034e9663abcd9ed2276, type: 3}
       propertyPath: fadeAnimation
@@ -8513,6 +8518,22 @@ PrefabInstance:
       propertyPath: completionTimer
       value: 
       objectReference: {fileID: 1027948809}
+    - target: {fileID: 5586452117014544014, guid: af43fcbb260d3034e9663abcd9ed2276, type: 3}
+      propertyPath: sections.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5586452117014544014, guid: af43fcbb260d3034e9663abcd9ed2276, type: 3}
+      propertyPath: 'sections.Array.data[0]'
+      value: 
+      objectReference: {fileID: 1828512715}
+    - target: {fileID: 5586452117014544014, guid: af43fcbb260d3034e9663abcd9ed2276, type: 3}
+      propertyPath: 'sections.Array.data[1]'
+      value: 
+      objectReference: {fileID: 1828512715}
+    - target: {fileID: 5586452117014544014, guid: af43fcbb260d3034e9663abcd9ed2276, type: 3}
+      propertyPath: 'sections.Array.data[2]'
+      value: 
+      objectReference: {fileID: 8384430}
     - target: {fileID: 6982140647706465070, guid: af43fcbb260d3034e9663abcd9ed2276, type: 3}
       propertyPath: m_LocalPosition.x
       value: 48.523113
