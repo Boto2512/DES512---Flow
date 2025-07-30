@@ -1,18 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-2575692946751038239
-MonoBehaviour:
-  m_ObjectHideFlags: 11
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  version: 9
 --- !u!21 &2100000
 Material:
   serializedVersion: 8
@@ -20,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: M_burnt-orange
+  m_Name: Shader Graphs_EnvironmentToonShading 1
   m_Shader: {fileID: -6465566751694194690, guid: 344e788d848abe348bd2c346071d6de8, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -38,7 +25,7 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - MainTex:
-        m_Texture: {fileID: 2800000, guid: 67f634ff9cc27d148af88fa88bfa534a, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - Mask_R_Emission:
@@ -76,30 +63,39 @@ Material:
     m_Ints: []
     m_Floats:
     - Brightness_Rim: 2
-    - Rim_Power: 0.12
-    - Toon_Ramp_Offset: 0.55
+    - Rim_Power: 5
+    - Toon_Ramp_Offset: 0.5
     - Toon_Ramp_Smoothness: 0
     - _Ambient: 0
-    - _Gloss_amount: 0
-    - _N_blend: 0.1
-    - _N_tile: 0.02
+    - _Gloss_amount: 0.05
     - _Normal_Map_1: 0
     - _Normal_Strength: 1
-    - _Outline_Amount: -0.022
+    - _Outline_Amount: 0
     - _Outline_Brightness: 1
     - _QueueControl: 0
     - _QueueOffset: 0
     - _Soft_Outline_Amount: 0.39
     - _Soft_Outline_Brightness: 1
     - _Soft_Outline_Softness: 2
-    - _Tiling: 0.02
     - _Toon_Ramp_Offset_Point: 0.5
-    - _blend: 0.1
     m_Colors:
     - Toon_Ramp_Tint: {r: 0.49056596, g: 0.49056596, b: 0.49056596, a: 1}
-    - _Color: {r: 0.7264151, g: 0.5277153, b: 0.48998755, a: 1}
-    - _Gloss_Tint: {r: 0.9056604, g: 0.2947668, b: 0.2947668, a: 1}
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Gloss_Tint: {r: 1, g: 1, b: 1, a: 1}
     - _Outline_Tint: {r: 1, g: 1, b: 1, a: 1}
     - _Solt_Outline_Tint: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
+--- !u!114 &3390688784587487059
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  version: 9
