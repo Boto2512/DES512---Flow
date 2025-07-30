@@ -16,7 +16,7 @@ public class Projectile : MonoBehaviour {
         playerLocation = Globals.PLAYER_TARGET.Target.position;
 
         rb = GetComponent<Rigidbody>();
-
+        AudioManager.instance?.Play("Launch", transform.position);
         direction = (playerLocation - rb.position).normalized;
 
         // Optional: face the projectile toward the player
@@ -40,6 +40,7 @@ public class Projectile : MonoBehaviour {
             return;
 
         if (Utility.DoesMaskContainLayer(Globals.PLAYER_MASK, other.gameObject.layer)) {
+            AudioManager.instance?.Play("Hurt");
             IDamageable damageable = other.attachedRigidbody.gameObject.GetComponent<IDamageable>();
             damageable.TakeDamage(damageAmount);
             Destroy(this.gameObject);

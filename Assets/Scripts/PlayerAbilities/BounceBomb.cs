@@ -60,7 +60,7 @@ public class BounceBomb : MonoBehaviour {
 
         this.transform.SetPositionAndRotation(closestPoint, rotation);
 
-        AudioManager.instance?.Play("BombAttach");
+        AudioManager.instance?.Play("BombAttach",transform.position);
         rb.isKinematic = true;
         rb.detectCollisions = false;
     }
@@ -166,7 +166,7 @@ public class BounceBomb : MonoBehaviour {
     }
 
     private void ExplosionVFX() {
-        AudioManager.instance?.Play("BombBounce");
+        AudioManager.instance?.Play("BombBounce", transform.position);
         vfxObject.GetComponent<VFXCleanUp>().StartTimer();
 
         vfx.transform.SetParent(null);
