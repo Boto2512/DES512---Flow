@@ -126,9 +126,10 @@ public class BBThrowController : MonoBehaviour {
     #region Charges
 
     private void UpdateChargeCounter() {
-        if (chargeCounter == Config.MaxCharges)
+        if (chargeCounter == Config.MaxCharges) { 
+            MaxChargesUI();
             return;
-
+        }
         if (chargeCounter > Config.MaxCharges) {
             chargeCounter = Config.MaxCharges;
             return;
@@ -168,6 +169,16 @@ public class BBThrowController : MonoBehaviour {
             else if (index < currentAmount) { chargeMaterials[index].SetFloat("_LiquidAmount", 1); }
             else if (index > currentAmount) { chargeMaterials[index].SetFloat("_LiquidAmount", 0); }
 
+            index++;
+        }
+    }
+
+    private void MaxChargesUI()
+    {
+        int index = 0;
+        foreach (Material mat in chargeMaterials)
+        {
+            chargeMaterials[index].SetFloat("_LiquidAmount", 1);
             index++;
         }
     }
