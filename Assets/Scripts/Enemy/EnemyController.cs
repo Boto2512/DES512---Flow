@@ -53,6 +53,10 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
     [SerializeField] private float attackChargeTime;
     private float timer;
     private bool isAttacking = false;
+    private bool canAttack = true;
+    private ParticleSystem chargeVFX;
+    [SerializeField] private GameObject chargeOrb;
+
     private Vector3 firingPosition => attackTransform.position;
 
     private List<StateMachine.Transition<EnemyAIState>> transitions;
@@ -101,6 +105,11 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
         SetTarget();
         agent = this.GetComponent<NavMeshAgent>();
         rb = this.GetComponent<Rigidbody>();
+
+        chargeVFX = GetComponentInChildren<ParticleSystem>();
+        chargeVFX.Stop();
+        var chargeParameters = chargeVFX.main;
+        chargeParameters.duration = attackChargeTime;
 
         stateMachine = new EnemyAIStateMachine(transitions);
         Globals.EVENT_PLAYER_MODIFIED.AddListener(SetTarget);
@@ -240,16 +249,25 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
     }
 
     private void Attack() {
-        if (!isAttacking) { isAttacking = true; }
-        else if (timer < attackChargeTime) {
+        if (canAttack & !isAttacking) { 
+            isAttacking = true;
+            chargeVFX.Play();
+        }
+        else if (canAttack && timer < attackChargeTime) {
             timer += Time.deltaTime;
             return;
         }  
-        else { 
-        timer = 0;
-        Instantiate(projectile, attackTransform.position, attackTransform.rotation);
-        this.InvokeExclusive("attackCooldown", () => isAttacking = false, attackCooldown);
-        }             
+        else if (canAttack){ 
+            timer = 0;
+            canAttack = false;
+            isAttacking = false;
+            Instantiate(projectile, attackTransform.position, attackTransform.rotation);
+            this.InvokeExclusive("attackCooldown", () => canAttack = true, attackCooldown);
+        }
+        else
+        {
+            return;
+        }
     }
 
     private void Reposition() {
