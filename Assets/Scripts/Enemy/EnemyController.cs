@@ -85,9 +85,9 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
             new(EnemyAIState.Pursue, EnemyAIState.Idle, PursueToIdleCheck, PursueToIdleCallback),
             new(EnemyAIState.Pursue, EnemyAIState.Attack, PursueToAttackCheck, PursueToAttackCallback),
             new(EnemyAIState.Pursue, EnemyAIState.Reposition, PursueToRepositionCheck, PursueToRepositionCallback),
-            new(EnemyAIState.Attack, EnemyAIState.Idle, AttackToIdleCheck, AttackToIdleCallback),
-            new(EnemyAIState.Attack, EnemyAIState.Pursue, AttackToPursueCheck, AttackToPursueCallback),
-            new(EnemyAIState.Attack, EnemyAIState.Reposition, AttackToRepositionCheck, AttackToRepositionCallback),
+            //new(EnemyAIState.Attack, EnemyAIState.Idle, AttackToIdleCheck, AttackToIdleCallback),
+            //new(EnemyAIState.Attack, EnemyAIState.Pursue, AttackToPursueCheck, AttackToPursueCallback),
+            //new(EnemyAIState.Attack, EnemyAIState.Reposition, AttackToRepositionCheck, AttackToRepositionCallback),
             new(EnemyAIState.Reposition, EnemyAIState.Attack, RepositionToAttackCheck, RepositionToAttackCallback),
             new(EnemyAIState.Reposition, EnemyAIState.Pursue, RepositionToPursueCheck, RepositionToPursueCallback)
         };
