@@ -40,7 +40,11 @@ public class BounceBomb : MonoBehaviour {
         Vector3 closestPoint;
         Quaternion rotation;
         if (collision.collider is MeshCollider mc && !mc.convex) {
-            if (mc.Raycast(new(this.rb.position, this.rb.linearVelocity.normalized), out RaycastHit hitInfo, 2f)) {
+            if (rb.linearVelocity.sqrMagnitude <= 0f) {
+                return;
+            }
+
+            if (mc.Raycast(new(rb.position, rb.linearVelocity.normalized), out RaycastHit hitInfo, 2f)) {
                 closestPoint = hitInfo.point;
                 rotation = Quaternion.FromToRotation(Vector3.up, hitInfo.normal);
             }
