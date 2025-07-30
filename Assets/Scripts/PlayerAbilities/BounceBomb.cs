@@ -188,7 +188,7 @@ public class BounceBomb : MonoBehaviour {
             ExplosiveSteam steam = col.GetComponent<ExplosiveSteam>();
             if (steam != null) {
                 Destroy(steam.gameObject);
-                TutorialEvents.OnBarrelExploded?.Invoke();
+                
             }
         }
     }

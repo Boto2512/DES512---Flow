@@ -7,6 +7,8 @@ public class LevelExitStep : ITutorialStep
     public Sprite GetGifSprite() => tutorialGif;
     public void SetGifSprite(Sprite sprite) => tutorialGif = sprite;
 
+    public string GetAnimationTrigger() => "Exit"; 
+
     private bool levelExit = false;
 
     public void OnStepStart()

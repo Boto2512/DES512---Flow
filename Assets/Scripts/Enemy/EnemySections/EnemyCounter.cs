@@ -69,7 +69,8 @@ public class EnemyCounter : MonoBehaviour
     }
 
     private void OpenDoor()
-    {   
+    {
+        TutorialEvents.OnBarrelExploded?.Invoke();
         door.position = Vector3.MoveTowards(door.position,doorEndPos.position, Time.deltaTime);
         toggleXray.ToggleXRay(false);
     }
