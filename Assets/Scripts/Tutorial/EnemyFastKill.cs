@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class EnemyFastKill : ITutorialStep
 {
-    public bool ShouldAutoAdvance() => false;
+    public bool ShouldAutoAdvance() => true;
     private Sprite tutorialGif;
     public Sprite GetGifSprite() => tutorialGif;
     public void SetGifSprite(Sprite sprite) => tutorialGif = sprite;
