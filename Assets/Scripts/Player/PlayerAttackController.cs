@@ -46,7 +46,10 @@ public class PlayerAttackController : MonoBehaviour, IDamageable
     [Header("Prefabs")]
     [SerializeField] private GameObject hitVFX;
     [SerializeField] private GameObject parryProjectile;
+    [SerializeField] private Transform parryProjectilePosition;
     private bool parried = false;
+
+
 
     private Rigidbody rb;
     private IHasSpeedThresholds thresholdHolder;
