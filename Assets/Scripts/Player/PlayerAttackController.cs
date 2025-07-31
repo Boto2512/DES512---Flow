@@ -167,9 +167,8 @@ public class PlayerAttackController : MonoBehaviour, IDamageable
                     projectiles[i].attachedRigidbody.angularVelocity = new(0f, 50f, 0f);
                     bb.SetParried();
                 }
-                else
-                {
-                    ParryProjectile parriedProjectileScript = Instantiate(parryProjectile, orientation.position, Quaternion.FromToRotation(Vector3.zero, orientation.forward)).GetComponent<ParryProjectile>();
+                else {
+                    ParryProjectile parriedProjectileScript = Instantiate(parryProjectile, parryProjectilePosition.position, Quaternion.FromToRotation(Vector3.zero, orientation.forward)).GetComponent<ParryProjectile>();
                     parriedProjectileScript.Momentum = momentum;
                     parriedProjectileScript.Damage = Config.ParriedProjectileDefaultDamage * thresholdHolder.CurrentThreshold.DamageMultiplier;
 

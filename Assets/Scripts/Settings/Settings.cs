@@ -25,12 +25,16 @@ public class Settings : MonoBehaviour
     public void Awake() {
         float mVolume;
         audioMixer.GetFloat("Master", out mVolume);
+        mVolume = Mathf.Pow(10, mVolume/20f);
         masterVolume.value  = mVolume;
 
+
         audioMixer.GetFloat("Music", out mVolume);
+        mVolume = Mathf.Pow(10, mVolume / 20f);
         musicVolume.value = mVolume;
 
         audioMixer.GetFloat("SFX", out mVolume);
+        mVolume = Mathf.Pow(10, mVolume / 20f);
         soundEffectVolume.value = mVolume;
 
         horizontalSensitivity.value = cameraConfig.HorizontalSensitivity;
@@ -90,9 +94,26 @@ public class Settings : MonoBehaviour
         }
     }
 
-    public void SetMasterVolume(float volume) { audioMixer.SetFloat("Master", Mathf.Log10(volume) * 20); }
-    public void SetSoundEffectVolume(float volume) { audioMixer.SetFloat("SFX", Mathf.Log10(volume) * 20); }
-    public void SetMusicVolume(float volume) { audioMixer.SetFloat("Music", Mathf.Log10(volume) * 20); }
+    public void SetMasterVolume(float volume) { 
+        audioMixer.SetFloat("Master", Mathf.Log10(volume) * 20); 
+        if(volume == 0)
+        {
+            audioMixer.SetFloat("Master", -80f);
+        }
+    
+    }
+    public void SetSoundEffectVolume(float volume) { audioMixer.SetFloat("SFX", Mathf.Log10(volume) * 20);
+        if (volume == 0)
+        {
+            audioMixer.SetFloat("SFX", -80f);
+        }
+    }
+    public void SetMusicVolume(float volume) { audioMixer.SetFloat("Music", Mathf.Log10(volume) * 20); 
+        if (volume == 0)
+        {
+            audioMixer.SetFloat("Music", -80f);
+        }
+    }
 
     public void Close()
     {
