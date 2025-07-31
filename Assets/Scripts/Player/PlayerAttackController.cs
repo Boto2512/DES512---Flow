@@ -4,6 +4,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.UI;
+using UnityEngine.VFX;
 using static UnityEngine.Rendering.STP;
 
 public class PlayerAttackController : MonoBehaviour, IDamageable
@@ -47,6 +48,7 @@ public class PlayerAttackController : MonoBehaviour, IDamageable
     [SerializeField] private GameObject hitVFX;
     [SerializeField] private GameObject parryProjectile;
     private bool parried = false;
+    [SerializeField] private VisualEffect slashVFX;
 
     private Rigidbody rb;
     private IHasSpeedThresholds thresholdHolder;
@@ -106,6 +108,10 @@ public class PlayerAttackController : MonoBehaviour, IDamageable
         //attackAnimator.SetTrigger("hasAttacked");
         cameraAnimator.SetTrigger("hasAttacked");
         AudioManager.instance?.Play("PlayerAttackInTheAir");
+
+        slashVFX.transform.position = hurtbox.transform.position;
+        slashVFX.transform.rotation = hurtbox.transform.rotation;
+        slashVFX.Play();
 
         attacking = true;
         attackReadied = false;
@@ -167,9 +173,8 @@ public class PlayerAttackController : MonoBehaviour, IDamageable
                     projectiles[i].attachedRigidbody.angularVelocity = new(0f, 50f, 0f);
                     bb.SetParried();
                 }
-                else
-                {
-                    ParryProjectile parriedProjectileScript = Instantiate(parryProjectile, orientation.position, Quaternion.FromToRotation(Vector3.zero, orientation.forward)).GetComponent<ParryProjectile>();
+                else {
+                    ParryProjectile parriedProjectileScript = Instantiate(parryProjectile, parryProjectilePosition.position, Quaternion.FromToRotation(Vector3.zero, orientation.forward)).GetComponent<ParryProjectile>();
                     parriedProjectileScript.Momentum = momentum;
                     parriedProjectileScript.Damage = Config.ParriedProjectileDefaultDamage * thresholdHolder.CurrentThreshold.DamageMultiplier;
 
