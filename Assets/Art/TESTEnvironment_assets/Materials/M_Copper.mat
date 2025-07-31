@@ -21,7 +21,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: M_Copper
-  m_Shader: {fileID: -6465566751694194690, guid: 8d5cbc2790ab64f4db44076cc6de7911, type: 3}
+  m_Shader: {fileID: -6465566751694194690, guid: 344e788d848abe348bd2c346071d6de8, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -81,6 +81,8 @@ Material:
     - Toon_Ramp_Smoothness: 0
     - _Ambient: 0
     - _Gloss_amount: 0
+    - _N_blend: 0
+    - _N_tile: 0
     - _Normal_Map_1: 0
     - _Normal_Strength: 1
     - _Outline_Amount: -0.022
@@ -90,10 +92,13 @@ Material:
     - _Soft_Outline_Amount: 0.39
     - _Soft_Outline_Brightness: 1
     - _Soft_Outline_Softness: 2
+    - _Tiled_Texture: 0
+    - _Tiling: 0
     - _Toon_Ramp_Offset_Point: 0.5
+    - _blend: 0
     m_Colors:
     - Toon_Ramp_Tint: {r: 0.49056596, g: 0.49056596, b: 0.49056596, a: 1}
-    - _Color: {r: 0.6132076, g: 0.4503747, b: 0.32106623, a: 1}
+    - _Color: {r: 0.3679245, g: 0.2477299, b: 0.1509879, a: 1}
     - _Gloss_Tint: {r: 1, g: 1, b: 1, a: 1}
     - _Outline_Tint: {r: 0.9960785, g: 0.93725497, b: 0.8078432, a: 1}
     - _Solt_Outline_Tint: {r: 1, g: 1, b: 1, a: 1}
