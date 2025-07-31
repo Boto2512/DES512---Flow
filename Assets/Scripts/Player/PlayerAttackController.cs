@@ -5,7 +5,8 @@ using UnityEngine.InputSystem;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.UI;
 
-public class PlayerAttackController : MonoBehaviour, IDamageable {
+public class PlayerAttackController : MonoBehaviour, IDamageable
+{
     [SerializeField] public PlayerDamageConfig Config;
 
     [Header("GameOver")]
@@ -33,6 +34,14 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
     [Header("Hurtbox")]
     [SerializeField] private PlayerHurtbox hurtbox;
 
+    [Header("Crosshair")]
+    [SerializeField] private Image crosshairImage;
+    [SerializeField] private Color defaultCrosshairColor = Color.white;
+    [SerializeField] private Color enemyCrosshairColor = Color.red;
+    [SerializeField] private float aimCheckDistance = 100f;
+    [SerializeField] private LayerMask enemyLayerMask;
+
+
     [Header("Prefabs")]
     [SerializeField] private GameObject hitVFX;
     [SerializeField] private GameObject parryProjectile;
@@ -45,7 +54,8 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
     // input
     private bool attackPressed = false;
 
-    private void Start() {
+    private void Start()
+    {
         rb = this.GetComponent<Rigidbody>();
         thresholdHolder = this.GetComponent<IHasSpeedThresholds>();
 
@@ -63,16 +73,21 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
             Debug.LogError("Parry Projectile prefab in PlayerAttackController doesn't have the ParryProjectile script component");
     }
 
-    private void Update() {
+    private void Update()
+    {
         if (attacking && !parried)
             Parry();
 
         VignettePower();
+
+        CheckIfAimingAtEnemy();
+
     }
 
     #region Attack
 
-    public void ReadyAttack() {
+    public void ReadyAttack()
+    {
         attackPressed = true;
         if (attacking)
             return;
@@ -81,7 +96,8 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
         attackAnimator.SetBool("isHoldingHammer", true);
     }
 
-    public void Attack() {
+    public void Attack()
+    {
         attackPressed = false;
         if (attacking || !attackReadied)
             return;
@@ -98,17 +114,20 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
         this.InvokeOverwrite("attack animation playing", () => { attacking = false; parried = false; CheckHoldingAttack(); }, Config.AttackCooldown);
     }
 
-    public void DamageableHit(IDamageable damageable, Collider collider) {
+    public void DamageableHit(IDamageable damageable, Collider collider)
+    {
         float damage = CalculateDamage();
         damageable.TakeDamage(damage, this.gameObject);
 
-        if (collider.attachedRigidbody != null && collider.attachedRigidbody.TryGetComponent<IMomentumModifiable>(out var imm)) {
+        if (collider.attachedRigidbody != null && collider.attachedRigidbody.TryGetComponent<IMomentumModifiable>(out var imm))
+        {
             Vector3 knockback = orientation.forward.normalized * Config.KnockbackDealt;
             knockback.y = Config.KnockbackHeight;
             imm.AddMomentum(knockback);
         }
 
-        if (Config.UseHitStop) {
+        if (Config.UseHitStop)
+        {
             HitStop.Slow(Config.HitStopTimeScale, Config.HitStopDuration).Forget();
         }
         //HitStop.Stop(0.33f).Forget();
@@ -117,16 +136,20 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
         AudioManager.instance?.Play("PlayerAttack");
     }
 
-    private void Parry() {
+    private void Parry()
+    {
         Collider[] projectiles = new Collider[5];
         int projectilesLength = Physics.OverlapSphereNonAlloc(orientation.position, Config.ParryCheckDistance, projectiles, Globals.PROJECTILE_MASK, QueryTriggerInteraction.Collide);
-        if (projectilesLength == 0) {
+        if (projectilesLength == 0)
+        {
             return;
         }
 
-        for (int i = 0; i < projectilesLength; ++i) {
+        for (int i = 0; i < projectilesLength; ++i)
+        {
             float angle = Vector3.Angle(orientation.forward, projectiles[i].gameObject.transform.position - orientation.position);
-            if (angle <= Config.ParryMaxAngle) {
+            if (angle <= Config.ParryMaxAngle)
+            {
                 parried = true;
 
                 float projectileSpeed = Mathf.Max(Config.ParriedProjectileMinimumSpeed, rb.linearVelocity.magnitude * Config.ParriedProjectileSpeedMultiplier);
@@ -135,7 +158,8 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
                 if (Config.UseParryHitStop)
                     HitStop.Slow(Config.HitStopTimeScale, Config.HitStopDuration).Forget();
 
-                if (projectiles[i].attachedRigidbody != null && projectiles[i].attachedRigidbody.gameObject.TryGetComponent<BounceBomb>(out var bb)) {
+                if (projectiles[i].attachedRigidbody != null && projectiles[i].attachedRigidbody.gameObject.TryGetComponent<BounceBomb>(out var bb))
+                {
                     projectiles[i].attachedRigidbody.linearVelocity = momentum;
                     projectiles[i].attachedRigidbody.useGravity = false;
                     projectiles[i].attachedRigidbody.linearDamping = 0f;
@@ -156,15 +180,18 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
         }
     }
 
-    private float CalculateDamage() {
+    private float CalculateDamage()
+    {
         if (thresholdHolder.CurrentThreshold == null)
             return Config.Attack;
 
         return Config.Attack * thresholdHolder.CurrentThreshold.DamageMultiplier;
     }
 
-    private void CheckHoldingAttack() {
-        if (attackPressed) {
+    private void CheckHoldingAttack()
+    {
+        if (attackPressed)
+        {
             ReadyAttack();
         }
     }
@@ -189,11 +216,13 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
 
     public float BombRegenAmount { get; } = 0f;
 
-    public float GetHealth() {
+    public float GetHealth()
+    {
         return health;
     }
 
-    public void TakeDamage(float amount) {
+    public void TakeDamage(float amount)
+    {
         health -= amount;
         healthBar.value = health;
         TutorialEvents.OnEnemyKilled?.Invoke();
@@ -203,7 +232,8 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
         vignetteMAT.SetFloat("_VignettePower", vignettePower);
         vignetteTimer = 0;
 
-        if (health <= 0 && !gameOverCanvas.activeSelf) {
+        if (health <= 0 && !gameOverCanvas.activeSelf)
+        {
             Kill();
         }
     }
@@ -215,12 +245,14 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
             vignetteMAT.SetFloat("_VignettePower", vignettePower);
         }
     }
-    public void Kill() {
+    public void Kill()
+    {
         StartCoroutine(Death());
 
     }
 
-    private IEnumerator Death() {
+    private IEnumerator Death()
+    {
         yield return new WaitForSeconds(.5f);
         gameOverCanvas.SetActive(true);
         dead = true;
@@ -231,7 +263,8 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
         Time.timeScale = 0;
     }
 
-    public void Heal(float amount) {
+    public void Heal(float amount)
+    {
         health = Mathf.Clamp(health + amount, 0f, Config.MaxHealth);
         healthBar.value = health;
     }
@@ -241,11 +274,32 @@ public class PlayerAttackController : MonoBehaviour, IDamageable {
     #region Input
 
     // in case input is needed here directly
-    public void AttackInput(InputAction.CallbackContext context) {
-        if (context.ReadValueAsButton()) {
+    public void AttackInput(InputAction.CallbackContext context)
+    {
+        if (context.ReadValueAsButton())
+        {
             Attack();
         }
     }
 
     #endregion Input
+
+    #region Crosshair
+
+    private void CheckIfAimingAtEnemy()
+    {
+        Ray ray = new Ray(orientation.position, orientation.forward);
+        if (Physics.Raycast(ray, out RaycastHit hit, aimCheckDistance, enemyLayerMask, QueryTriggerInteraction.Ignore))
+        {
+            if (hit.collider.CompareTag("Enemy"))
+            {
+                crosshairImage.color = enemyCrosshairColor;
+                return;
+            }
+        }
+
+        crosshairImage.color = defaultCrosshairColor;
+    }
+
+    #endregion Crosshair
 }
