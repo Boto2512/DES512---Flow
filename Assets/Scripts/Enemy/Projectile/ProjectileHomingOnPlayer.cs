@@ -81,7 +81,7 @@ public class ProjectileHomingOnPlayer : MonoBehaviour
         Vector3 newPosition = transform.position + lockDir.normalized* Time.deltaTime * homingSpeed; //Vector3.MoveTowards(, lockPosition, Time.deltaTime * homingSpeed);
         projectileModel.up = Vector3.Lerp(projectileModel.up, lockDir, rotateSpeed);
         projectileRigidBody.MovePosition(newPosition);
-        AudioManager.instance?.Play("Launch");
+        AudioManager.instance?.Play("Launch", transform.position);
     }
 
     private void OnTriggerEnter(Collider other) {

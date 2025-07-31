@@ -34,7 +34,7 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
     private ITargetable target;
     private Vector3 targetPosition => target.Target.position;
     private void SetTarget() => target = Globals.PLAYER_TARGET;
-    private Vector3 desiredDestination = Vector3.zero;                  // only use when isTargetReachable is true
+    private Vector3 desiredDestination = Vector3.zero;// only use when isTargetReachable is true
 
     // flags for AI
     private bool isTargetInAttackRange = false;
@@ -82,6 +82,9 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
 
     [Header("Momentum")]
     [SerializeField] private Transform momentumPosition;
+
+    [Header("Animation Controller")]
+    [SerializeField] private Animator Animation;
 
     private void Awake() {
         transitions = new() {
@@ -245,16 +248,22 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
         if (isGrounded && bombBounced) {
             bombBounced = false;
         }
+        Animation.SetBool("isWalking", false);
+
     }
 
     private void Pursue() {
         SetAgentDestination(GetPursueDestination());
+        Animation.SetBool("isWalking", true);
     }
 
     private void Attack() {
         if (canAttack & !isAttacking) { 
             isAttacking = true;
             chargeVFX.Play();
+
+
+            Animation.SetBool("isWalking", false);
         }
         else if (canAttack && timer < attackChargeTime) {
             timer += Time.deltaTime;
@@ -268,7 +277,7 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
             isAttacking = false;
             chargeOrb.localScale = Vector3.zero;
 
-
+            Animation.SetTrigger("hasAttacked");
 
             Instantiate(projectile, attackTransform.position, attackTransform.rotation);
             this.InvokeExclusive("attackCooldown", () => canAttack = true, attackCooldown);
@@ -290,6 +299,8 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
     private void Reposition() {
         float halfComfortableRange = (maxComfortableRange + minComfortableRange) / 2f;
         Vector3 toComfortableRange = (rb.position - targetPosition).normalized * halfComfortableRange;
+
+        Animation.SetBool("isWalking", true);
 
         if (NavMesh.SamplePosition(targetPosition + toComfortableRange, out NavMeshHit hit, halfComfortableRange, NavMesh.AllAreas)) {
             SetAgentDestination(hit.position);
