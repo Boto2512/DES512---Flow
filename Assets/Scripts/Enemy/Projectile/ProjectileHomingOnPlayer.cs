@@ -81,12 +81,14 @@ public class ProjectileHomingOnPlayer : MonoBehaviour
         Vector3 newPosition = transform.position + lockDir.normalized* Time.deltaTime * homingSpeed; //Vector3.MoveTowards(, lockPosition, Time.deltaTime * homingSpeed);
         projectileModel.up = Vector3.Lerp(projectileModel.up, lockDir, rotateSpeed);
         projectileRigidBody.MovePosition(newPosition);
+        AudioManager.instance?.Play("Launch", transform.position);
     }
 
     private void OnTriggerEnter(Collider other) {
 
-        if (other.CompareTag("Player")) { 
+        if (other.CompareTag("Player")) {
             //Damage Player
+            AudioManager.instance?.Play("Hurt");
             IDamageable damageable = other.attachedRigidbody.gameObject.GetComponent<IDamageable>();
             damageable.TakeDamage(damage);
             Destroy(gameObject);

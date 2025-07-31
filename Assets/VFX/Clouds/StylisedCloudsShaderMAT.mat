@@ -1,0 +1,77 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-5429660583237245043
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  version: 9
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: StylisedCloudsShaderMAT
+  m_Shader: {fileID: -6465566751694194690, guid: eab725af793978b43874e79503b06ad2, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 2
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses:
+  - MOTIONVECTORS
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - unity_Lightmaps:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_LightmapsInd:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_ShadowMasks:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _BaseScale: 0.003
+    - _BaseSpeed: 5.05
+    - _BaseStrength: 0.3
+    - _CloudAngle: -64.5
+    - _Emission: -0.13
+    - _FadeDepth: 0.19
+    - _Fresnel: 0.71
+    - _FresnelOpacity: 0.1
+    - _MainScale: 0.001
+    - _NoiseEdgeOne: -0.3
+    - _NoiseEdgeTwo: 0.4
+    - _NoiseScale: 0.01
+    - _NoiseStrength: 3.36
+    - _Position: 45.05
+    - _QueueControl: 0
+    - _QueueOffset: 0
+    - _SpeedClouds: 10.8
+    m_Colors:
+    - _AxisClouds: {r: 1, g: 0, b: 0, a: 90}
+    - _ColourPeak: {r: 1, g: 0.9669811, b: 0.9669811, a: 0}
+    - _ColourValley: {r: 0.4734781, g: 0.7207954, b: 0.754717, a: 0}
+    - _NoiseRemap: {r: -0.33, g: 0.6, b: -0.98, a: 0.8}
+  m_BuildTextureStacks: []
+  m_AllowLocking: 1

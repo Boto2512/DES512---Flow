@@ -66,7 +66,7 @@ MonoBehaviour:
   - soundName: BombBounce
     clip: {fileID: 8300000, guid: 979a5dbba11b2d44da3d49a013e39e5f, type: 3}
     priority: 1
-    volume: 0.5
+    volume: 0.6
     pitch: 2
     loop: 0
     mute: 0
@@ -75,14 +75,14 @@ MonoBehaviour:
   - soundName: BGM1
     clip: {fileID: 8300000, guid: 17ccae916d9589b44b5c5bfdb64ff5b0, type: 3}
     priority: 1
-    volume: 0.5
+    volume: 0.3
     pitch: 1
-    loop: 1
+    loop: 0
     mute: 0
     mixerGroup: {fileID: -4843252175066814224, guid: 37077b37cf7bfeb48be93012974dd892, type: 2}
     source: {fileID: 0}
   - soundName: BGM2
-    clip: {fileID: 8300000, guid: 17ccae916d9589b44b5c5bfdb64ff5b0, type: 3}
+    clip: {fileID: 8300000, guid: be650748ee6a4d3489c90585b25e4172, type: 3}
     priority: 1
     volume: 0.5
     pitch: 1
@@ -102,7 +102,7 @@ MonoBehaviour:
   - soundName: BombAttach
     clip: {fileID: 8300000, guid: f0e7822b09a8dfb48886b618065ad9b1, type: 3}
     priority: 1
-    volume: 1
+    volume: 0.5
     pitch: 1
     loop: 0
     mute: 0
@@ -111,7 +111,7 @@ MonoBehaviour:
   - soundName: FallWater
     clip: {fileID: 8300000, guid: f805729dceb917b4c83a52deb13d0454, type: 3}
     priority: 1
-    volume: 1
+    volume: 0.5
     pitch: 1
     loop: 0
     mute: 0
@@ -131,6 +131,51 @@ MonoBehaviour:
     priority: 1
     volume: 0.35
     pitch: 2
+    loop: 0
+    mute: 0
+    mixerGroup: {fileID: 7839286490650633151, guid: 37077b37cf7bfeb48be93012974dd892, type: 2}
+    source: {fileID: 0}
+  - soundName: Hurt
+    clip: {fileID: 8300000, guid: 19b7805903841f544b9eec0cc0daa373, type: 3}
+    priority: 1
+    volume: 1
+    pitch: 1
+    loop: 0
+    mute: 1
+    mixerGroup: {fileID: 7839286490650633151, guid: 37077b37cf7bfeb48be93012974dd892, type: 2}
+    source: {fileID: 0}
+  - soundName: Charging
+    clip: {fileID: 8300000, guid: d1b2b508dabd7bf4b83b570c974e1635, type: 3}
+    priority: 1
+    volume: 1
+    pitch: 1
+    loop: 0
+    mute: 1
+    mixerGroup: {fileID: 7839286490650633151, guid: 37077b37cf7bfeb48be93012974dd892, type: 2}
+    source: {fileID: 0}
+  - soundName: Launch
+    clip: {fileID: 8300000, guid: 26813e9a81d5f994fbaaaaf1c35c0b4d, type: 3}
+    priority: 1
+    volume: 0.25
+    pitch: 1
+    loop: 0
+    mute: 0
+    mixerGroup: {fileID: 7839286490650633151, guid: 37077b37cf7bfeb48be93012974dd892, type: 2}
+    source: {fileID: 0}
+  - soundName: Laser
+    clip: {fileID: 8300000, guid: d676a2e9f63c3ee49946bf363db0ca55, type: 3}
+    priority: 1
+    volume: 0.25
+    pitch: 1
+    loop: 0
+    mute: 0
+    mixerGroup: {fileID: 7839286490650633151, guid: 37077b37cf7bfeb48be93012974dd892, type: 2}
+    source: {fileID: 0}
+  - soundName: EnemyFallWater
+    clip: {fileID: 8300000, guid: f805729dceb917b4c83a52deb13d0454, type: 3}
+    priority: 1
+    volume: 0.3
+    pitch: 1
     loop: 0
     mute: 0
     mixerGroup: {fileID: 7839286490650633151, guid: 37077b37cf7bfeb48be93012974dd892, type: 2}
