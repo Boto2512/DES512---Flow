@@ -25,7 +25,6 @@ public class Projectile : MonoBehaviour {
         //VFX positoion set.
         //VFXEventAttribute eventAttribute = visualEffect.CreateVFXEventAttribute();
 
-
     }
 
 

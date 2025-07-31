@@ -75,7 +75,7 @@ public class LevelLaunchPad : MonoBehaviour
     private void OnTriggerEnter(Collider other) {
         if (other.gameObject.CompareTag("Player") && unlocked) {
             isTiming = false;
-            completionTimer.text = $"Level Complete: \n{(Mathf.Round(timer * 100)/100)}s";
+            completionTimer.text = $"{(Mathf.Round(timer * 100)/100)}s";
 
             other.attachedRigidbody.GetComponent<IMomentumModifiable>().SetMomentum(Vector3.up * launchForce);
             stopTimer = true;
