@@ -11,6 +11,7 @@ public class SpeedStageThreshold {
     [SerializeField] private bool hasSpeedlines;
     [SerializeField] private Vector2 speedRangeOfLines;
     [SerializeField] private float speedlineSpawnRate;
+    [SerializeField] private Color speedlineColor;
 
 
     public float SpeedThreshold => speedThreshold;
@@ -21,4 +22,6 @@ public class SpeedStageThreshold {
     public bool HasSpeedLines => hasSpeedlines;
     public Vector2 SpeedRangeOfLines => speedRangeOfLines;
     public float SpeedlineSpawnRate => speedlineSpawnRate;
+
+    public Color SpeedlineColor => speedlineColor;
 }

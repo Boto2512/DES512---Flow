@@ -256,12 +256,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   upwardSpeed: 80
+  upwardHorizontalRange: 0
+  upwardVerticalRange: 0
   upwardHeight: 3
   rotateSpeed: 0.25
-  homingSpeed: 80
-  homingDelay: 1.5
+  homingSpeed: 20
+  homingDelay: 1
   homingDuration: 3
-  damage: 15
+  damage: 10
+  projectileModel: {fileID: 3846930732342539265}
 --- !u!1001 &3668659514010375146
 PrefabInstance:
   m_ObjectHideFlags: 0

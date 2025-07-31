@@ -15,6 +15,8 @@ public class FirstPersonPlayerController : MonoBehaviour, ITargetable, IHasSpeed
     public SpeedStageThreshold CurrentThreshold { get; private set; }
     private SpeedStageThreshold prevThreshold = null;
 
+    public bool PlayerInputEnabled = true;
+
     #region Facets of Character
 
     private Rigidbody rb;
@@ -103,14 +105,23 @@ public class FirstPersonPlayerController : MonoBehaviour, ITargetable, IHasSpeed
     #region Input
 
     public void MoveInput(InputAction.CallbackContext context) {
+        if (!PlayerInputEnabled)
+            return;
+
         movementController.MoveInput(context.ReadValue<Vector2>());
     }
 
     public void LookInput(InputAction.CallbackContext context) {
+        if (!PlayerInputEnabled)
+            return;
+
         animationController.MouseInput(context.ReadValue<Vector2>());
     }
 
     public void AttackInput(InputAction.CallbackContext context) {
+        if (!PlayerInputEnabled)
+            return;
+
         if (context.performed) {
             PrimaryActionPressed.Invoke();
         }
@@ -120,6 +131,9 @@ public class FirstPersonPlayerController : MonoBehaviour, ITargetable, IHasSpeed
     }
 
     public void ThrowInput(InputAction.CallbackContext context) {
+        if (!PlayerInputEnabled)
+            return;
+
         if (context.performed) {
             SecondaryActionPressed.Invoke();
         }
@@ -129,6 +143,9 @@ public class FirstPersonPlayerController : MonoBehaviour, ITargetable, IHasSpeed
     }
 
     public void JumpInput(InputAction.CallbackContext context) {
+        if (!PlayerInputEnabled)
+            return;
+
         movementController.JumpInput(context.ReadValueAsButton());
     }
 

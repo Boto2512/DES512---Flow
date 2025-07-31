@@ -28,18 +28,18 @@ public class ParryProjectile : MonoBehaviour {
     private void OnCollisionEnter(Collision collision) {
         Debug.Log("PP hit " + collision.gameObject.name);
 
-        Rigidbody otherRB = collision.rigidbody;
-        if (otherRB == null) {
-            if (Utility.IsObstacle(collision.gameObject.layer)) {
-                Destroy(this.gameObject);
-            }
-            return;
+        if (Utility.IsObstacle(collision.gameObject.layer)) {
+            Destroy(this.gameObject);
         }
 
-        if (!otherRB.gameObject.TryGetComponent<IDamageable>(out var damageable))
+        Rigidbody otherRB = collision.rigidbody;
+        if (otherRB == null)
             return;
 
-        damageable.TakeDamage(Damage);
-        Destroy(this.gameObject);
+        if (otherRB.gameObject.TryGetComponent<IDamageable>(out var damageable)) {
+            damageable.TakeDamage(Damage);
+            Destroy(this.gameObject);
+            return;
+        }
     }
 }

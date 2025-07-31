@@ -6,6 +6,7 @@ public class BarrelExplodedStep : ITutorialStep
     private Sprite tutorialGif;
     public Sprite GetGifSprite() => tutorialGif;
     public void SetGifSprite(Sprite sprite) => tutorialGif = sprite;
+    public string GetAnimationTrigger() => "Eliminate"; 
     
     private bool barrelExploded = false;
 
@@ -27,5 +28,5 @@ public class BarrelExplodedStep : ITutorialStep
 
     public bool Validate() => barrelExploded;
 
-    public string GetMessage() => "Explode the barrel using Bomb Bounce!";
+    public string GetMessage() => "Killing all enemies in the area opens the gate.";
 }

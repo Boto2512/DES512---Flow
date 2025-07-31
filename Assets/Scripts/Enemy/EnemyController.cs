@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Events;
@@ -9,6 +10,7 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
     [Header("Health")]
     [SerializeField, Min(0f)] float health = 100;
     [SerializeField] Slider healthBar;
+    private Transform healthBarParent;
     [SerializeField] GameObject healthDrop;
 
     [Header("Drops")]
@@ -32,7 +34,7 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
     private ITargetable target;
     private Vector3 targetPosition => target.Target.position;
     private void SetTarget() => target = Globals.PLAYER_TARGET;
-    private Vector3 desiredDestination = Vector3.zero;                  // only use when isTargetReachable is true
+    private Vector3 desiredDestination = Vector3.zero;// only use when isTargetReachable is true
 
     // flags for AI
     private bool isTargetInAttackRange = false;
@@ -43,11 +45,19 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
     private bool isTargetTooFar => !(isInComfortableRange || isTargetTooClose);
     private bool bombBounced = false;
 
+    private bool movedExternallyAtLeastOnce = false;
+
     [Header("Attack")]
     [SerializeField] private GameObject projectile;
     [SerializeField] private Transform attackTransform;
     [SerializeField, Min(0f)] private float attackCooldown = 1f;
+    [SerializeField] private float attackChargeTime;
+    private float timer;
     private bool isAttacking = false;
+    private bool canAttack = true;
+    private ParticleSystem chargeVFX;
+    [SerializeField] private Transform chargeOrb;
+    [SerializeField] private Vector3 scaleGoal;
     private Vector3 firingPosition => attackTransform.position;
 
     private List<StateMachine.Transition<EnemyAIState>> transitions;
@@ -80,9 +90,9 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
             new(EnemyAIState.Pursue, EnemyAIState.Idle, PursueToIdleCheck, PursueToIdleCallback),
             new(EnemyAIState.Pursue, EnemyAIState.Attack, PursueToAttackCheck, PursueToAttackCallback),
             new(EnemyAIState.Pursue, EnemyAIState.Reposition, PursueToRepositionCheck, PursueToRepositionCallback),
-            new(EnemyAIState.Attack, EnemyAIState.Idle, AttackToIdleCheck, AttackToIdleCallback),
-            new(EnemyAIState.Attack, EnemyAIState.Pursue, AttackToPursueCheck, AttackToPursueCallback),
-            new(EnemyAIState.Attack, EnemyAIState.Reposition, AttackToRepositionCheck, AttackToRepositionCallback),
+            //new(EnemyAIState.Attack, EnemyAIState.Idle, AttackToIdleCheck, AttackToIdleCallback),
+            //new(EnemyAIState.Attack, EnemyAIState.Pursue, AttackToPursueCheck, AttackToPursueCallback),
+            //new(EnemyAIState.Attack, EnemyAIState.Reposition, AttackToRepositionCheck, AttackToRepositionCallback),
             new(EnemyAIState.Reposition, EnemyAIState.Attack, RepositionToAttackCheck, RepositionToAttackCallback),
             new(EnemyAIState.Reposition, EnemyAIState.Pursue, RepositionToPursueCheck, RepositionToPursueCallback)
         };
@@ -90,12 +100,19 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start() {
+        DOTween.Init();
+
         healthBar.maxValue = health;
         healthBar.value = healthBar.maxValue;
-
+        healthBarParent = healthBar.transform.GetComponentInParent<Canvas>().transform;
         SetTarget();
         agent = this.GetComponent<NavMeshAgent>();
         rb = this.GetComponent<Rigidbody>();
+
+        chargeVFX = GetComponentInChildren<ParticleSystem>();
+        chargeVFX.Stop();
+        var chargeParameters = chargeVFX.main;
+        chargeParameters.duration = attackChargeTime;
 
         stateMachine = new EnemyAIStateMachine(transitions);
         Globals.EVENT_PLAYER_MODIFIED.AddListener(SetTarget);
@@ -106,6 +123,8 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
         UpdateAIFlags();
         stateMachine.Update();
         DecideAction();
+
+        healthBarParent.LookAt(targetPosition);
     }
 
     private void OnValidate() {
@@ -185,7 +204,6 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
             isInComfortableRange = false;
             isTargetTooClose = false;
             isTargetReachable = false;
-
             return;
         }
 
@@ -234,12 +252,39 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
     }
 
     private void Attack() {
-        if (isAttacking)
+        if (canAttack & !isAttacking) { 
+            isAttacking = true;
+            chargeVFX.Play();
+        }
+        else if (canAttack && timer < attackChargeTime) {
+            timer += Time.deltaTime;
+            ScaleOrb();
             return;
+        }  
+        else if (canAttack){
 
-        isAttacking = true;
-        Instantiate(projectile, attackTransform.position, attackTransform.rotation);
-        this.InvokeExclusive("attackCooldown", () => isAttacking = false, attackCooldown);
+            timer = 0;
+            canAttack = false;
+            isAttacking = false;
+            chargeOrb.localScale = Vector3.zero;
+
+
+
+            Instantiate(projectile, attackTransform.position, attackTransform.rotation);
+            this.InvokeExclusive("attackCooldown", () => canAttack = true, attackCooldown);
+        }
+        else
+        {
+            return;
+        }
+    }
+
+    private void ScaleOrb()
+    {
+        float progress = (timer/attackChargeTime) *.1f;
+        Vector3 lerpedScale;
+        lerpedScale = Vector3.Lerp(chargeOrb.transform.localScale, scaleGoal, progress);
+        chargeOrb.localScale = lerpedScale;
     }
 
     private void Reposition() {
@@ -249,6 +294,11 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
         if (NavMesh.SamplePosition(targetPosition + toComfortableRange, out NavMeshHit hit, halfComfortableRange, NavMesh.AllAreas)) {
             SetAgentDestination(hit.position);
         }
+
+        canAttack = true;
+        isAttacking= false;
+        timer = 0;
+
     }
 
     private void FanOut() {
@@ -257,7 +307,7 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
 
     private Vector3 GetPursueDestination() {
         if (target == null)
-            return rb.position;
+            return this.transform.position;
 
         if (isTargetReachable)
             return desiredDestination;
@@ -287,7 +337,7 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
         //Vector3 directionToTarget = (targetPosition - rb.position).normalized;
         //Vector3 desiredPosition = targetPosition - directionToTarget * desiredDistance;
 
-        bool result = NavMesh.SamplePosition(targetPosition, out NavMeshHit hit, attackRange, NavMesh.AllAreas);
+        bool result = NavMesh.SamplePosition(targetPosition, out NavMeshHit hit, attackRange, new NavMeshQueryFilter() { agentTypeID = agent.agentTypeID, areaMask = agent.areaMask });
         desiredDestination = hit.position;
 
         return result;
@@ -304,7 +354,7 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
     }
 
     private bool IdleToPursueCheck() {
-        return isTargetReachable && isGrounded && !bombBounced;
+        return isTargetReachable && isGrounded && !bombBounced && movedExternallyAtLeastOnce;
     }
 
     private bool AttackToIdleCheck() {
@@ -324,11 +374,11 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
     }
 
     private bool AttackToPursueCheck() {
-        return !isTargetInAttackRange || !isTargetInView || bombBounced;
+        return (!isTargetInAttackRange || !isTargetInView || bombBounced) && movedExternallyAtLeastOnce;
     }
 
     private bool AttackToRepositionCheck() {
-        return isTargetInView && isTargetTooClose;
+        return isTargetInView && isTargetTooClose && movedExternallyAtLeastOnce;
     }
 
     private bool RepositionToAttackCheck() {
@@ -418,6 +468,8 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
 
         rb.linearVelocity = value;
         //this.InvokeOverwrite("bombBounced", () => bombBounced = true, 0.1f);
+
+        movedExternallyAtLeastOnce = true;
     }
 
     public void AddMomentum(Vector3 value, ForceMode additionType = ForceMode.Impulse) {

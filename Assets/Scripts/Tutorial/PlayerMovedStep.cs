@@ -7,7 +7,8 @@ public class PlayerMovedStep : ITutorialStep
     private Sprite tutorialGif;
     public Sprite GetGifSprite() => tutorialGif;
     public void SetGifSprite(Sprite sprite) => tutorialGif = sprite;
-    
+    public string GetAnimationTrigger() => "Moved"; 
+
     private bool hasMoved = false;
     
 
