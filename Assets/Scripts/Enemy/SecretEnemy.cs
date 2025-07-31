@@ -269,6 +269,8 @@ namespace Secret {
                 default:
                     break;
             }
+
+            Debug.Log(stateMachine.CurrentState);
         }
 
         private void Idle()
@@ -288,7 +290,6 @@ namespace Secret {
         {
             if (isAttacking||isLasering)
                 return;
-
 
             if (!isLastAttackLaser &&seriesNumber==0)
             {

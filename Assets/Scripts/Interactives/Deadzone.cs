@@ -25,7 +25,7 @@ public class Deadzone : MonoBehaviour
         }
         else if (collision.transform.CompareTag(enemyTag))
         {
-            AudioManager.instance?.Play("FallWater");
+            AudioManager.instance?.Play("EnemyFallWater");
             Destroy(collision.gameObject);
         }
     }

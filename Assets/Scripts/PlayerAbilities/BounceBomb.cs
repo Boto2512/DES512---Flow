@@ -32,12 +32,37 @@ public class BounceBomb : MonoBehaviour {
     }
 
     private void OnCollisionEnter(Collision collision) {
-        AudioManager.instance?.Play("BombAttach");
+        CheckIfInsideBounceBombTriggerZone();
+        AttachToSurface(collision);
+    }
+
+    private void AttachToSurface(Collision collision) {
+        Vector3 closestPoint;
+        Quaternion rotation;
+        if (collision.collider is MeshCollider mc && !mc.convex) {
+            if (rb.linearVelocity.sqrMagnitude <= 0f) {
+                return;
+            }
+            else if (mc.Raycast(new Ray(rb.position, rb.linearVelocity.normalized), out RaycastHit hitInfo, 2f)) {
+                closestPoint = hitInfo.point;
+                rotation = Quaternion.FromToRotation(Vector3.up, hitInfo.normal);
+            }
+            else {
+                closestPoint = mc.ClosestPointOnConcaveMesh(rb.position, out var normal);
+                rotation = Quaternion.FromToRotation(Vector3.up, normal);
+            }
+        }
+        else {
+            closestPoint = collision.GetContact(0).point;
+            //closestPoint = collision.collider.ClosestPoint(this.transform.position);
+            rotation = Quaternion.FromToRotation(Vector3.up, collision.GetContact(0).normal);
+        }
+
+        this.transform.SetPositionAndRotation(closestPoint, rotation);
+
+        AudioManager.instance?.Play("BombAttach",transform.position);
         rb.isKinematic = true;
         rb.detectCollisions = false;
-        CheckIfInsideBounceBombTriggerZone();
-        this.transform.SetPositionAndRotation(collision.collider.ClosestPoint(this.transform.position), Quaternion.FromToRotation(Vector3.up, collision.GetContact(0).normal));
-        blastCentre.position = collision.GetContact(0).point;
     }
 
     public void SetParried() => parried = true;
@@ -141,7 +166,7 @@ public class BounceBomb : MonoBehaviour {
     }
 
     private void ExplosionVFX() {
-        AudioManager.instance?.Play("BombBounce");
+        AudioManager.instance?.Play("BombBounce", transform.position);
         vfxObject.GetComponent<VFXCleanUp>().StartTimer();
 
         vfx.transform.SetParent(null);
