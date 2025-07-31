@@ -7,6 +7,7 @@ public class TurretEnemy : MonoBehaviour, IDamageable {
     [Header("Health")]
     [SerializeField] private float health;
     [SerializeField] private Slider healthBar;
+    [SerializeField] private Transform healthbarParent;
 
     [Header("Attack")]
     [SerializeField] private float attackDamage;
@@ -30,6 +31,7 @@ public class TurretEnemy : MonoBehaviour, IDamageable {
         player = Globals.PLAYER.transform;
         healthBar.maxValue = health;
         healthBar.value = health;
+        healthbarParent = healthBar.GetComponentInParent<Canvas>().transform;
 
         if (attackVFX.HasFloat("Duration")) {
             attackVFX.SetFloat("Duration", attackDelay);
@@ -40,6 +42,7 @@ public class TurretEnemy : MonoBehaviour, IDamageable {
     }
 
     private void Update() {
+        healthbarParent.LookAt(player);
         if (IsInRange()) { ChargingAttack(); }
         else { return; }
     }
@@ -67,6 +70,7 @@ public class TurretEnemy : MonoBehaviour, IDamageable {
     }
 
     private void ChargingAttack() {
+        AudioManager.instance?.Play("Charging", transform.position);
         chargeTimer += Time.deltaTime;
         if (chargeTimer > attackChargeTime) { StartCoroutine(Attack()); }
     }
@@ -75,7 +79,7 @@ public class TurretEnemy : MonoBehaviour, IDamageable {
         chargeTimer = 0;
         Vector3 start = orb.position;
         Vector3 direction = (player.position - orb.position).normalized;
-
+        
         yield return new WaitForSeconds(attackDelay);
 
         Physics.Raycast(start, direction, out RaycastHit hit, attackRange, canHitMask);
@@ -88,6 +92,7 @@ public class TurretEnemy : MonoBehaviour, IDamageable {
 
         if (attackVFX.HasFloat("LaserLength")) { attackVFX.SetFloat("LaserLength", hit.distance); }
         attackVFX.Play();
+        AudioManager.instance?.Play("Laser", transform.position);
 
         if (hit.transform != null) {
             if (hit.transform.CompareTag("Player")) {

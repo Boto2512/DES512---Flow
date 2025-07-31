@@ -9,6 +9,7 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
     [Header("Health")]
     [SerializeField, Min(0f)] float health = 100;
     [SerializeField] Slider healthBar;
+    private Transform healthBarParent;
     [SerializeField] GameObject healthDrop;
 
     [Header("Drops")]
@@ -49,6 +50,8 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
     [SerializeField] private GameObject projectile;
     [SerializeField] private Transform attackTransform;
     [SerializeField, Min(0f)] private float attackCooldown = 1f;
+    [SerializeField] private float attackChargeTime;
+    private float timer;
     private bool isAttacking = false;
     private Vector3 firingPosition => attackTransform.position;
 
@@ -94,7 +97,7 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
     void Start() {
         healthBar.maxValue = health;
         healthBar.value = healthBar.maxValue;
-
+        healthBarParent = healthBar.transform.GetComponentInParent<Canvas>().transform;
         SetTarget();
         agent = this.GetComponent<NavMeshAgent>();
         rb = this.GetComponent<Rigidbody>();
@@ -108,6 +111,8 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
         UpdateAIFlags();
         stateMachine.Update();
         DecideAction();
+
+        healthBarParent.LookAt(targetPosition);
     }
 
     private void OnValidate() {
@@ -187,7 +192,6 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
             isInComfortableRange = false;
             isTargetTooClose = false;
             isTargetReachable = false;
-
             return;
         }
 
@@ -236,12 +240,16 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
     }
 
     private void Attack() {
-        if (isAttacking)
+        if (!isAttacking) { isAttacking = true; }
+        else if (timer < attackChargeTime) {
+            timer += Time.deltaTime;
             return;
-
-        isAttacking = true;
+        }  
+        else { 
+        timer = 0;
         Instantiate(projectile, attackTransform.position, attackTransform.rotation);
         this.InvokeExclusive("attackCooldown", () => isAttacking = false, attackCooldown);
+        }             
     }
 
     private void Reposition() {
