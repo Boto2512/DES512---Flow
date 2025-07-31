@@ -53,6 +53,7 @@ public class LaserTrap : MonoBehaviour {
 
         Debug.DrawRay(start, direction * laserLength, Color.darkRed, laserDuration);
         laserVFX.Play();
+        AudioManager.instance?.Play("Laser", transform.position);
 
         foreach (RaycastHit hit in hits) {
             if (hit.transform.GetComponent<IDamageable>() != null) {

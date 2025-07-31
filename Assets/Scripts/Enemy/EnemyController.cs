@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Events;
@@ -33,7 +34,7 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
     private ITargetable target;
     private Vector3 targetPosition => target.Target.position;
     private void SetTarget() => target = Globals.PLAYER_TARGET;
-    private Vector3 desiredDestination = Vector3.zero;                  // only use when isTargetReachable is true
+    private Vector3 desiredDestination = Vector3.zero;// only use when isTargetReachable is true
 
     // flags for AI
     private bool isTargetInAttackRange = false;
@@ -53,6 +54,10 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
     [SerializeField] private float attackChargeTime;
     private float timer;
     private bool isAttacking = false;
+    private bool canAttack = true;
+    private ParticleSystem chargeVFX;
+    [SerializeField] private Transform chargeOrb;
+    [SerializeField] private Vector3 scaleGoal;
     private Vector3 firingPosition => attackTransform.position;
 
     private List<StateMachine.Transition<EnemyAIState>> transitions;
@@ -95,12 +100,19 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start() {
+        DOTween.Init();
+
         healthBar.maxValue = health;
         healthBar.value = healthBar.maxValue;
         healthBarParent = healthBar.transform.GetComponentInParent<Canvas>().transform;
         SetTarget();
         agent = this.GetComponent<NavMeshAgent>();
         rb = this.GetComponent<Rigidbody>();
+
+        chargeVFX = GetComponentInChildren<ParticleSystem>();
+        chargeVFX.Stop();
+        var chargeParameters = chargeVFX.main;
+        chargeParameters.duration = attackChargeTime;
 
         stateMachine = new EnemyAIStateMachine(transitions);
         Globals.EVENT_PLAYER_MODIFIED.AddListener(SetTarget);
@@ -240,16 +252,39 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
     }
 
     private void Attack() {
-        if (!isAttacking) { isAttacking = true; }
-        else if (timer < attackChargeTime) {
+        if (canAttack & !isAttacking) { 
+            isAttacking = true;
+            chargeVFX.Play();
+        }
+        else if (canAttack && timer < attackChargeTime) {
             timer += Time.deltaTime;
+            ScaleOrb();
             return;
         }  
-        else { 
-        timer = 0;
-        Instantiate(projectile, attackTransform.position, attackTransform.rotation);
-        this.InvokeExclusive("attackCooldown", () => isAttacking = false, attackCooldown);
-        }             
+        else if (canAttack){
+
+            timer = 0;
+            canAttack = false;
+            isAttacking = false;
+            chargeOrb.localScale = Vector3.zero;
+
+
+
+            Instantiate(projectile, attackTransform.position, attackTransform.rotation);
+            this.InvokeExclusive("attackCooldown", () => canAttack = true, attackCooldown);
+        }
+        else
+        {
+            return;
+        }
+    }
+
+    private void ScaleOrb()
+    {
+        float progress = (timer/attackChargeTime) *.1f;
+        Vector3 lerpedScale;
+        lerpedScale = Vector3.Lerp(chargeOrb.transform.localScale, scaleGoal, progress);
+        chargeOrb.localScale = lerpedScale;
     }
 
     private void Reposition() {
@@ -259,6 +294,11 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
         if (NavMesh.SamplePosition(targetPosition + toComfortableRange, out NavMeshHit hit, halfComfortableRange, NavMesh.AllAreas)) {
             SetAgentDestination(hit.position);
         }
+
+        canAttack = true;
+        isAttacking= false;
+        timer = 0;
+
     }
 
     private void FanOut() {

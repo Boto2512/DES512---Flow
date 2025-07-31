@@ -7,10 +7,7 @@ public interface ITutorialStep
     void OnStepComplete();
     bool Validate();
     string GetMessage();
-    Sprite GetGifSprite();
-    void SetGifSprite(Sprite sprite);
+    string GetAnimationTrigger(); // used for toaster animation
 
     bool ShouldAutoAdvance() => false;
-
 }
-
