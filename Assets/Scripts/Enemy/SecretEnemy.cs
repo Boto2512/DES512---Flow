@@ -343,6 +343,9 @@ namespace Secret {
 
         private void LaunchProjectile()
         {
+
+            isLastAttackLaser = false;
+            isAttacking = true;
             Debug.Log("Launch projectile");
             Instantiate(projectile, attackTransform.position, attackTransform.rotation);
 
