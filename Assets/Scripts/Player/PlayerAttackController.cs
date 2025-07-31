@@ -4,6 +4,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.UI;
+using UnityEngine.VFX;
 
 public class PlayerAttackController : MonoBehaviour, IDamageable
 {
@@ -47,6 +48,7 @@ public class PlayerAttackController : MonoBehaviour, IDamageable
     [SerializeField] private GameObject parryProjectile;
     [SerializeField] private Transform parryProjectilePosition;
     private bool parried = false;
+    [SerializeField] private VisualEffect slashVFX;
 
     private Rigidbody rb;
     private IHasSpeedThresholds thresholdHolder;
@@ -106,6 +108,10 @@ public class PlayerAttackController : MonoBehaviour, IDamageable
         //attackAnimator.SetTrigger("hasAttacked");
         cameraAnimator.SetTrigger("hasAttacked");
         AudioManager.instance?.Play("PlayerAttackInTheAir");
+
+        slashVFX.transform.position = hurtbox.transform.position;
+        slashVFX.transform.rotation = hurtbox.transform.rotation;
+        slashVFX.Play();
 
         attacking = true;
         attackReadied = false;
