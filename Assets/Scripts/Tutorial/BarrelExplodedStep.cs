@@ -6,6 +6,7 @@ public class BarrelExplodedStep : ITutorialStep
     private Sprite tutorialGif;
     public Sprite GetGifSprite() => tutorialGif;
     public void SetGifSprite(Sprite sprite) => tutorialGif = sprite;
+    public string GetAnimationTrigger() => "Eliminate"; 
     
     private bool barrelExploded = false;
 

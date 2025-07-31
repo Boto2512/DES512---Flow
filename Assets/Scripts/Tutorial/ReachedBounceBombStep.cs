@@ -7,7 +7,7 @@ public class ReachedBounceBombStep : ITutorialStep
     private Sprite tutorialGif;
     public Sprite GetGifSprite() => tutorialGif;
     public void SetGifSprite(Sprite sprite) => tutorialGif = sprite;
-    
+    public string GetAnimationTrigger() => "Reached"; 
     private bool hasReached = false;
 
     public void OnStepStart()

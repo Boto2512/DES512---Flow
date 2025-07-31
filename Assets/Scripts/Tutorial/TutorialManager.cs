@@ -9,23 +9,14 @@ public class TutorialManager : MonoBehaviour
     private int currentStepIndex = 0;
 
     private bool isTutorialRunning = false;
-
     private bool stepCompleted = false;
-
-    private Animator animator;
-
-    [SerializeField] private Sprite moveStepGif;
-    [SerializeField] private Sprite ReachedBounceBombStepGif;
-    [SerializeField] private Sprite UsedBounceBombStepGif;
-    [SerializeField] private Sprite EnemyKilledStepGif;
-    [SerializeField] private Sprite EnemyFastKillStepGif;
-    [SerializeField] private Sprite BarrelExplodedStepGif;
-    [SerializeField] private Sprite ExitLevelGif;
 
     private void Awake()
     {
-        if (Instance == null) Instance = this;
-        else Destroy(gameObject);
+        if (Instance == null)
+            Instance = this;
+        else
+            Destroy(gameObject);
 
         DontDestroyOnLoad(gameObject);
     }
@@ -36,43 +27,39 @@ public class TutorialManager : MonoBehaviour
         StartTutorial();
     }
 
-    private bool waitingForNextFrame = false;
-
     private void Update()
     {
-        if (!isTutorialRunning || stepCompleted) return;
+        if (!isTutorialRunning || stepCompleted)
+            return;
 
         ITutorialStep currentStep = tutorialSteps[currentStepIndex];
 
         if (currentStep.Validate() && !stepCompleted)
-{
-    stepCompleted = true;
+        {
+            stepCompleted = true;
 
-    if (currentStep.ShouldAutoAdvance())
+            if (currentStep.ShouldAutoAdvance())
+            {
+                NextStep();
+                stepCompleted = false;
+            }
+        }
+    }
+
+    /// <summary>
+    /// External trigger to proceed to the next step (e.g. from UI).
+    /// </summary>
+    public void NotifyStepConfirmed()
     {
+        if (!stepCompleted) return;
+
         NextStep();
         stepCompleted = false;
     }
-}
 
-    }
-
-public void NotifyStepConfirmed()
-{
-    if (!stepCompleted) return; 
-
-    NextStep();
-    stepCompleted = false;  
-}
-
-private System.Collections.IEnumerator WaitBeforeNextValidation()
-{
-    waitingForNextFrame = true;
-    yield return null;
-    waitingForNextFrame = false;
-}
-
-
+    /// <summary>
+    /// Initializes all tutorial steps in sequence.
+    /// </summary>
     private void InitializeTutorialSteps()
     {
         tutorialSteps = new List<ITutorialStep>
@@ -85,56 +72,55 @@ private System.Collections.IEnumerator WaitBeforeNextValidation()
             new BarrelExplodedStep(),
             new LevelExitStep()
         };
-
-        tutorialSteps[0].SetGifSprite(moveStepGif);
-        tutorialSteps[1].SetGifSprite(ReachedBounceBombStepGif);
-        tutorialSteps[2].SetGifSprite(UsedBounceBombStepGif);
-        tutorialSteps[3].SetGifSprite(EnemyKilledStepGif);
-        tutorialSteps[4].SetGifSprite(EnemyFastKillStepGif);
-        tutorialSteps[5].SetGifSprite(BarrelExplodedStepGif);
-        tutorialSteps[6].SetGifSprite(ExitLevelGif);
     }
 
+    /// <summary>
+    /// Begins the tutorial.
+    /// </summary>
     public void StartTutorial()
-{
-    isTutorialRunning = true;
-    tutorialSteps[currentStepIndex].OnStepStart(); 
-    StartCoroutine(DelayedShowMessage());
-}
+    {
+        isTutorialRunning = true;
+        tutorialSteps[currentStepIndex].OnStepStart();
+        StartCoroutine(DelayedShowMessage());
+    }
 
+    private System.Collections.IEnumerator DelayedShowMessage()
+    {
+        yield return null; // Wait 1 frame to ensure UI is ready
+        ShowCurrentStepMessage();
+    }
 
-private System.Collections.IEnumerator DelayedShowMessage()
-{
-    yield return null; // Wait 1 frame
-    ShowCurrentStepMessage();
-}
-
-
+    /// <summary>
+    /// Displays the message for the current step, and triggers the associated animation.
+    /// </summary>
     private void ShowCurrentStepMessage()
-{
-    if (currentStepIndex < tutorialSteps.Count)
     {
-        ITutorialStep step = tutorialSteps[currentStepIndex];
-        string message = step.GetMessage();
-        Sprite gif = step.GetGifSprite();
-        ToasterManager.Instance.ShowToaster(message, gif);
-    }
-    else
-    {
-        EndTutorial();
-    }
-}
+        if (currentStepIndex < tutorialSteps.Count)
+        {
+            ITutorialStep step = tutorialSteps[currentStepIndex];
+            string message = step.GetMessage();
+            string animationTrigger = step.GetAnimationTrigger();
 
+            ToasterManager.Instance.ShowToaster(message, animationTrigger);
+        }
+        else
+        {
+            EndTutorial();
+        }
+    }
 
+    /// <summary>
+    /// Advances to the next step in the tutorial.
+    /// </summary>
     private void NextStep()
     {
-        tutorialSteps[currentStepIndex].OnStepComplete(); // cleanup
+        tutorialSteps[currentStepIndex].OnStepComplete();
 
         currentStepIndex++;
 
         if (currentStepIndex < tutorialSteps.Count)
         {
-            tutorialSteps[currentStepIndex].OnStepStart(); // setup new
+            tutorialSteps[currentStepIndex].OnStepStart();
             ShowCurrentStepMessage();
         }
         else
@@ -143,34 +129,40 @@ private System.Collections.IEnumerator DelayedShowMessage()
         }
     }
 
-public bool IsCurrentStep(int stepIndex)
-{
-    return currentStepIndex == stepIndex;
-}
-
-
-
+    /// <summary>
+    /// Ends the tutorial sequence.
+    /// </summary>
     private void EndTutorial()
     {
         isTutorialRunning = false;
         ToasterManager.Instance.ShowToaster("Tutorial complete! Good luck!");
     }
 
+    /// <summary>
+    /// Resets the tutorial and starts over from the first step.
+    /// </summary>
     public void ResetTutorial()
-{
-    if (isTutorialRunning && currentStepIndex < tutorialSteps.Count)
     {
-        tutorialSteps[currentStepIndex].OnStepComplete(); 
+        if (isTutorialRunning && currentStepIndex < tutorialSteps.Count)
+        {
+            tutorialSteps[currentStepIndex].OnStepComplete();
+        }
+
+        StopAllCoroutines();
+
+        currentStepIndex = 0;
+        stepCompleted = false;
+        isTutorialRunning = false;
+
+        InitializeTutorialSteps();
+        StartTutorial();
     }
 
-    StopAllCoroutines(); 
-    // Reset state
-    currentStepIndex = 0;
-    stepCompleted = false;
-    isTutorialRunning = false;
-
-    
-    InitializeTutorialSteps();
-    StartTutorial();
-}
+    /// <summary>
+    /// Used to check from outside whether the current step matches.
+    /// </summary>
+    public bool IsCurrentStep(int stepIndex)
+    {
+        return currentStepIndex == stepIndex;
+    }
 }
