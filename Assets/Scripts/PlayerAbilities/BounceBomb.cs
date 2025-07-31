@@ -40,23 +40,27 @@ public class BounceBomb : MonoBehaviour {
         Vector3 closestPoint;
         Quaternion rotation;
         if (collision.collider is MeshCollider mc && !mc.convex) {
-            if (mc.Raycast(new(this.rb.position, this.rb.linearVelocity.normalized), out RaycastHit hitInfo, 2f)) {
+            if (rb.linearVelocity.sqrMagnitude <= 0f) {
+                return;
+            }
+            else if (mc.Raycast(new Ray(rb.position, rb.linearVelocity.normalized), out RaycastHit hitInfo, 2f)) {
                 closestPoint = hitInfo.point;
                 rotation = Quaternion.FromToRotation(Vector3.up, hitInfo.normal);
             }
             else {
-                closestPoint = Utility.ClosestPointOnConcaveMesh(mc, rb.position, out var normal);
+                closestPoint = mc.ClosestPointOnConcaveMesh(rb.position, out var normal);
                 rotation = Quaternion.FromToRotation(Vector3.up, normal);
             }
         }
         else {
-            closestPoint = collision.collider.ClosestPoint(this.transform.position);
+            closestPoint = collision.GetContact(0).point;
+            //closestPoint = collision.collider.ClosestPoint(this.transform.position);
             rotation = Quaternion.FromToRotation(Vector3.up, collision.GetContact(0).normal);
         }
 
         this.transform.SetPositionAndRotation(closestPoint, rotation);
 
-        AudioManager.instance?.Play("BombAttach");
+        AudioManager.instance?.Play("BombAttach",transform.position);
         rb.isKinematic = true;
         rb.detectCollisions = false;
     }
@@ -162,7 +166,7 @@ public class BounceBomb : MonoBehaviour {
     }
 
     private void ExplosionVFX() {
-        AudioManager.instance?.Play("BombBounce");
+        AudioManager.instance?.Play("BombBounce", transform.position);
         vfxObject.GetComponent<VFXCleanUp>().StartTimer();
 
         vfx.transform.SetParent(null);
