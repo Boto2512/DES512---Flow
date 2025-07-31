@@ -50,12 +50,19 @@ namespace Secret {
         [Header("Attack")]
         [SerializeField] private GameObject projectile;
         [SerializeField] private Transform attackTransform;
+        private ParticleSystem chargeVFX;
 
         [SerializeField] private int attackSeries = 3;
         [SerializeField] private float attackSeriesInterval = .1f;
-
         [SerializeField, Min(0f)] private float attackCooldown = 1f;
+
+        [Header("Charging")]
+        [SerializeField] private float attackChargeTime;
+        [SerializeField] private Transform chargeOrb;
+        [SerializeField] private Vector3 scaleGoal;
+        private float timer;
         private bool isAttacking = false;
+        private bool canAttack = true;
         private int seriesNumber = 0;
         private Vector3 firingPosition => attackTransform.position;
 
@@ -122,6 +129,8 @@ namespace Secret {
             healthBar.maxValue = health;
             healthBar.value = healthBar.maxValue;
 
+            chargeVFX = GetComponentInChildren<ParticleSystem>();
+            chargeVFX.Stop();
             SetTarget();
             agent = this.GetComponent<NavMeshAgent>();
             rb = this.GetComponent<Rigidbody>();
@@ -301,15 +310,43 @@ namespace Secret {
                     return;
                 }
             }
-            LaunchProjectile();
+            PrepareToLaunchProjectile();
+        }
+
+        private void PrepareToLaunchProjectile()
+        {
+
+            if (seriesNumber==0)
+            {
+                if (canAttack)
+                {
+                    isLastAttackLaser = false;
+                    isAttacking = true;
+                    chargeVFX.Play();
+                    chargeOrb.DOScale(scaleGoal, attackChargeTime).OnComplete(()=> {
+                        LaunchProjectile();
+                    });
+                    canAttack = false;
+                }
+                else
+                {
+                    return;
+                }
+                
+            }
+            else
+            {
+                canAttack = true;
+                LaunchProjectile();
+            }
         }
 
         private void LaunchProjectile()
         {
-            Debug.Log("Launch projectile");
 
             isLastAttackLaser = false;
             isAttacking = true;
+            Debug.Log("Launch projectile");
             Instantiate(projectile, attackTransform.position, attackTransform.rotation);
 
             seriesNumber++;
@@ -321,7 +358,9 @@ namespace Secret {
             }
             else
             {
+                chargeVFX.Stop();
                 seriesNumber = 0;
+                chargeOrb.localScale = Vector3.zero;
                 this.InvokeExclusive("attackCooldown", () => {
                     isAttacking = false;
                 }, attackCooldown);
