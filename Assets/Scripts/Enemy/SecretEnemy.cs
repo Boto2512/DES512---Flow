@@ -106,6 +106,9 @@ namespace Secret {
         [Header("Momentum")]
         [SerializeField] private Transform momentumPosition;
 
+        [Header("Animation Controller")]
+        [SerializeField] private Animator animator;
+
         private void Awake()
         {
             transitions = new() {
@@ -288,11 +291,21 @@ namespace Secret {
             {
                 bombBounced = false;
             }
+
+            if (animator.GetBool("isWalking"))
+            {
+                animator.SetBool("isWalking", false);
+            }
         }
 
         private void Pursue()
         {
             SetAgentDestination(GetPursueDestination());
+
+            if (!animator.GetBool("isWalking"))
+            {
+                animator.SetBool("isWalking", true);
+            }
         }
 
         private void Attack()
@@ -309,6 +322,11 @@ namespace Secret {
                     StartLaser();
                     return;
                 }
+            }
+
+            if (animator.GetBool("isWalking"))
+            {
+                animator.SetBool("isWalking", false);
             }
             PrepareToLaunchProjectile();
         }
@@ -396,6 +414,11 @@ namespace Secret {
             if (NavMesh.SamplePosition(targetPosition + toComfortableRange, out NavMeshHit hit, halfComfortableRange, NavMesh.AllAreas))
             {
                SetAgentDestination(hit.position);
+            }
+
+            if (!animator.GetBool("isWalking"))
+            {
+                animator.SetBool("isWalking", true);
             }
         }
 
