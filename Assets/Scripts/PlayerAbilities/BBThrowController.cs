@@ -51,7 +51,7 @@ public class BBThrowController : MonoBehaviour {
         UpdateChargeCounter();
 
 #if DEBUG
-        debugChargeCountText.text = $"Charges: {ChargeCount()}, Regen {chargeCounter - ChargeCount():P1}";
+        //debugChargeCountText.text = $"Charges: {ChargeCount()}, Regen {chargeCounter - ChargeCount():P1}";
 #endif
     }
 

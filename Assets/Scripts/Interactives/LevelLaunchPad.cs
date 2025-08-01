@@ -1,5 +1,6 @@
 using System.Collections;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -19,6 +20,7 @@ public class LevelLaunchPad : MonoBehaviour
     [SerializeField] Transform[] sections;
     private bool unlocked;
     private int enemyCount;
+    [SerializeField] Transform rotator;
     TextMeshProUGUI enemyCounter;
     [SerializeField] bool bypassEnemies;
     [Header("Level Timer")]
@@ -46,8 +48,7 @@ public class LevelLaunchPad : MonoBehaviour
     }
 
     private void Update() {
-
-        enemyCounter.transform.LookAt(player.position);
+        enemyCounter.transform.LookAt(player);
         if (!stopTimer) { levelTimer += Time.deltaTime; }
 
         if(isTiming) { timer += Time.deltaTime; }

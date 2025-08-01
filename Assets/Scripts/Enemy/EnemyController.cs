@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using DG.Tweening;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Events;
@@ -83,6 +82,12 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
     [Header("Momentum")]
     [SerializeField] private Transform momentumPosition;
 
+    [Header("Animation Controller")]
+    [SerializeField] private Animator animator;
+
+    [Header("Model")]
+    [SerializeField] private Transform model;
+
     private void Awake() {
         transitions = new() {
             new(EnemyAIState.Idle, EnemyAIState.Attack, IdleToAttackCheck, IdleToAttackCallback),
@@ -90,9 +95,9 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
             new(EnemyAIState.Pursue, EnemyAIState.Idle, PursueToIdleCheck, PursueToIdleCallback),
             new(EnemyAIState.Pursue, EnemyAIState.Attack, PursueToAttackCheck, PursueToAttackCallback),
             new(EnemyAIState.Pursue, EnemyAIState.Reposition, PursueToRepositionCheck, PursueToRepositionCallback),
-            //new(EnemyAIState.Attack, EnemyAIState.Idle, AttackToIdleCheck, AttackToIdleCallback),
-            //new(EnemyAIState.Attack, EnemyAIState.Pursue, AttackToPursueCheck, AttackToPursueCallback),
-            //new(EnemyAIState.Attack, EnemyAIState.Reposition, AttackToRepositionCheck, AttackToRepositionCallback),
+            new(EnemyAIState.Attack, EnemyAIState.Idle, AttackToIdleCheck, AttackToIdleCallback),
+            new(EnemyAIState.Attack, EnemyAIState.Pursue, AttackToPursueCheck, AttackToPursueCallback),
+            new(EnemyAIState.Attack, EnemyAIState.Reposition, AttackToRepositionCheck, AttackToRepositionCallback),
             new(EnemyAIState.Reposition, EnemyAIState.Attack, RepositionToAttackCheck, RepositionToAttackCallback),
             new(EnemyAIState.Reposition, EnemyAIState.Pursue, RepositionToPursueCheck, RepositionToPursueCallback)
         };
@@ -100,8 +105,6 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start() {
-        DOTween.Init();
-
         healthBar.maxValue = health;
         healthBar.value = healthBar.maxValue;
         healthBarParent = healthBar.transform.GetComponentInParent<Canvas>().transform;
@@ -239,49 +242,73 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
             default:
                 break;
         }
+
+        if (stateMachine.MovementState) {
+            model.LookAt(agent.nextPosition.With(y: model.position.y));
+        }
+        else {
+            if (animator.GetBool("isWalking")) {
+                animator.SetBool("isWalking", false);
+            }
+        }
     }
 
     private void Idle() {
         if (isGrounded && bombBounced) {
             bombBounced = false;
         }
+
+        if (animator.GetBool("isWalking")) {
+            animator.SetBool("isWalking", false);
+        }
     }
 
     private void Pursue() {
         SetAgentDestination(GetPursueDestination());
+
+        if (!animator.GetBool("isWalking")) {
+            animator.SetBool("isWalking", true);
+        }
+
+        model.LookAt(agent.nextPosition.With(y: model.position.y));
     }
 
     private void Attack() {
-        if (canAttack & !isAttacking) { 
+        if (canAttack & !isAttacking) {
             isAttacking = true;
             chargeVFX.Play();
+
+            if (animator.GetBool("isWalking")) {
+                animator.SetBool("isWalking", false);
+            }
+
+            model.LookAt(targetPosition.With(y: model.position.y));
+
         }
         else if (canAttack && timer < attackChargeTime) {
             timer += Time.deltaTime;
             ScaleOrb();
             return;
-        }  
-        else if (canAttack){
+        }
+        else if (canAttack) {
 
             timer = 0;
             canAttack = false;
             isAttacking = false;
             chargeOrb.localScale = Vector3.zero;
 
-
+            model.LookAt(targetPosition.With(y: model.position.y));
 
             Instantiate(projectile, attackTransform.position, attackTransform.rotation);
             this.InvokeExclusive("attackCooldown", () => canAttack = true, attackCooldown);
         }
-        else
-        {
+        else {
             return;
         }
     }
 
-    private void ScaleOrb()
-    {
-        float progress = (timer/attackChargeTime) *.1f;
+    private void ScaleOrb() {
+        float progress = (timer / attackChargeTime) * .1f;
         Vector3 lerpedScale;
         lerpedScale = Vector3.Lerp(chargeOrb.transform.localScale, scaleGoal, progress);
         chargeOrb.localScale = lerpedScale;
@@ -291,14 +318,19 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
         float halfComfortableRange = (maxComfortableRange + minComfortableRange) / 2f;
         Vector3 toComfortableRange = (rb.position - targetPosition).normalized * halfComfortableRange;
 
+        if (!animator.GetBool("isWalking")) {
+            animator.SetBool("isWalking", true);
+        }
+
+        timer = 0;
+        isAttacking = false;
+        chargeOrb.localScale = new Vector3(0, 0, 0);
+
         if (NavMesh.SamplePosition(targetPosition + toComfortableRange, out NavMeshHit hit, halfComfortableRange, NavMesh.AllAreas)) {
             SetAgentDestination(hit.position);
         }
 
-        canAttack = true;
-        isAttacking= false;
-        timer = 0;
-
+        model.LookAt(agent.nextPosition.With(y: model.position.y));
     }
 
     private void FanOut() {
