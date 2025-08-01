@@ -84,7 +84,7 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
     [SerializeField] private Transform momentumPosition;
 
     [Header("Animation Controller")]
-    [SerializeField] private Animator Animation;
+    [SerializeField] private Animator animator;
 
     private void Awake() {
         transitions = new() {
@@ -103,8 +103,6 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start() {
-        DOTween.Init();
-
         healthBar.maxValue = health;
         healthBar.value = healthBar.maxValue;
         healthBarParent = healthBar.transform.GetComponentInParent<Canvas>().transform;
@@ -248,15 +246,21 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
         if (isGrounded && bombBounced) {
             bombBounced = false;
         }
-        if (Animation != null) { 
-        Animation.SetBool("isWalking", false);}
+
+        if (animator.GetBool("isWalking"))
+        {
+            animator.SetBool("isWalking", false);
+        }
 
     }
 
     private void Pursue() {
         SetAgentDestination(GetPursueDestination());
-        if (Animation != null) {
-        Animation.SetBool("isWalking", true); }
+
+        if (!animator.GetBool("isWalking"))
+        {
+            animator.SetBool("isWalking", true);
+        }
     }
 
     private void Attack() {
@@ -264,9 +268,15 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
             isAttacking = true;
             chargeVFX.Play();
 
+            if (animator.GetBool("isWalking"))
+            {
+                animator.SetBool("isWalking", false);
+            }
 
-            if (Animation != null) { 
-            Animation.SetBool("isWalking", false);}
+            Vector3 newtarget = targetPosition;
+            newtarget.y = transform.position.y;
+            transform.LookAt(newtarget);
+
         }
         else if (canAttack && timer < attackChargeTime) {
             timer += Time.deltaTime;
@@ -279,9 +289,6 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
             canAttack = false;
             isAttacking = false;
             chargeOrb.localScale = Vector3.zero;
-
-            if (Animation != null) {
-            Animation.SetTrigger("hasAttacked"); }
 
             Instantiate(projectile, attackTransform.position, attackTransform.rotation);
             this.InvokeExclusive("attackCooldown", () => canAttack = true, attackCooldown);
@@ -304,8 +311,14 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
         float halfComfortableRange = (maxComfortableRange + minComfortableRange) / 2f;
         Vector3 toComfortableRange = (rb.position - targetPosition).normalized * halfComfortableRange;
 
-        if (Animation != null) { 
-        Animation.SetBool("isWalking", true);}
+        if (!animator.GetBool("isWalking"))
+        {
+            animator.SetBool("isWalking", true);
+        }
+
+        timer = 0;
+        isAttacking = false;
+        chargeOrb.localScale = new Vector3 (0,0, 0);
 
         if (NavMesh.SamplePosition(targetPosition + toComfortableRange, out NavMeshHit hit, halfComfortableRange, NavMesh.AllAreas)) {
             SetAgentDestination(hit.position);
