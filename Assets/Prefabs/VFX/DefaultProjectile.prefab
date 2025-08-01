@@ -11,9 +11,9 @@ GameObject:
   - component: {fileID: 8109041763089266389}
   - component: {fileID: 1984533283135829848}
   - component: {fileID: 3148272923580324042}
-  - component: {fileID: 9173500362048742}
+  - component: {fileID: 195853224424170339}
   m_Layer: 9
-  m_Name: ProjectileFinalVersionEnemy
+  m_Name: DefaultProjectile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -86,7 +86,7 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &9173500362048742
+--- !u!114 &195853224424170339
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -95,19 +95,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 1929457029355738013}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 20924736bd9b0d840814f27ca1c71389, type: 3}
+  m_Script: {fileID: 11500000, guid: 433db6794b9e42144bb4557e177d4157, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  upwardSpeed: 80
-  upwardHorizontalRange: 0
-  upwardVerticalRange: 0
-  upwardHeight: 3
-  rotateSpeed: 0.25
-  homingSpeed: 20
-  homingDelay: 1
-  homingDuration: 3
-  damage: 10
-  projectileModel: {fileID: 7086526618031628668}
+  projectileSpeed: 4
+  playerLocation: {x: 0, y: 0, z: 0}
+  timeToFire: 0
+  rotationSpeed: 100
+  damageAmount: 10
 --- !u!1 &2360558762179424128
 GameObject:
   m_ObjectHideFlags: 0
