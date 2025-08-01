@@ -83,6 +83,9 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
     [Header("Momentum")]
     [SerializeField] private Transform momentumPosition;
 
+    [Header("Animation Controller")]
+    [SerializeField] private Animator animator;
+
     private void Awake() {
         transitions = new() {
             new(EnemyAIState.Idle, EnemyAIState.Attack, IdleToAttackCheck, IdleToAttackCallback),
@@ -90,9 +93,9 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
             new(EnemyAIState.Pursue, EnemyAIState.Idle, PursueToIdleCheck, PursueToIdleCallback),
             new(EnemyAIState.Pursue, EnemyAIState.Attack, PursueToAttackCheck, PursueToAttackCallback),
             new(EnemyAIState.Pursue, EnemyAIState.Reposition, PursueToRepositionCheck, PursueToRepositionCallback),
-            //new(EnemyAIState.Attack, EnemyAIState.Idle, AttackToIdleCheck, AttackToIdleCallback),
-            //new(EnemyAIState.Attack, EnemyAIState.Pursue, AttackToPursueCheck, AttackToPursueCallback),
-            //new(EnemyAIState.Attack, EnemyAIState.Reposition, AttackToRepositionCheck, AttackToRepositionCallback),
+            new(EnemyAIState.Attack, EnemyAIState.Idle, AttackToIdleCheck, AttackToIdleCallback),
+            new(EnemyAIState.Attack, EnemyAIState.Pursue, AttackToPursueCheck, AttackToPursueCallback),
+            new(EnemyAIState.Attack, EnemyAIState.Reposition, AttackToRepositionCheck, AttackToRepositionCallback),
             new(EnemyAIState.Reposition, EnemyAIState.Attack, RepositionToAttackCheck, RepositionToAttackCallback),
             new(EnemyAIState.Reposition, EnemyAIState.Pursue, RepositionToPursueCheck, RepositionToPursueCallback)
         };
@@ -100,8 +103,6 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start() {
-        DOTween.Init();
-
         healthBar.maxValue = health;
         healthBar.value = healthBar.maxValue;
         healthBarParent = healthBar.transform.GetComponentInParent<Canvas>().transform;
@@ -245,16 +246,37 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
         if (isGrounded && bombBounced) {
             bombBounced = false;
         }
+
+        if (animator.GetBool("isWalking"))
+        {
+            animator.SetBool("isWalking", false);
+        }
+
     }
 
     private void Pursue() {
         SetAgentDestination(GetPursueDestination());
+
+        if (!animator.GetBool("isWalking"))
+        {
+            animator.SetBool("isWalking", true);
+        }
     }
 
     private void Attack() {
         if (canAttack & !isAttacking) { 
             isAttacking = true;
             chargeVFX.Play();
+
+            if (animator.GetBool("isWalking"))
+            {
+                animator.SetBool("isWalking", false);
+            }
+
+            Vector3 newtarget = targetPosition;
+            newtarget.y = transform.position.y;
+            transform.LookAt(newtarget);
+
         }
         else if (canAttack && timer < attackChargeTime) {
             timer += Time.deltaTime;
@@ -267,8 +289,6 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
             canAttack = false;
             isAttacking = false;
             chargeOrb.localScale = Vector3.zero;
-
-
 
             Instantiate(projectile, attackTransform.position, attackTransform.rotation);
             this.InvokeExclusive("attackCooldown", () => canAttack = true, attackCooldown);
@@ -291,13 +311,18 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
         float halfComfortableRange = (maxComfortableRange + minComfortableRange) / 2f;
         Vector3 toComfortableRange = (rb.position - targetPosition).normalized * halfComfortableRange;
 
+        if (!animator.GetBool("isWalking"))
+        {
+            animator.SetBool("isWalking", true);
+        }
+
+        timer = 0;
+        isAttacking = false;
+        chargeOrb.localScale = new Vector3 (0,0, 0);
+
         if (NavMesh.SamplePosition(targetPosition + toComfortableRange, out NavMeshHit hit, halfComfortableRange, NavMesh.AllAreas)) {
             SetAgentDestination(hit.position);
         }
-
-        canAttack = true;
-        isAttacking= false;
-        timer = 0;
 
     }
 
