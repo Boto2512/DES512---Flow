@@ -160,9 +160,9 @@ public class PlayerMovementController : MonoBehaviour, IMomentumModifiable {
         prevGroundedState = groundedState;
         prevJumpActivated = jumpActivated;
 
-        debugSpeedText.text = $"Horizontal: {rb.linearVelocity.Horizontal().magnitude:0.####}\n" +
-            $"Up: {Vector3.Dot(rb.linearVelocity, Vector3.up):0.####}\n" +
-            $"Overall: {rb.linearVelocity.magnitude:0.####}";
+        //debugSpeedText.text = $"Horizontal: {rb.linearVelocity.Horizontal().magnitude:0.####}\n" +
+        //    $"Up: {Vector3.Dot(rb.linearVelocity, Vector3.up):0.####}\n" +
+        //    $"Overall: {rb.linearVelocity.magnitude:0.####}";
     }
 
     private void FixedUpdate() {
