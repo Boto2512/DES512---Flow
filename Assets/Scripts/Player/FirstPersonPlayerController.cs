@@ -75,7 +75,7 @@ public class FirstPersonPlayerController : MonoBehaviour, ITargetable, IHasSpeed
 
     private void FixedUpdate() {
         FindCurrentThreshold();
-        if (prevThreshold == CurrentThreshold) {
+        if (prevThreshold != CurrentThreshold) {
             SpeedThresholdChanged.Invoke();
         }
 
