@@ -252,6 +252,11 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
             animator.SetBool("isWalking", false);
         }
 
+        if (animator.GetBool("Gangnam"))
+        {
+            animator.SetBool("Gangnam", false);
+        }
+
     }
 
     private void Pursue() {
@@ -260,6 +265,11 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
         if (!animator.GetBool("isWalking"))
         {
             animator.SetBool("isWalking", true);
+        }
+
+        if (animator.GetBool("Gangnam"))
+        {
+            animator.SetBool("Gangnam", false);
         }
     }
 
@@ -272,6 +282,7 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
             {
                 animator.SetBool("isWalking", false);
             }
+
 
             Vector3 newtarget = targetPosition;
             newtarget.y = transform.position.y;

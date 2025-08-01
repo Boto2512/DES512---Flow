@@ -296,6 +296,11 @@ namespace Secret {
             {
                 animator.SetBool("isWalking", false);
             }
+
+            if (animator.GetBool("Gangnam"))
+            {
+                animator.SetBool("Gangnam", false);
+            }
         }
 
         private void Pursue()
@@ -305,6 +310,11 @@ namespace Secret {
             if (!animator.GetBool("isWalking"))
             {
                 animator.SetBool("isWalking", true);
+            }
+
+            if (animator.GetBool("Gangnam"))
+            {
+                animator.SetBool("Gangnam", false);
             }
         }
 
@@ -328,6 +338,9 @@ namespace Secret {
             {
                 animator.SetBool("isWalking", false);
             }
+
+            
+
             PrepareToLaunchProjectile();
         }
 
@@ -341,6 +354,10 @@ namespace Secret {
                     isLastAttackLaser = false;
                     isAttacking = true;
                     chargeVFX.Play();
+                    if (!animator.GetBool("Gangnam"))
+                    {
+                        animator.SetBool("Gangnam", true);
+                    }
                     chargeOrb.DOScale(scaleGoal, attackChargeTime).OnComplete(()=> {
                         LaunchProjectile();
                     });
@@ -394,6 +411,16 @@ namespace Secret {
             float originalY = laserTransform.position.y;
             //laserCollider.enabled = true;
             laserTransform.gameObject.SetActive(true);
+            if (!animator.GetBool("Gangnam"))
+            {
+                animator.SetBool("Gangnam", true);
+            }
+
+            if (animator.GetBool("isWalking"))
+            {
+                animator.SetBool("isWalking", false);
+            }
+
             laserTransform.DOLocalMoveY(laserMaxY, laserRisingTime).OnComplete(() => {
                 foreach (var laser in secretEnemyLaserList)
                 {
@@ -419,6 +446,11 @@ namespace Secret {
             if (!animator.GetBool("isWalking"))
             {
                 animator.SetBool("isWalking", true);
+            }
+
+            if (animator.GetBool("Gangnam"))
+            {
+                animator.SetBool("Gangnam", false);
             }
         }
 
