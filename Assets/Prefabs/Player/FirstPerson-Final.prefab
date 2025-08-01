@@ -4371,6 +4371,21 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 77d3c0bd497a6b84cbdc7f170d91dfc0, type: 2}
   - {fileID: 2100000, guid: 5364cda3e45e01d44b2558bd61ebc368, type: 2}
   - {fileID: 2100000, guid: 134648337efdbb14f8756a13ada9da51, type: 2}
+  ChargeCountIncreased:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 5756315456945496000, guid: 83fa99cd267d2b0408c02cb1a3a9d7bb, type: 3}
+        m_TargetAssemblyTypeName: AudioManager, Assembly-CSharp
+        m_MethodName: PlayBombChargingAudio
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   debugChargeCountText: {fileID: 4371506445335393440}
 --- !u!114 &668975271106841607
 MonoBehaviour:

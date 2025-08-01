@@ -4587,6 +4587,34 @@ PrefabInstance:
       propertyPath: m_Name
       value: FirstPerson-Final
       objectReference: {fileID: 0}
+    - target: {fileID: 5253378949980374968, guid: 2fab9f41ce824a24f9b6b279975808b2, type: 3}
+      propertyPath: ChargeCountIncreased.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5253378949980374968, guid: 2fab9f41ce824a24f9b6b279975808b2, type: 3}
+      propertyPath: ChargeCountIncreased.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5253378949980374968, guid: 2fab9f41ce824a24f9b6b279975808b2, type: 3}
+      propertyPath: ChargeCountIncreased.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1965784472}
+    - target: {fileID: 5253378949980374968, guid: 2fab9f41ce824a24f9b6b279975808b2, type: 3}
+      propertyPath: ChargeCountIncreased.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5253378949980374968, guid: 2fab9f41ce824a24f9b6b279975808b2, type: 3}
+      propertyPath: ChargeCountIncreased.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: PlayBombChargingAudio
+      objectReference: {fileID: 0}
+    - target: {fileID: 5253378949980374968, guid: 2fab9f41ce824a24f9b6b279975808b2, type: 3}
+      propertyPath: ChargeCountIncreased.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: AudioManager, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 5253378949980374968, guid: 2fab9f41ce824a24f9b6b279975808b2, type: 3}
+      propertyPath: ChargeCountIncreased.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     - target: {fileID: 7333138646730308612, guid: 2fab9f41ce824a24f9b6b279975808b2, type: 3}
       propertyPath: vignetteMAT
       value: 
@@ -14142,6 +14170,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6219088366736459797, guid: 83fa99cd267d2b0408c02cb1a3a9d7bb, type: 3}
   m_PrefabInstance: {fileID: 1965784470}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1965784472 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5756315456945496000, guid: 83fa99cd267d2b0408c02cb1a3a9d7bb, type: 3}
+  m_PrefabInstance: {fileID: 1965784470}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 493575c4699958940a38b2726b4e8b35, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1984277452
 GameObject:
   m_ObjectHideFlags: 0

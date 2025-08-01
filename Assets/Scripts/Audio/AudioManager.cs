@@ -75,7 +75,6 @@ public class AudioManager : MonoBehaviour
         }
 
         //  create a new one when pool is empty
-        Debug.LogWarning("Audio pool exhausted! Creating new audio source.");
         return CreateNewAudioSourceInPool();
     }
     public void ReturnToPool(AudioSource source)
@@ -102,7 +101,10 @@ public class AudioManager : MonoBehaviour
         source.outputAudioMixerGroup = sound.mixerGroup;
         source.mute = sound.mute;
     }
-
+    public void PlayBombChargingAudio()
+    {
+        Play("CB");
+    }
     public void Play(string soundName, Vector3? position = null)
     {
         Sound sound = Array.Find(soundList, s => s.soundName == soundName);
