@@ -21,7 +21,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Rocks
-  m_Shader: {fileID: -6465566751694194690, guid: 8d5cbc2790ab64f4db44076cc6de7911, type: 3}
+  m_Shader: {fileID: -6465566751694194690, guid: 344e788d848abe348bd2c346071d6de8, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -38,7 +38,7 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - MainTex:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: 79545e839a0ff5841a16b9ab01212deb, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - Mask_R_Emission:
@@ -50,7 +50,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Normal_Map:
-        m_Texture: {fileID: 2800000, guid: 0135c0718cb0b1442854016cd430db31, type: 3}
+        m_Texture: {fileID: 2800000, guid: 812d3d5aade18334ca9bcf7cd734db36, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Outline_Texture:
@@ -81,8 +81,10 @@ Material:
     - Toon_Ramp_Smoothness: 0
     - _Ambient: 0
     - _Gloss_amount: 0
+    - _N_blend: 0.2
+    - _N_tile: 0.1
     - _Normal_Map_1: 0
-    - _Normal_Strength: -0.58
+    - _Normal_Strength: 0.3
     - _Outline_Amount: -0.022
     - _Outline_Brightness: 1
     - _QueueControl: 0
@@ -90,10 +92,12 @@ Material:
     - _Soft_Outline_Amount: 0.39
     - _Soft_Outline_Brightness: 1
     - _Soft_Outline_Softness: 2
+    - _Tiling: 0.02
     - _Toon_Ramp_Offset_Point: 0.416
+    - _blend: 0.15
     m_Colors:
-    - Toon_Ramp_Tint: {r: 0.49056596, g: 0.49056596, b: 0.49056596, a: 1}
-    - _Color: {r: 0.6226415, g: 0.5143683, b: 0.41411534, a: 1}
+    - Toon_Ramp_Tint: {r: 0.29957277, g: 0.43236566, b: 0.6415094, a: 1}
+    - _Color: {r: 0.8773585, g: 0.8773585, b: 0.8773585, a: 1}
     - _Gloss_Tint: {r: 1, g: 1, b: 1, a: 1}
     - _Outline_Tint: {r: 1, g: 1, b: 1, a: 1}
     - _Solt_Outline_Tint: {r: 1, g: 1, b: 1, a: 1}
