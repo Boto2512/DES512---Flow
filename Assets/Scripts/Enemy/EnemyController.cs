@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using DG.Tweening;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Events;
@@ -85,6 +84,9 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
 
     [Header("Animation Controller")]
     [SerializeField] private Animator animator;
+
+    [Header("Model")]
+    [SerializeField] private Transform model;
 
     private void Awake() {
         transitions = new() {
@@ -240,6 +242,15 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
             default:
                 break;
         }
+
+        if (stateMachine.MovementState) {
+            model.LookAt(agent.nextPosition.With(y: model.position.y));
+        }
+        else {
+            if (animator.GetBool("isWalking")) {
+                animator.SetBool("isWalking", false);
+            }
+        }
     }
 
     private void Idle() {
@@ -247,61 +258,57 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
             bombBounced = false;
         }
 
-        if (animator.GetBool("isWalking"))
-        {
+        if (animator.GetBool("isWalking")) {
             animator.SetBool("isWalking", false);
         }
-
     }
 
     private void Pursue() {
         SetAgentDestination(GetPursueDestination());
 
-        if (!animator.GetBool("isWalking"))
-        {
+        if (!animator.GetBool("isWalking")) {
             animator.SetBool("isWalking", true);
         }
+
+        model.LookAt(agent.nextPosition.With(y: model.position.y));
     }
 
     private void Attack() {
-        if (canAttack & !isAttacking) { 
+        if (canAttack & !isAttacking) {
             isAttacking = true;
             chargeVFX.Play();
 
-            if (animator.GetBool("isWalking"))
-            {
+            if (animator.GetBool("isWalking")) {
                 animator.SetBool("isWalking", false);
             }
 
-            Vector3 newtarget = targetPosition;
-            newtarget.y = transform.position.y;
-            transform.LookAt(newtarget);
+            model.LookAt(targetPosition.With(y: model.position.y));
 
         }
         else if (canAttack && timer < attackChargeTime) {
             timer += Time.deltaTime;
             ScaleOrb();
             return;
-        }  
-        else if (canAttack){
+        }
+        else if (canAttack) {
 
             timer = 0;
             canAttack = false;
             isAttacking = false;
             chargeOrb.localScale = Vector3.zero;
 
+            model.LookAt(targetPosition.With(y: model.position.y));
+
             Instantiate(projectile, attackTransform.position, attackTransform.rotation);
             this.InvokeExclusive("attackCooldown", () => canAttack = true, attackCooldown);
         }
-        else
-        {
+        else {
             return;
         }
     }
 
-    private void ScaleOrb()
-    {
-        float progress = (timer/attackChargeTime) *.1f;
+    private void ScaleOrb() {
+        float progress = (timer / attackChargeTime) * .1f;
         Vector3 lerpedScale;
         lerpedScale = Vector3.Lerp(chargeOrb.transform.localScale, scaleGoal, progress);
         chargeOrb.localScale = lerpedScale;
@@ -311,19 +318,19 @@ public class EnemyController : MonoBehaviour, IDamageable, IMomentumModifiable {
         float halfComfortableRange = (maxComfortableRange + minComfortableRange) / 2f;
         Vector3 toComfortableRange = (rb.position - targetPosition).normalized * halfComfortableRange;
 
-        if (!animator.GetBool("isWalking"))
-        {
+        if (!animator.GetBool("isWalking")) {
             animator.SetBool("isWalking", true);
         }
 
         timer = 0;
         isAttacking = false;
-        chargeOrb.localScale = new Vector3 (0,0, 0);
+        chargeOrb.localScale = new Vector3(0, 0, 0);
 
         if (NavMesh.SamplePosition(targetPosition + toComfortableRange, out NavMeshHit hit, halfComfortableRange, NavMesh.AllAreas)) {
             SetAgentDestination(hit.position);
         }
 
+        model.LookAt(agent.nextPosition.With(y: model.position.y));
     }
 
     private void FanOut() {
