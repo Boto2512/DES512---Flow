@@ -51,6 +51,8 @@ public class PlayerAttackController : MonoBehaviour, IDamageable
     private bool parried = false;
     [SerializeField] private VisualEffect slashVFX;
 
+
+
     private Rigidbody rb;
     private IHasSpeedThresholds thresholdHolder;
 

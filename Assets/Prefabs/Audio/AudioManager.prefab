@@ -141,7 +141,7 @@ MonoBehaviour:
     volume: 1
     pitch: 1
     loop: 0
-    mute: 0
+    mute: 1
     mixerGroup: {fileID: 7839286490650633151, guid: 37077b37cf7bfeb48be93012974dd892, type: 2}
     source: {fileID: 0}
   - soundName: Charging
@@ -156,7 +156,7 @@ MonoBehaviour:
   - soundName: Launch
     clip: {fileID: 8300000, guid: 26813e9a81d5f994fbaaaaf1c35c0b4d, type: 3}
     priority: 1
-    volume: 0.5
+    volume: 0.25
     pitch: 1
     loop: 0
     mute: 0
@@ -165,7 +165,7 @@ MonoBehaviour:
   - soundName: Laser
     clip: {fileID: 8300000, guid: d676a2e9f63c3ee49946bf363db0ca55, type: 3}
     priority: 1
-    volume: 0.5
+    volume: 0.25
     pitch: 1
     loop: 0
     mute: 0
