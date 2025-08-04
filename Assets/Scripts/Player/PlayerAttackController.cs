@@ -300,7 +300,7 @@ public class PlayerAttackController : MonoBehaviour, IDamageable
     private void CheckIfAimingAtEnemy()
     {
         Ray ray = new Ray(orientation.position, orientation.forward);
-        if (Physics.Raycast(ray, out RaycastHit hit, aimCheckDistance, enemyLayerMask, QueryTriggerInteraction.Ignore))
+        if (Physics.Raycast(ray, out RaycastHit hit, aimCheckDistance, enemyLayerMask | Globals.OBSTACLE_MASK, QueryTriggerInteraction.Ignore))
         {
             if (hit.collider.CompareTag("Enemy"))
             {
