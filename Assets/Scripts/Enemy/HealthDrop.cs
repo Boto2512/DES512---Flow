@@ -34,6 +34,7 @@ public class HealthDrop : MonoBehaviour
         if (other.gameObject.CompareTag("Player"))
         { 
             other.GetComponentInParent<IDamageable>().Heal(healAmount);
+            AudioManager.instance?.Play("Gear");
             floatTween.Kill();
             rotateTween.Kill();
             Destroy(parent.gameObject, 0.5f);

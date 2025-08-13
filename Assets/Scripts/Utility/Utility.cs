@@ -24,7 +24,7 @@ public static class Utility {
     /// <summary>
     /// Creates a copy of the Vector3 with different named values
     /// </summary>
-    public static Vector3 With(this Vector3 v, float? x, float? y, float? z) {
+    public static Vector3 With(this Vector3 v, float? x = null, float? y = null, float? z = null) {
         return new Vector3(
             x ?? v.x,
             y ?? v.y,

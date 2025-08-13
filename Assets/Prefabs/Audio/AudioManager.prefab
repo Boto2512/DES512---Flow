@@ -77,15 +77,15 @@ MonoBehaviour:
     priority: 1
     volume: 0.3
     pitch: 1
-    loop: 0
+    loop: 1
     mute: 0
     mixerGroup: {fileID: -4843252175066814224, guid: 37077b37cf7bfeb48be93012974dd892, type: 2}
     source: {fileID: 0}
   - soundName: BGM2
-    clip: {fileID: 8300000, guid: be650748ee6a4d3489c90585b25e4172, type: 3}
+    clip: {fileID: 8300000, guid: 63330b19fb7e03542947136bc2f0d82c, type: 3}
     priority: 1
-    volume: 0.5
-    pitch: 1
+    volume: 0.4
+    pitch: 0.8
     loop: 1
     mute: 0
     mixerGroup: {fileID: -4843252175066814224, guid: 37077b37cf7bfeb48be93012974dd892, type: 2}
@@ -109,7 +109,7 @@ MonoBehaviour:
     mixerGroup: {fileID: 7839286490650633151, guid: 37077b37cf7bfeb48be93012974dd892, type: 2}
     source: {fileID: 0}
   - soundName: FallWater
-    clip: {fileID: 8300000, guid: f805729dceb917b4c83a52deb13d0454, type: 3}
+    clip: {fileID: 8300000, guid: e950eb557b655e345a8eef50429eada6, type: 3}
     priority: 1
     volume: 0.5
     pitch: 1
@@ -136,12 +136,12 @@ MonoBehaviour:
     mixerGroup: {fileID: 7839286490650633151, guid: 37077b37cf7bfeb48be93012974dd892, type: 2}
     source: {fileID: 0}
   - soundName: Hurt
-    clip: {fileID: 8300000, guid: 19b7805903841f544b9eec0cc0daa373, type: 3}
+    clip: {fileID: 8300000, guid: e8f0aa9df7f11ad409056e316d0d6351, type: 3}
     priority: 1
-    volume: 1
-    pitch: 1
+    volume: 0.35
+    pitch: 0.4
     loop: 0
-    mute: 1
+    mute: 0
     mixerGroup: {fileID: 7839286490650633151, guid: 37077b37cf7bfeb48be93012974dd892, type: 2}
     source: {fileID: 0}
   - soundName: Charging
@@ -159,13 +159,13 @@ MonoBehaviour:
     volume: 0.25
     pitch: 1
     loop: 0
-    mute: 0
+    mute: 1
     mixerGroup: {fileID: 7839286490650633151, guid: 37077b37cf7bfeb48be93012974dd892, type: 2}
     source: {fileID: 0}
   - soundName: Laser
     clip: {fileID: 8300000, guid: d676a2e9f63c3ee49946bf363db0ca55, type: 3}
     priority: 1
-    volume: 0.25
+    volume: 0.5
     pitch: 1
     loop: 0
     mute: 0
@@ -175,6 +175,33 @@ MonoBehaviour:
     clip: {fileID: 8300000, guid: f805729dceb917b4c83a52deb13d0454, type: 3}
     priority: 1
     volume: 0.3
+    pitch: 1
+    loop: 0
+    mute: 0
+    mixerGroup: {fileID: 7839286490650633151, guid: 37077b37cf7bfeb48be93012974dd892, type: 2}
+    source: {fileID: 0}
+  - soundName: Gear
+    clip: {fileID: 8300000, guid: 4aab36fe1912a9a4dbb62fb0e1a4a3e0, type: 3}
+    priority: 1
+    volume: 0.5
+    pitch: 1
+    loop: 0
+    mute: 0
+    mixerGroup: {fileID: 7839286490650633151, guid: 37077b37cf7bfeb48be93012974dd892, type: 2}
+    source: {fileID: 0}
+  - soundName: WeaponTran
+    clip: {fileID: 8300000, guid: f9d3217376323ef4da42122cf48e09b8, type: 3}
+    priority: 1
+    volume: 0.5
+    pitch: 1
+    loop: 0
+    mute: 1
+    mixerGroup: {fileID: 7839286490650633151, guid: 37077b37cf7bfeb48be93012974dd892, type: 2}
+    source: {fileID: 0}
+  - soundName: CB
+    clip: {fileID: 8300000, guid: 6d5545941eb01f94997cc08f38399854, type: 3}
+    priority: 1
+    volume: 0.7
     pitch: 1
     loop: 0
     mute: 0

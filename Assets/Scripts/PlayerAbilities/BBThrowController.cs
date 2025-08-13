@@ -1,8 +1,8 @@
-using System;
 using System.Runtime.CompilerServices;
 using AYellowpaper;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 
 
 public class BBThrowController : MonoBehaviour {
@@ -24,6 +24,9 @@ public class BBThrowController : MonoBehaviour {
     [Header("UI")]
     [SerializeField] private Material[] chargeMaterials;
 
+    [Header("Events")]
+    public UnityEvent ChargeCountIncreased;
+
 
 #if DEBUG
     [Header("Debug")]
@@ -35,9 +38,13 @@ public class BBThrowController : MonoBehaviour {
 
     // charges
     private float chargeCounter;
+    private int previousChargeCount;
 
     private void Start() {
         chargeCounter = (float)Config.MaxCharges;
+
+        Debug.Log($" Liquid Amount; {chargeMaterials[0].GetFloat("_LiquidAmount")}");
+
         chargeMaterials[0].SetFloat("_LiquidAmount", 1);
         chargeMaterials[1].SetFloat("_LiquidAmount", 1);
         chargeMaterials[2].SetFloat("_LiquidAmount", 1);
@@ -47,7 +54,7 @@ public class BBThrowController : MonoBehaviour {
         UpdateChargeCounter();
 
 #if DEBUG
-        debugChargeCountText.text = $"Charges: {ChargeCount()}, Regen {chargeCounter - ChargeCount():P1}";
+        //debugChargeCountText.text = $"Charges: {ChargeCount()}, Regen {chargeCounter - ChargeCount():P1}";
 #endif
     }
 
@@ -126,7 +133,7 @@ public class BBThrowController : MonoBehaviour {
     #region Charges
 
     private void UpdateChargeCounter() {
-        if (chargeCounter == Config.MaxCharges) { 
+        if (chargeCounter == Config.MaxCharges) {
             MaxChargesUI();
             return;
         }
@@ -136,8 +143,13 @@ public class BBThrowController : MonoBehaviour {
         }
 
         chargeCounter += Time.deltaTime / Config.ChargeRegenTime;
+        
+        if (ChargeCount() > previousChargeCount)
+            ChargeCountIncreased.Invoke();
 
         ChargeUI();
+
+        previousChargeCount = ChargeCount();
     }
 
     public void AddChargeRegenAmount(float amount) {
@@ -158,10 +170,13 @@ public class BBThrowController : MonoBehaviour {
 
 
     private void ChargeUI() {
-
-        if(chargeCounter == Config.MaxCharges) { return; }
+        if (ChargeCount() == Config.MaxCharges)
+        {
+            Debug.Log("im max scared"); return; 
+        }
         float currentCharge = (chargeCounter % 1);
         int currentAmount = Mathf.FloorToInt(chargeCounter);
+        Debug.Log($"CurrentCharge = {currentCharge}  \nCurrentAmount{currentAmount}");
         int index = 0;
 
         foreach (Material mat in chargeMaterials) {
@@ -173,11 +188,9 @@ public class BBThrowController : MonoBehaviour {
         }
     }
 
-    private void MaxChargesUI()
-    {
+    private void MaxChargesUI() {
         int index = 0;
-        foreach (Material mat in chargeMaterials)
-        {
+        foreach (Material mat in chargeMaterials) {
             chargeMaterials[index].SetFloat("_LiquidAmount", 1);
             index++;
         }

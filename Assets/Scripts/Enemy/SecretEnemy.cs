@@ -106,6 +106,9 @@ namespace Secret {
         [Header("Momentum")]
         [SerializeField] private Transform momentumPosition;
 
+        [Header("Animation Controller")]
+        [SerializeField] private Animator animator;
+
         private void Awake()
         {
             transitions = new() {
@@ -288,11 +291,31 @@ namespace Secret {
             {
                 bombBounced = false;
             }
+
+            if (animator.GetBool("isWalking"))
+            {
+                animator.SetBool("isWalking", false);
+            }
+
+            if (animator.GetBool("Gangnam"))
+            {
+                animator.SetBool("Gangnam", false);
+            }
         }
 
         private void Pursue()
         {
             SetAgentDestination(GetPursueDestination());
+
+            if (!animator.GetBool("isWalking"))
+            {
+                animator.SetBool("isWalking", true);
+            }
+
+            if (animator.GetBool("Gangnam"))
+            {
+                animator.SetBool("Gangnam", false);
+            }
         }
 
         private void Attack()
@@ -310,6 +333,14 @@ namespace Secret {
                     return;
                 }
             }
+
+            if (animator.GetBool("isWalking"))
+            {
+                animator.SetBool("isWalking", false);
+            }
+
+            
+
             PrepareToLaunchProjectile();
         }
 
@@ -323,6 +354,10 @@ namespace Secret {
                     isLastAttackLaser = false;
                     isAttacking = true;
                     chargeVFX.Play();
+                    if (!animator.GetBool("Gangnam"))
+                    {
+                        animator.SetBool("Gangnam", true);
+                    }
                     chargeOrb.DOScale(scaleGoal, attackChargeTime).OnComplete(()=> {
                         LaunchProjectile();
                     });
@@ -343,6 +378,9 @@ namespace Secret {
 
         private void LaunchProjectile()
         {
+
+            isLastAttackLaser = false;
+            isAttacking = true;
             Debug.Log("Launch projectile");
             Instantiate(projectile, attackTransform.position, attackTransform.rotation);
 
@@ -373,6 +411,16 @@ namespace Secret {
             float originalY = laserTransform.position.y;
             //laserCollider.enabled = true;
             laserTransform.gameObject.SetActive(true);
+            if (!animator.GetBool("Gangnam"))
+            {
+                animator.SetBool("Gangnam", true);
+            }
+
+            if (animator.GetBool("isWalking"))
+            {
+                animator.SetBool("isWalking", false);
+            }
+
             laserTransform.DOLocalMoveY(laserMaxY, laserRisingTime).OnComplete(() => {
                 foreach (var laser in secretEnemyLaserList)
                 {
@@ -393,6 +441,16 @@ namespace Secret {
             if (NavMesh.SamplePosition(targetPosition + toComfortableRange, out NavMeshHit hit, halfComfortableRange, NavMesh.AllAreas))
             {
                SetAgentDestination(hit.position);
+            }
+
+            if (!animator.GetBool("isWalking"))
+            {
+                animator.SetBool("isWalking", true);
+            }
+
+            if (animator.GetBool("Gangnam"))
+            {
+                animator.SetBool("Gangnam", false);
             }
         }
 
